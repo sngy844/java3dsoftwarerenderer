@@ -55,11 +55,11 @@ import java.util.Arrays;
 public class Bitmap
 {
 	/** The width, in pixels, of the image */
-	private final int  m_width;
+	protected final int  m_width;
 	/** The height, in pixels, of the image */
-	private final int  m_height;
+	protected final int  m_height;
 	/** Every pixel component in the image */
-	private final byte m_components[];
+	protected final byte m_components[];
 
 	/** Basic getter */
 	public int GetWidth() { return m_width; }
