@@ -55,11 +55,11 @@ import java.util.Arrays;
 public class Bitmap
 {
 	/** The width, in pixels, of the image */
-	private final int  m_width;
+	protected final int  m_width;
 	/** The height, in pixels, of the image */
-	private final int  m_height;
+	protected final int  m_height;
 	/** Every pixel component in the image */
-	private final byte m_components[];
+	protected final byte m_components[];
 
 	/** Basic getter */
 	public int GetWidth() { return m_width; }
@@ -112,11 +112,15 @@ public class Bitmap
 	 */
 	public void CopyToByteArray(byte[] dest)
 	{
-		for(int i = 0; i < m_width * m_height; i++)
+		int index3;
+		int index4;
+		final int totalPixels =  m_width * m_height;
+		for(int i = 0; i < totalPixels; i++)
 		{
-			dest[i * 3    ] = m_components[i * 4 + 1];
-			dest[i * 3 + 1] = m_components[i * 4 + 2];
-			dest[i * 3 + 2] = m_components[i * 4 + 3];
+			index3 =  i*3; 		index4 = i*4;
+			dest[index3    ] = m_components[index4 + 1];
+			dest[index3 + 1] = m_components[index4 + 2];
+			dest[index3 + 2] = m_components[index4 + 3];
 		}
 	}
 }

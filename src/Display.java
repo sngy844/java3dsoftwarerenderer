@@ -104,11 +104,9 @@ public class Display extends Canvas
 	public void SwapBuffers()
 	{
 		//Display components should be the byte array used for displayImage's pixels.
-		//Therefore, this call should effectively copy the frameBuffer into the
-		//displayImage.
+		//Therefore, this call should effectively copy the frameBuffer into the displayImage.
 		m_frameBuffer.CopyToByteArray(m_displayComponents);
-		m_graphics.drawImage(m_displayImage, 0, 0, 
-			m_frameBuffer.GetWidth(), m_frameBuffer.GetHeight(), null);
+		m_graphics.drawImage(m_displayImage, 0, 0, m_frameBuffer.GetWidth(), m_frameBuffer.GetHeight(), null);
 		m_bufferStrategy.show();
 	}
 }

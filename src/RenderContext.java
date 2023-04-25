@@ -1,7 +1,46 @@
 public class RenderContext extends Bitmap
 {
+	//Index on framebuffer to draw grid
+	int gridIndex [];
+
 	public RenderContext(int width, int height)	{
 		super(width, height);
+		final int spacing = 25;
+
+		gridIndex  = new int[(int)Math.ceil(this.GetWidth()/(float)spacing)*(int)Math.ceil(this.GetHeight()/(float)spacing)];
+		int count =0;
+		for(int j = 0 ; j < height ; j+=spacing){
+			for(int  i = 0 ; i< width ; i+=spacing) {
+				gridIndex[count++] = (j * m_width + i) * 4;
+			}
+		}
+	}
+
+	public void drawGrid(){
+		int index ;
+		for(int i =0 ; i< gridIndex.length ; i++){
+			index = gridIndex[i];
+			m_components[index ] = 	 (byte)255;
+			m_components[index +1] = (byte)255;
+			m_components[index +2] = (byte)255;
+			m_components[index +3] = (byte)255;
+		}
+	}
+
+	public void drawGrid2(){
+		int index ;
+		//Gird coordinate can be precomputed
+		for(int i = 0 ; i < this.GetWidth() ; i+=10){
+			for(int j = 0 ; j < this.GetHeight() ; j+=10){
+				index = (j*m_width + i)*4;
+				m_components[index ] = (byte)255;
+				m_components[index +1] = (byte)255;
+				m_components[index +2] = (byte)255;
+				m_components[index +3] = (byte)255;
+
+				//DrawPixel(i,j,(byte)255,(byte) 255,(byte)255); //Clean but cost function call
+			}
+		}
 	}
 
 	public void drawLine(int x0, int y0, int x1, int y1, byte r, byte g, byte b){
@@ -42,4 +81,11 @@ public class RenderContext extends Bitmap
 			}
 		}
 	}
+
+	public void drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, byte r, byte g, byte b){
+		drawLine(x0,y0,x1,y1,r,g,b);
+		drawLine(x1,y1,x2,y2,r,g,b);
+		drawLine(x2,y2,x0,y0,r,g,b);
+	}
+
 }
