@@ -99,6 +99,14 @@ public class Bitmap
 		m_components[index + 3] = r;
 	}
 
+	public void DrawPixel(int x, int y, byte r, byte g, byte b)
+	{
+		int index = (x + y * m_width) * 4;
+		m_components[index    ] = (byte)0xFF;
+		m_components[index + 1] = b;
+		m_components[index + 2] = g;
+		m_components[index + 3] = r;
+	}
 	/**
 	 * Copies the Bitmap into a BGR byte array.
 	 */
