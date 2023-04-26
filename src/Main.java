@@ -9,29 +9,7 @@ public class Main
 		Display display = new Display(1024, 1024, "Software Rendering");
 		RenderContext target = display.GetFrameBuffer();
 
-		Properties properties = new Properties();
-		InputStream inputStream = Main.class.getResourceAsStream("vertices.properties");
-		properties.load(inputStream);
-
-		String verticesString[] =properties.getProperty("vertices").split(",");
-		double vertices[] = new double[verticesString.length];
-		for(int i =0 ; i< verticesString.length ;i++) {
-			vertices[i] = Double.parseDouble(verticesString[i]) + 1.0;
-		}
-		for(int i =0 ; i< vertices.length ;i+=3) {
-			vertices[i]   =	(vertices[i]*target.GetWidth()-1)/2.0;
-			vertices[i+1] = target.GetHeight() -1 - (vertices[i+1]*target.GetHeight()-1)/2.0;
-		}
-
-		String indicesString[] =properties.getProperty("indices").split(",");
-		int indices[] = new int[indicesString.length];
-		for(int i =0 ; i< indicesString.length ;i++)
-			indices[i] = (Integer.parseInt(indicesString[i]) - 1)*3 ;
-
-		inputStream.close();
-		properties.clear();
-
-
+		DrawHead draw = new DrawHead(target);
 
 		long previousTime = System.nanoTime();
 		double elapsedTime = 0;
@@ -73,36 +51,10 @@ public class Main
 //				move =1;
 
 			//Since vertices from obj range from -1.0 1.0 we add 1.0 to make range 0.0 to 2.0 then scaled with width and height for vx, vy
-			for(int i =0 ; i< vertices.length ;i+=3){
-				int v_x =(int)vertices[i];
-				int v_y =(int)vertices[i+1];
+			draw.drawPoints();
 
-				target.DrawPixel(v_x,v_y,(byte)0xFF,(byte)0xFF,(byte)0xFF);
-			}
 			if(drawWire) {
-				for (int i = 0; i < indices.length; i += 3) {
-					int v0_idx = indices[i] ;
-					int v1_idx = indices[i + 1];
-					int v2_idx = indices[i + 2];
-
-					int v0_x = (int)vertices[v0_idx];
-					int v0_y = (int)vertices[v0_idx + 1];
-
-					int v1_x = (int)vertices[v1_idx];
-					int v1_y = (int)vertices[v1_idx + 1];
-
-					int v2_x = (int)vertices[v2_idx];
-					int v2_y = (int)vertices[v2_idx + 1];
-
-
-//					target.DrawPixel(v0_x, v0_y, (byte) 255, (byte) 0, (byte) 0);
-//					target.DrawPixel(v1_x, v1_y, (byte) 255, (byte) 0, (byte) 0);
-//					target.DrawPixel(v2_x, v2_y, (byte) 255, (byte) 0, (byte) 0);
-
-				target.drawLine(v0_x,v0_y,v1_x,v1_y,(byte)255,(byte)255,(byte)255);
-				target.drawLine(v1_x,v1_y,v2_x,v2_y,(byte)255,(byte)255,(byte)255);
-				target.drawLine(v2_x,v2_y,v0_x,v0_y,(byte)255,(byte)255,(byte)255);
-				}
+				draw.drawWire();
 			}
 
 			display.SwapBuffers();

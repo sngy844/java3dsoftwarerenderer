@@ -77,8 +77,8 @@ public class Display extends Canvas
 		m_displayComponents = 
 			((DataBufferByte)m_displayImage.getRaster().getDataBuffer()).getData();
 
-		m_frameBuffer.Clear((byte)0x80);
-		m_frameBuffer.DrawPixel(100, 100, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0xFF);
+		//m_frameBuffer.Clear((byte)0x80);
+		//m_frameBuffer.DrawPixel(100, 100, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0xFF);
 
 		//Create a JFrame designed specifically to show this Display.
 		m_frame = new JFrame();
