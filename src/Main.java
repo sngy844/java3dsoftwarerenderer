@@ -21,7 +21,7 @@ public class Main
 			target.Clear((byte) 0x00);
 			target.drawGrid();
 
-			target.DrawPixel(50, 50, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF);
+			target.DrawPixel(50,50,(byte)0xFF,(byte)0xFF,(byte)0xFF);
 
 			target.drawLine(200,200, 400,400, (byte)0xFF,(byte)0xFF,(byte)0xFF);
 			target.drawLine(200,300, 400,300, (byte)0xFF,(byte)0xFF,(byte)0xFF);

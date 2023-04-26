@@ -27,6 +27,22 @@ public class RenderContext extends Bitmap
 		}
 	}
 
+	public void drawGrid(){
+		int index ;
+		//Gird coordinate can be precomputed
+		for(int i = 0 ; i < this.GetWidth() ; i+=10){
+			for(int j = 0 ; j < this.GetHeight() ; j+=10){
+				index = (j*m_width + i)*4;
+				m_components[index ] = (byte)255;
+				m_components[index +1] = (byte)255;
+				m_components[index +2] = (byte)255;
+				m_components[index +3] = (byte)255;
+
+				//DrawPixel(i,j,(byte)255,(byte) 255,(byte)255); //Clean but cost function call
+			}
+		}
+	}
+
 	public void drawLine(int x0, int y0, int x1, int y1, byte r, byte g, byte b){
 		//DDA
 		final int delta_x = x1 - x0;
