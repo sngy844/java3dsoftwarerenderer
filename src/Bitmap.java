@@ -59,7 +59,7 @@ public class Bitmap
 	/** The height, in pixels, of the image */
 	protected final int  m_height;
 	/** Every pixel component in the image */
-	protected final byte m_components[];
+	protected final byte m_pixelComponents[];
 
 	/** Basic getter */
 	public int GetWidth() { return m_width; }
@@ -76,7 +76,7 @@ public class Bitmap
 	{
 		m_width      = width;
 		m_height     = height;
-		m_components = new byte[m_width * m_height * 4];
+		m_pixelComponents = new byte[m_width * m_height * 4];
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class Bitmap
 	 */
 	public void Clear(byte shade)
 	{
-		Arrays.fill(m_components, shade);
+		Arrays.fill(m_pixelComponents, shade);
 	}
 
 	/**
@@ -93,19 +93,19 @@ public class Bitmap
 	public void DrawPixel(int x, int y, byte a, byte b, byte g, byte r)
 	{
 		int index = (x + y * m_width) * 4;
-		m_components[index    ] = a;
-		m_components[index + 1] = b;
-		m_components[index + 2] = g;
-		m_components[index + 3] = r;
+		m_pixelComponents[index    ] = a;
+		m_pixelComponents[index + 1] = b;
+		m_pixelComponents[index + 2] = g;
+		m_pixelComponents[index + 3] = r;
 	}
 
 	public void DrawPixel(int x, int y, byte r, byte g, byte b)
 	{
 		int index = (x + y * m_width) * 4;
-		m_components[index    ] = (byte)0xFF;
-		m_components[index + 1] = b;
-		m_components[index + 2] = g;
-		m_components[index + 3] = r;
+		m_pixelComponents[index    ] = (byte)0xFF;
+		m_pixelComponents[index + 1] = b;
+		m_pixelComponents[index + 2] = g;
+		m_pixelComponents[index + 3] = r;
 	}
 	/**
 	 * Copies the Bitmap into a BGR byte array.
@@ -118,9 +118,9 @@ public class Bitmap
 		for(int i = 0; i < totalPixels; i++)
 		{
 			index3 =  i*3; 		index4 = i*4;
-			dest[index3    ] = m_components[index4 + 1];
-			dest[index3 + 1] = m_components[index4 + 2];
-			dest[index3 + 2] = m_components[index4 + 3];
+			dest[index3    ] = m_pixelComponents[index4 + 1];
+			dest[index3 + 1] = m_pixelComponents[index4 + 2];
+			dest[index3 + 2] = m_pixelComponents[index4 + 3];
 		}
 	}
 }

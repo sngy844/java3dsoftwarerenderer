@@ -20,10 +20,10 @@ public class RenderContext extends Bitmap
 		int index ;
 		for(int i =0 ; i< gridIndex.length ; i++){
 			index = gridIndex[i];
-			m_components[index ] = 	 (byte)255;
-			m_components[index +1] = (byte)255;
-			m_components[index +2] = (byte)255;
-			m_components[index +3] = (byte)255;
+			m_pixelComponents[index ] = 	 (byte)255;
+			m_pixelComponents[index +1] = (byte)255;
+			m_pixelComponents[index +2] = (byte)255;
+			m_pixelComponents[index +3] = (byte)255;
 		}
 	}
 
@@ -66,10 +66,62 @@ public class RenderContext extends Bitmap
 		}
 	}
 
-	public void drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, byte r, byte g, byte b){
+	public void drawTriangleWire(int x0, int y0, int x1, int y1, int x2, int y2, byte r, byte g, byte b){
 		drawLine(x0,y0,x1,y1,r,g,b);
 		drawLine(x1,y1,x2,y2,r,g,b);
 		drawLine(x2,y2,x0,y0,r,g,b);
+	}
+
+	/*
+		y1 must be equal to y2
+	 */
+	public void drawFlatBottomTriangleFill(int x0, int y0, int x1, int y1, int x2, int y2, byte r, byte g, byte b){
+		//Flat bottom first
+		final float inverse_slope_1 = (float)(x1 - x0)/(y1-y0);
+		final float inverse_slope_2 = (float)(x2 - x0)/(y2-y0);
+
+		float xstart =x0;
+		float xend = x0;
+		for(int y = y0; y<=y2; y++){
+			//drawLine((int)xstart,y,(int)xend,y,r,g,b); //Could be expensive of function calls
+			int index = 0;
+			for(int x = (int)xstart ; x<=(int)xend; x++){
+				//DrawPixel(x,y,r,g,b); //Could be expensive for function calls also
+				index =(y*m_width+x)*4;
+				m_pixelComponents[index]=(byte)255;
+				m_pixelComponents[index+1]=r;
+				m_pixelComponents[index+2]=g;
+				m_pixelComponents[index+3]=b;
+			}
+			xstart+=inverse_slope_1;
+			xend+=inverse_slope_2;
+		}
+	}
+
+	/*
+		y0 must be equal to y1 and x1 > x2
+	 */
+	public void drawFlatTopTriangleFill(int x0, int y0, int x1, int y1, int x2, int y2, byte r, byte g, byte b){
+		final float inverse_slope_1 = (float)(x2 - x0)/(y2-y0);
+		final float inverse_slope_2 = (float)(x2 - x1)/(y2-y1);
+
+		float xstart =x0;
+		float xend = x1;
+
+		for(int y = y0; y<y2; y++){
+			//drawLine((int)xstart,y,(int)xend,y,r,g,b); //Could be expensive of function calls
+			int index = 0;
+			for(int x = (int)xstart ; x<=(int)xend; x++){
+				//DrawPixel(x,y,r,g,b); //Could be expensive for function calls also
+				index =(y*m_width+x)*4;
+				m_pixelComponents[index]=(byte)255;
+				m_pixelComponents[index+1]=r;
+				m_pixelComponents[index+2]=g;
+				m_pixelComponents[index+3]=b;
+			}
+			xstart+=inverse_slope_1;
+			xend+=inverse_slope_2;
+		}
 	}
 
 }
