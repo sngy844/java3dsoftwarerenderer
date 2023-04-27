@@ -1,3 +1,7 @@
+package test;
+
+import swrast.GfxMath;
+
 public class Main_SignedAreaTest {
 
     public static void main(String [] args){

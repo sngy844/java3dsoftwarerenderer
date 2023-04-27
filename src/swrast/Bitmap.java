@@ -1,4 +1,4 @@
-/**
+package swrast; /**
 @file
 @author Benny Bobaganoosh <thebennybox@gmail.com>
 @section LICENSE
@@ -102,6 +102,51 @@ public class Bitmap
 	public void DrawPixel(int x, int y, byte r, byte g, byte b)
 	{
 		int index = (x + y * m_width) * 4;
+		m_pixelComponents[index    ] = (byte)0xFF;
+		m_pixelComponents[index + 1] = b;
+		m_pixelComponents[index + 2] = g;
+		m_pixelComponents[index + 3] = r;
+	}
+
+	public void drawPoint(int x, int y, byte r, byte g, byte b)
+	{
+		int index = (x + y * m_width) * 4;
+		m_pixelComponents[index    ] = (byte)0xFF;
+		m_pixelComponents[index + 1] = b;
+		m_pixelComponents[index + 2] = g;
+		m_pixelComponents[index + 3] = r;
+
+		index = (x-1 + y * m_width) * 4;
+		m_pixelComponents[index    ] = (byte)0xFF;
+		m_pixelComponents[index + 1] = b;
+		m_pixelComponents[index + 2] = g;
+		m_pixelComponents[index + 3] = r;
+
+		index = (x+1 + y * m_width) * 4;
+		m_pixelComponents[index    ] = (byte)0xFF;
+		m_pixelComponents[index + 1] = b;
+		m_pixelComponents[index + 2] = g;
+		m_pixelComponents[index + 3] = r;
+
+		index = (x-1 + (y-1) * m_width) * 4;
+		m_pixelComponents[index    ] = (byte)0xFF;
+		m_pixelComponents[index + 1] = b;
+		m_pixelComponents[index + 2] = g;
+		m_pixelComponents[index + 3] = r;
+
+		index = (x+1 + (y+1) * m_width) * 4;
+		m_pixelComponents[index    ] = (byte)0xFF;
+		m_pixelComponents[index + 1] = b;
+		m_pixelComponents[index + 2] = g;
+		m_pixelComponents[index + 3] = r;
+
+		index = (x + (y+1) * m_width) * 4;
+		m_pixelComponents[index    ] = (byte)0xFF;
+		m_pixelComponents[index + 1] = b;
+		m_pixelComponents[index + 2] = g;
+		m_pixelComponents[index + 3] = r;
+
+		index = (x + (y-1) * m_width) * 4;
 		m_pixelComponents[index    ] = (byte)0xFF;
 		m_pixelComponents[index + 1] = b;
 		m_pixelComponents[index + 2] = g;

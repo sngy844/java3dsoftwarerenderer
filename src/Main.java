@@ -1,6 +1,9 @@
+import swrast.Display;
+import swrast.DrawHead;
+import swrast.RenderContext;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 public class Main
 {
@@ -9,7 +12,7 @@ public class Main
 		Display display = new Display(1024, 1024, "Software Rendering");
 		RenderContext target = display.GetFrameBuffer();
 
-		DrawHead draw = new DrawHead(target);
+		DrawHead draw = new DrawHead(target, Main.class.getResourceAsStream("vertices.properties"));
 
 		long previousTime = System.nanoTime();
 		double elapsedTime = 0;

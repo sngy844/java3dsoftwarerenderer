@@ -1,4 +1,4 @@
-/**
+package swrast; /**
 @file
 @author Benny Bobaganoosh <thebennybox@gmail.com>
 @section LICENSE

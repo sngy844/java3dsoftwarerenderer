@@ -1,3 +1,8 @@
+package test;
+
+import swrast.Display;
+import swrast.RenderContext;
+
 public class Main_FlatBottomTriangleTest {
     public static void main(String[] args){
     //
@@ -9,13 +14,14 @@ public class Main_FlatBottomTriangleTest {
     boolean isDrawVertices = false;
     // TODO: check winding
     int tris[] = new int[]{
+                        // Condition y1 = y2
                         50,300,10,500,130,500,
                         150,300,170,500,250,500,
                         350,300,300,500,500,500,
 
                         710,300,510,500,600,500,
 
-                        500,600,310,980,700,980
+                        500,600,720,980,310,980
     };
 
     int frame =0;

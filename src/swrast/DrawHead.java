@@ -1,3 +1,5 @@
+package swrast;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -7,10 +9,9 @@ public class DrawHead {
     private final double[] vertices;
     private final int[] indices;
 
-    public DrawHead(RenderContext tgt) throws IOException {
+    public DrawHead(RenderContext tgt,InputStream inputStream) throws IOException {
         this.target = tgt;
         Properties properties = new Properties();
-        InputStream inputStream = Main.class.getResourceAsStream("vertices.properties");
         properties.load(inputStream);
 
         String verticesString[] =properties.getProperty("vertices").split(",");
@@ -28,7 +29,6 @@ public class DrawHead {
         for(int i =0 ; i< indicesString.length ;i++)
             indices[i] = (Integer.parseInt(indicesString[i]) - 1)*3 ;
 
-        inputStream.close();
         properties.clear();
     }
 

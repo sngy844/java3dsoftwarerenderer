@@ -1,3 +1,5 @@
+package swrast;
+
 public class GfxMath {
 
     /*
