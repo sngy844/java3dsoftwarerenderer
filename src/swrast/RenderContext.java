@@ -106,7 +106,7 @@ public class RenderContext extends Bitmap
 	}
 
 	/*
-		y0 must be equal to y1 and x1 > x2
+		y0 must be equal to y1
 	 */
 	public void drawFlatTopTriangleFill(int x0, int y0, int x1, int y1, int x2, int y2, byte r, byte g, byte b){
 		float inverse_slope_1 = (float)(x2 - x0)/(y2-y0);
@@ -150,7 +150,6 @@ public class RenderContext extends Bitmap
 			temp = x0;			x0 = x1;		x1=temp;
 		}
 
-		// TODO: Division by zero case
 		if(y1 == y2)
 			drawFlatBottomTriangleFill(x0,y0,x1,y1,x2,y2,r,g,b);
 		else if(y0==y1)
@@ -183,5 +182,28 @@ public class RenderContext extends Bitmap
 		int Mx =(int)((float)(y1-y0)*(x2-x0))/(y2-y0) + x0;
 		return new int[]{Mx,My};
 	}
+
+	//Running slop technique
+	public void drawFlatBottomTriangleSlopeFill(int x0, int y0, int x1, int y1, int x2, int y2, byte r, byte g, byte b){
+		float inverse_slope_1 = (float)(x1 - x0)/(y1-y0);
+		float inverse_slope_2 = (float)(x2 - x0)/(y2-y0);
+
+		float xstart,xend;
+		int index =0;
+		for(int y = y0; y<=y1; y++ ){
+			xstart = (x0+ (y - y0)*inverse_slope_1);
+			xend = 	 (x2+ (y -  y2)*inverse_slope_2);
+			for(int x=(int)xstart; x<=(int)xend;x++) {
+				//DrawPixel(x,y,r,g,b); //Cost of function call
+				index =(y*m_width+x)*4;
+				m_pixelComponents[index]=(byte)255;
+				m_pixelComponents[index+1]=r;
+				m_pixelComponents[index+2]=g;
+				m_pixelComponents[index+3]=b;
+			}
+		}
+	}
+
+
 
 }
