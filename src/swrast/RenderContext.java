@@ -184,15 +184,32 @@ public class RenderContext extends Bitmap
 	}
 
 	//Running slop technique
+	// All started from the following line equation
+	//   slope * (x - x0) = y - y0 (1)
+	//   			or
+	//   slope * (x - x1) = y - y1 (2)
+	// slope is the 'slope' of two points (x0,y0) and (x1,y1) , calculated by (y1-y0)/(x1-x0)
+	// From above equation (1), given y you can calculate x using:
+	//   	x = (y-y0)/slope + x0
+	// <=>	x = x0 + (y-y0)*inverse_slope  -> this gives you an x-coordinate of a point that lay on the line at given y.
+	//
+	// Equation (2) can be expaned in similar way and will give the same result
+	//
 	public void drawFlatBottomTriangleSlopeFill(int x0, int y0, int x1, int y1, int x2, int y2, byte r, byte g, byte b){
-		float inverse_slope_1 = (float)(x1 - x0)/(y1-y0);
-		float inverse_slope_2 = (float)(x2 - x0)/(y2-y0);
+		float inverse_slope_1 = (float)(x1 - x0)/(y1-y0); //left side
+		float inverse_slope_2 = (float)(x2 - x0)/(y2-y0); //right side
 
 		float xstart,xend;
 		int index =0;
+		//For each y , find xstart on left side and xend on right side then draw span/line from xstart to xend
 		for(int y = y0; y<=y1; y++ ){
-			xstart = (x0+ (y - y0)*inverse_slope_1);
-			xend = 	 (x2+ (y -  y2)*inverse_slope_2);
+			//Same result
+			//xstart = (x0+ (y - y0)*inverse_slope_1);
+			//xend = 	 (x0+ (y - y0)*inverse_slope_2);
+			xstart = (x0+ (y - y0)*inverse_slope_1); //x on left side
+			xend = 	 (x2+ (y - y2)*inverse_slope_2); //x on right side
+
+			//Draw a span / line from xstart to xend
 			for(int x=(int)xstart; x<=(int)xend;x++) {
 				//DrawPixel(x,y,r,g,b); //Cost of function call
 				index =(y*m_width+x)*4;

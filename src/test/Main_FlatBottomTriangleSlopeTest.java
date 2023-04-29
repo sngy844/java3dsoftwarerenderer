@@ -15,7 +15,7 @@ public class Main_FlatBottomTriangleSlopeTest {
         // TODO: check winding
         int tris[] = new int[]{
                 // Condition y1 = y2
-                500,100,15,600,1020,600
+                500,100,150,600,850,600
         };
 
         int frame = 0;
