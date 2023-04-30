@@ -36,7 +36,7 @@ public class Main_FlatTopTriangleTest {
                     target.drawFlatTopTriangleFill(tris[i],tris[i+1],
                             tris[i+2],tris[i+3],
                             tris[i+4],tris[i+5],
-                            (byte)255,(byte)255,(byte)255);
+                            (byte)255,(byte)0,(byte)0);
             }
 
 

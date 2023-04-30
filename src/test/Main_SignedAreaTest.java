@@ -2,9 +2,13 @@ package test;
 
 import swrast.GfxMath;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class Main_SignedAreaTest {
 
-    public static void main(String [] args) {
+    public static void main(String [] args) throws IOException {
         float area3 = GfxMath.areaTriangle(0, 0, 1, 5, 4, 0);
         float area2 = GfxMath.areaTriangle(1, 1, 3, 3, 7, 1);
         float area1 = GfxMath.areaTriangle(0, 0, 0, 1, 2, 0);

@@ -3,8 +3,25 @@ package test;
 import swrast.Display;
 import swrast.RenderContext;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class Main_FlatBottomTriangleSlopeTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        InputStream inputStream = Main_SignedAreaTest.class.getResourceAsStream("texture.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        String [] brickPxString =properties.getProperty("brick").split(",");
+        byte brickTexture[] = new byte[brickPxString.length];
+        for(int i =0 ; i< brickPxString.length; i+=4){
+            brickTexture [i] = (byte) Integer.parseInt(brickPxString[i+3],16); //Alpha
+            brickTexture [i+1] = (byte) Integer.parseInt(brickPxString[i+2],16); //B
+            brickTexture [i+2] = (byte) Integer.parseInt(brickPxString[i+1],16); //G
+            brickTexture [i+3] = (byte) Integer.parseInt(brickPxString[i],16);//R
+        }
+
+
         //
         Display display = new Display(1024, 1024, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
@@ -15,7 +32,7 @@ public class Main_FlatBottomTriangleSlopeTest {
         // TODO: check winding
         int tris[] = new int[]{
                 // Condition y1 = y2
-                500,100,150,600,850,600
+                500,100,850,600,150,600
         };
 
         int frame = 0;
@@ -37,6 +54,14 @@ public class Main_FlatBottomTriangleSlopeTest {
                             tris[i + 4], tris[i + 5],
                             (byte) 255, (byte) 255, (byte) 255);
             }
+
+            for(int x =0 ; x<64; x++)
+                for(int y =0 ; y<64; y++){
+                    byte r = brickTexture[(y*64+x)*4 +1];
+                    byte g = brickTexture[(y*64+x)*4 +2];
+                    byte b = brickTexture[(y*64+x)*4 +3];
+                    target.DrawPixel(x,y,r,g,b);
+                }
 
             display.SwapBuffers();
 
