@@ -28,7 +28,7 @@ public class Main_FlatBottomTriangleSlopeTest {
 
         long previousTime = System.nanoTime();
         double elapsedTime = 0;
-        boolean isDrawVertices = false;
+        boolean isDrawVertices = true;
         // TODO: check winding
         int tris[] = new int[]{
                 // Condition y1 = y2
@@ -38,9 +38,6 @@ public class Main_FlatBottomTriangleSlopeTest {
         int frame = 0;
         while (true) {
             long currentTime = System.nanoTime();
-            float delta = (float) ((currentTime - previousTime) / 1000000.0);
-            elapsedTime += delta;
-            previousTime = currentTime;
 
             target.Clear((byte) 0x00);
 
@@ -65,10 +62,15 @@ public class Main_FlatBottomTriangleSlopeTest {
 
             display.SwapBuffers();
 
+            float delta = (float) ((currentTime - previousTime) / 1000000.0);
+            elapsedTime += delta;
+            previousTime = currentTime;
+
+
             frame++;
             if (elapsedTime >= 1000) {
-                System.out.println("FPS:" + frame);
-                isDrawVertices = !isDrawVertices;
+                System.out.println("FPS:" + frame+" delta:"+delta);
+                //isDrawVertices = !isDrawVertices;
                 elapsedTime = 0;
                 frame = 0;
             }
