@@ -6,6 +6,8 @@ public class RenderContext extends Bitmap
 	int gridIndex [];
 	final float weights[];
 
+	byte texture[];
+
 	public RenderContext(int width, int height)	{
 		super(width, height);
 		this.weights= new float[3];
@@ -203,6 +205,9 @@ public class RenderContext extends Bitmap
 		int r1=0,	g1=255,	b1=0;
 		int r2=0,	g2=0,	b2=255;
 
+		float u0 = 0.5f, v0=0f;
+		float u1 = 1, v1=1;
+		float u2 = 0, v2=1;
 
 		float inverse_slope_1 = (float)(x1 - x0)/(y1-y0); //left side
 		float inverse_slope_2 = (float)(x2 - x0)/(y2-y0); //right side
@@ -224,22 +229,36 @@ public class RenderContext extends Bitmap
 
 			//Draw a span / line from xstart to xend
 			for(int x=(int)xstart; x<=(int)xend;x++) {
-				//Barcycentric weight Can be optimized here
+				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
 				float finalR = weights[0]*r0 + weights[1]*r1 + weights[2]*r2;
 				float finalG = weights[0]*g0 + weights[1]*g1 + weights[2]*g2;
 				float finalB = weights[0]*b0 + weights[1]*b1 + weights[2]*b2;
 
+				//Interpolate U V coordinate
+				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
+				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
+
+				//Coordinate on real texture - assume texture is 64x64 dimension
+				final int textW = 128;
+				int textX = (int) (finalU * (textW -1));
+				int textY = (int) (finalV*  (textW -1));
+
+				byte textR = this.texture[(textY*textW+textX)*4+3];
+				byte textG = this.texture[(textY*textW+textX)*4+2];
+				byte textB = this.texture[(textY*textW+textX)*4+1];
+
 				//DrawPixel(x,y,r,g,b); //Cost of function call
 				index =(y*m_width+x)*4;
 				m_pixelComponents[index]=(byte)255;
-				m_pixelComponents[index+1]= (byte) finalB;
-				m_pixelComponents[index+2]= (byte) finalG;
-				m_pixelComponents[index+3]= (byte) finalR;
+				m_pixelComponents[index+1]= (byte) textR;
+				m_pixelComponents[index+2]= (byte) textG;
+				m_pixelComponents[index+3]= (byte) textB;
 			}
 		}
 	}
 
-
-
+	public void bindTexture(byte[] text){
+		this.texture = text;
+	}
 }

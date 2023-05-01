@@ -12,7 +12,7 @@ public class Main_FlatBottomTriangleSlopeTest {
         InputStream inputStream = Main_SignedAreaTest.class.getResourceAsStream("texture.properties");
         Properties properties = new Properties();
         properties.load(inputStream);
-        String [] brickPxString =properties.getProperty("brick").split(",");
+        String [] brickPxString =properties.getProperty("tile").split(",");
         byte brickTexture[] = new byte[brickPxString.length];
         for(int i =0 ; i< brickPxString.length; i+=4){
             brickTexture [i] = (byte) Integer.parseInt(brickPxString[i+3],16); //Alpha
@@ -34,7 +34,7 @@ public class Main_FlatBottomTriangleSlopeTest {
                 // Condition y1 = y2
                 500,100,850,600,150,600
         };
-
+        target.bindTexture(brickTexture);
         int frame = 0;
         while (true) {
             long currentTime = System.nanoTime();
@@ -52,11 +52,11 @@ public class Main_FlatBottomTriangleSlopeTest {
                             (byte) 255, (byte) 255, (byte) 255);
             }
 
-            for(int x =0 ; x<64; x++)
-                for(int y =0 ; y<64; y++){
-                    byte r = brickTexture[(y*64+x)*4 +1];
-                    byte g = brickTexture[(y*64+x)*4 +2];
-                    byte b = brickTexture[(y*64+x)*4 +3];
+            for(int x =0 ; x<128; x++)
+                for(int y =0 ; y<128; y++){
+                    byte r = brickTexture[(y*128+x)*4 +1];
+                    byte g = brickTexture[(y*128+x)*4 +2];
+                    byte b = brickTexture[(y*128+x)*4 +3];
                     target.DrawPixel(x,y,r,g,b);
                 }
 
