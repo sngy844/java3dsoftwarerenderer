@@ -7,6 +7,7 @@ public class RenderContext extends Bitmap
 	final float weights[];
 
 	byte texture[];
+	int textW;
 
 	public RenderContext(int width, int height)	{
 		super(width, height);
@@ -235,30 +236,57 @@ public class RenderContext extends Bitmap
 				float finalG = weights[0]*g0 + weights[1]*g1 + weights[2]*g2;
 				float finalB = weights[0]*b0 + weights[1]*b1 + weights[2]*b2;
 
+
 				//Interpolate U V coordinate
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
 
-				//Coordinate on real texture - assume texture is 64x64 dimension
-				final int textW = 128;
+				//Coordinate on real texture - assume texture is square dimension
 				int textX = (int) (finalU * (textW -1));
 				int textY = (int) (finalV*  (textW -1));
 
-				byte textR = this.texture[(textY*textW+textX)*4+3];
-				byte textG = this.texture[(textY*textW+textX)*4+2];
-				byte textB = this.texture[(textY*textW+textX)*4+1];
+				//Nearest neightbor (no filtering)
+//				byte textR = this.texture[(textY*textW+textX)*4+3];
+//				byte textG = this.texture[(textY*textW+textX)*4+2];
+//				byte textB = this.texture[(textY*textW+textX)*4+1];
+
+				//Billinear Filtering
+				int textX1 = textX+1 < textW ? textX+1 : textX;
+				int textY1 = textY;
+
+				int textX2 = textX;  int textX3 = textX+1 < textW ? textX+1 : textX;
+				int textY2 = textY+1 < textW ? textY+1 : textY ; int textY3 = textY+1 < textW ? textY+1 : textY ;
+				float tx = finalU * (textW -1); float ty = finalV*  (textW -1);
+				//interpolate horizontal and vertical
+				float y_upB     = lerp((texture[(textY*textW+textX)*4 +1 ] &0xFF), (texture[(textY1*textW+textX1)*4 +1]&0xFF),(tx - textX)/(textX1 - textX));
+				float y_downB   = lerp((texture[(textY2*textW+textX2)*4 +1 ] &0xFF), (texture[(textY3*textW+textX3)*4 +1 ] &0xFF), (tx - textX2)/(textX3 - textX2));
+				float y_targetB = lerp(y_upB, y_downB, (ty - textY) / (textY2 - textY));
+
+				float y_upG     = lerp((texture[(textY*textW+textX)*4 +2 ] &0xFF), (texture[(textY1*textW+textX1)*4 +2]&0xFF),(tx - textX)/(textX1 - textX));
+				float y_downG   = lerp((texture[(textY2*textW+textX2)*4 +2 ] &0xFF), (texture[(textY3*textW+textX3)*4 +2 ] &0xFF), (tx - textX2)/(textX3 - textX2));
+				float y_targetG = lerp(y_upG, y_downG, (ty - textY) / (textY2 - textY));
+
+				float y_upR     = lerp((texture[(textY*textW+textX)*4 +3 ] &0xFF), (texture[(textY1*textW+textX1)*4 +3]&0xFF),(tx - textX)/(textX1 - textX));
+				float y_downR   = lerp((texture[(textY2*textW+textX2)*4 +3 ] &0xFF), (texture[(textY3*textW+textX3)*4 +3 ] &0xFF), (tx - textX2)/(textX3 - textX2));
+				float y_targetR = lerp(y_upR, y_downR, (ty - textY) / (textY2 - textY));
+
 
 				//DrawPixel(x,y,r,g,b); //Cost of function call
 				index =(y*m_width+x)*4;
 				m_pixelComponents[index]=(byte)255;
-				m_pixelComponents[index+1]= (byte) textR;
-				m_pixelComponents[index+2]= (byte) textG;
-				m_pixelComponents[index+3]= (byte) textB;
+				m_pixelComponents[index+1]= (byte) y_targetB;
+				m_pixelComponents[index+2]= (byte) y_targetG;
+				m_pixelComponents[index+3]= (byte) y_targetR;
 			}
 		}
 	}
 
-	public void bindTexture(byte[] text){
+	public void bindTexture(byte[] text, int txtW){
 		this.texture = text;
+		this.textW = txtW;
+	}
+
+	float lerp( float a, float b, float t){
+		return a + t*(b-a);
 	}
 }

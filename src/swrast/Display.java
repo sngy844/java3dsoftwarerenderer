@@ -93,7 +93,7 @@ public class Display extends Canvas
 
 		//Allocates 1 display buffer, and gets access to it via the buffer
 		//strategy and a graphics object for drawing into it.
-		createBufferStrategy(1);
+		createBufferStrategy(2);
 		m_bufferStrategy = getBufferStrategy();
 		m_graphics = m_bufferStrategy.getDrawGraphics();
 	}
