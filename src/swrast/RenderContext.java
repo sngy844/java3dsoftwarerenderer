@@ -188,7 +188,7 @@ public class RenderContext extends Bitmap
 		int Mx =(int)((float)(y1-y0)*(x2-x0))/(y2-y0) + x0;
 		return new int[]{Mx,My};
 	}
-
+	static int filter =0;
 	//Running slop technique
 	// All started from the following line equation
 	//   slope * (x - x0) = y - y0 (1)
@@ -232,10 +232,18 @@ public class RenderContext extends Bitmap
 			for(int x=(int)xstart; x<=(int)xend;x++) {
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
-				float finalR = weights[0]*r0 + weights[1]*r1 + weights[2]*r2;
-				float finalG = weights[0]*g0 + weights[1]*g1 + weights[2]*g2;
-				float finalB = weights[0]*b0 + weights[1]*b1 + weights[2]*b2;
 
+				if(filter == 0) {
+					float finalR = weights[0] * r0 + weights[1] * r1 + weights[2] * r2;
+					float finalG = weights[0] * g0 + weights[1] * g1 + weights[2] * g2;
+					float finalB = weights[0] * b0 + weights[1] * b1 + weights[2] * b2;
+					index = (y * m_width + x) * 4;
+					m_pixelComponents[index] = (byte) 255;
+					m_pixelComponents[index + 1] = (byte) finalB;
+					m_pixelComponents[index + 2] = (byte) finalG;
+					m_pixelComponents[index + 3] = (byte) finalR;
+
+				}
 
 				//Interpolate U V coordinate
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
@@ -245,40 +253,56 @@ public class RenderContext extends Bitmap
 				int textX = (int) (finalU * (textW -1));
 				int textY = (int) (finalV*  (textW -1));
 
+				if(filter ==1) {
 				//Nearest neightbor (no filtering)
-//				byte textR = this.texture[(textY*textW+textX)*4+3];
-//				byte textG = this.texture[(textY*textW+textX)*4+2];
-//				byte textB = this.texture[(textY*textW+textX)*4+1];
+				byte textR = this.texture[(textY*textW+textX)*4+3];
+				byte textG = this.texture[(textY*textW+textX)*4+2];
+				byte textB = this.texture[(textY*textW+textX)*4+1];
+					//DrawPixel(x,y,r,g,b); //Cost of function call
+					index =(y*m_width+x)*4;
+					m_pixelComponents[index]=(byte)255;
+					m_pixelComponents[index+1]= (byte) textB;
+					m_pixelComponents[index+2]= (byte) textG;
+					m_pixelComponents[index+3]= (byte) textR;
+				}
+				else if(filter == 2) {
+					//Billinear Filtering
+					int textX1 = textX + 1 < textW ? textX + 1 : textX;
+					int textY1 = textY;
 
-				//Billinear Filtering
-				int textX1 = textX+1 < textW ? textX+1 : textX;
-				int textY1 = textY;
+					int textX2 = textX;
+					int textX3 = textX + 1 < textW ? textX + 1 : textX;
+					int textY2 = textY + 1 < textW ? textY + 1 : textY;
+					int textY3 = textY + 1 < textW ? textY + 1 : textY;
+					float tx = finalU * (textW - 1);
+					float ty = finalV * (textW - 1);
+					//interpolate horizontal and vertical
+					float y_upB = lerp((texture[(textY * textW + textX) * 4 + 1] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 1] & 0xFF), (tx - textX) / (textX1 - textX));
+					float y_downB = lerp((texture[(textY2 * textW + textX2) * 4 + 1] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 1] & 0xFF), (tx - textX2) / (textX3 - textX2));
+					float y_targetB = lerp(y_upB, y_downB, (ty - textY) / (textY2 - textY));
 
-				int textX2 = textX;  int textX3 = textX+1 < textW ? textX+1 : textX;
-				int textY2 = textY+1 < textW ? textY+1 : textY ; int textY3 = textY+1 < textW ? textY+1 : textY ;
-				float tx = finalU * (textW -1); float ty = finalV*  (textW -1);
-				//interpolate horizontal and vertical
-				float y_upB     = lerp((texture[(textY*textW+textX)*4 +1 ] &0xFF), (texture[(textY1*textW+textX1)*4 +1]&0xFF),(tx - textX)/(textX1 - textX));
-				float y_downB   = lerp((texture[(textY2*textW+textX2)*4 +1 ] &0xFF), (texture[(textY3*textW+textX3)*4 +1 ] &0xFF), (tx - textX2)/(textX3 - textX2));
-				float y_targetB = lerp(y_upB, y_downB, (ty - textY) / (textY2 - textY));
+					float y_upG = lerp((texture[(textY * textW + textX) * 4 + 2] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 2] & 0xFF), (tx - textX) / (textX1 - textX));
+					float y_downG = lerp((texture[(textY2 * textW + textX2) * 4 + 2] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 2] & 0xFF), (tx - textX2) / (textX3 - textX2));
+					float y_targetG = lerp(y_upG, y_downG, (ty - textY) / (textY2 - textY));
 
-				float y_upG     = lerp((texture[(textY*textW+textX)*4 +2 ] &0xFF), (texture[(textY1*textW+textX1)*4 +2]&0xFF),(tx - textX)/(textX1 - textX));
-				float y_downG   = lerp((texture[(textY2*textW+textX2)*4 +2 ] &0xFF), (texture[(textY3*textW+textX3)*4 +2 ] &0xFF), (tx - textX2)/(textX3 - textX2));
-				float y_targetG = lerp(y_upG, y_downG, (ty - textY) / (textY2 - textY));
-
-				float y_upR     = lerp((texture[(textY*textW+textX)*4 +3 ] &0xFF), (texture[(textY1*textW+textX1)*4 +3]&0xFF),(tx - textX)/(textX1 - textX));
-				float y_downR   = lerp((texture[(textY2*textW+textX2)*4 +3 ] &0xFF), (texture[(textY3*textW+textX3)*4 +3 ] &0xFF), (tx - textX2)/(textX3 - textX2));
-				float y_targetR = lerp(y_upR, y_downR, (ty - textY) / (textY2 - textY));
+					float y_upR = lerp((texture[(textY * textW + textX) * 4 + 3] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 3] & 0xFF), (tx - textX) / (textX1 - textX));
+					float y_downR = lerp((texture[(textY2 * textW + textX2) * 4 + 3] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 3] & 0xFF), (tx - textX2) / (textX3 - textX2));
+					float y_targetR = lerp(y_upR, y_downR, (ty - textY) / (textY2 - textY));
 
 
-				//DrawPixel(x,y,r,g,b); //Cost of function call
-				index =(y*m_width+x)*4;
-				m_pixelComponents[index]=(byte)255;
-				m_pixelComponents[index+1]= (byte) y_targetB;
-				m_pixelComponents[index+2]= (byte) y_targetG;
-				m_pixelComponents[index+3]= (byte) y_targetR;
-			}
-		}
+					//DrawPixel(x,y,r,g,b); //Cost of function call
+					index = (y * m_width + x) * 4;
+					m_pixelComponents[index] = (byte) 255;
+					m_pixelComponents[index + 1] = (byte) y_targetB;
+					m_pixelComponents[index + 2] = (byte) y_targetG;
+					m_pixelComponents[index + 3] = (byte) y_targetR;
+				}
+
+			} // end for each x span start end
+
+		}//end for each y scan line
+
+		filter = (filter+1)%3;
 	}
 
 	public void bindTexture(byte[] text, int txtW){

@@ -30,10 +30,13 @@ public class Main_FlatBottomTriangleSlopeTest {
         long previousTime = System.nanoTime();
         double elapsedTime = 0;
         boolean isDrawVertices = true;
+
         // TODO: check winding
         int tris[] = new int[]{
                 // Condition y1 = y2
-                500,100,850,600,150,600
+                500/4,100/4,850/4,600/4,150/4,600/4,
+                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
+                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
         target.bindTexture(brickTexture,textW);
         int frame = 0;
