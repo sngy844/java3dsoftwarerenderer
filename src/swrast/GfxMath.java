@@ -63,6 +63,10 @@ public class GfxMath {
         return weights;
     }
 
+    static float lerp( float a, float b, float t){
+        return a + t*(b-a);
+    }
+
     public class Vector2{
         public float x;
         public float y;

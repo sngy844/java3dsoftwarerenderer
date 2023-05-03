@@ -7,13 +7,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class Main_FlatBottomTriangleSlopeTest {
+public class Main_FlatTopTriangleSlopeTest {
+
+
     public static void main(String[] args) throws IOException {
         InputStream inputStream = Main_SignedAreaTest.class.getResourceAsStream("texture.properties");
         Properties properties = new Properties();
         properties.load(inputStream);
-        String [] brickPxString =properties.getProperty("brick").split(",");
-        final int textW = 64;
+
+        final String textureName = "tile";
+        String [] brickPxString =properties.getProperty(textureName).split(",");
+        final int textW = Integer.parseInt(properties.getProperty(String.format("%s_width",textureName)));
         byte brickTexture[] = new byte[brickPxString.length];
         for(int i =0 ; i< brickPxString.length; i+=4){
             brickTexture [i] = (byte) Integer.parseInt(brickPxString[i+3],16); //Alpha
@@ -22,21 +26,20 @@ public class Main_FlatBottomTriangleSlopeTest {
             brickTexture [i+3] = (byte) Integer.parseInt(brickPxString[i+2],16);//R
         }
 
-
         //
         Display display = new Display(1024, 1024, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
         double elapsedTime = 0;
-        boolean isDrawVertices = true; int filter=0;
+        boolean isDrawVertices = true; int filter =0;
 
         // TODO: check winding
         int tris[] = new int[]{
-                // Condition y1 = y2
-                500/4,100/4,850/4,600/4,150/4,600/4,
-                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
-                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
+                // Condition y0 = y1
+                87,25,262,25,175,150
+//                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
+//                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
         target.bindTexture(brickTexture,textW,filter);
         int frame = 0;
@@ -50,7 +53,7 @@ public class Main_FlatBottomTriangleSlopeTest {
 
             if (isDrawVertices) {
                 for (int i = 0; i < tris.length; i += 6)
-                    target.drawFlatBottomTriangleSlopeFill(tris[i], tris[i + 1],
+                    target.drawFlatTopTriangleSlopeFill(tris[i], tris[i + 1],
                             tris[i + 2], tris[i + 3],
                             tris[i + 4], tris[i + 5],
                             (byte) 255, (byte) 255, (byte) 255);
