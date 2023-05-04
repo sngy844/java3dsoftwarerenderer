@@ -13,7 +13,7 @@ public class Main_TriangleRotateTest {
         double elapsedTime = 0;
         boolean isDrawVertices = false;
         //The original triangle vertices
-        final int originalTris [] = new int[]{450,300 , 600,600,300 ,500};
+        final int originalTris [] = new int[]{480 ,100 , 650,800,150 ,550};
 
         //Buffer to hold transformed vertices
         int tris[] = new int[originalTris.length];
@@ -44,7 +44,7 @@ public class Main_TriangleRotateTest {
                 tris[i+4] -= cenX;
                 tris[i+5] -= cenY;
 
-                phi += 0.005; //Increase angle over time
+                phi += 0.0005; //Increase angle over time
                 double x = Math.cos(phi)*tris[i] - Math.sin(phi)*tris[i+1] ;
                 double y = Math.sin(phi)*tris[i] + Math.cos(phi)*tris[i+1] ;
                 tris[i] =   (int)(x+ cenX);
@@ -65,10 +65,11 @@ public class Main_TriangleRotateTest {
 
             {
                 for(int i =0 ; i< tris.length; i+=6)
-                    target.drawTriangleFill(tris[i],tris[i+1],
+                    target.drawTriangleFillSlope(tris[i],tris[i+1],
                             tris[i+2],tris[i+3],
-                            tris[i+4],tris[i+5],
-                            (byte)255,(byte)255,(byte)255);
+                            tris[i+4],tris[i+5]
+                            //(byte)255,(byte)255,(byte)255)
+                    );
             }
 
             for(int i =0 ; i< tris.length; i+=2) {
