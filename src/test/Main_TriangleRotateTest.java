@@ -6,14 +6,14 @@ import swrast.RenderContext;
 public class Main_TriangleRotateTest {
     public static void main(String[] args){
         //
-        Display display = new Display(1024, 1024, "Software Rendering");
+        Display display = new Display(180, 180,1000,1000, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
         double elapsedTime = 0;
         boolean isDrawVertices = false;
         //The original triangle vertices
-        final int originalTris [] = new int[]{480 ,100 , 650,800,150 ,550};
+        final int originalTris [] = new int[]{480/5 ,100/5 , 650/5,800/5,150/5 ,550/5};
 
         //Buffer to hold transformed vertices
         int tris[] = new int[originalTris.length];
@@ -44,7 +44,7 @@ public class Main_TriangleRotateTest {
                 tris[i+4] -= cenX;
                 tris[i+5] -= cenY;
 
-                phi += 0.0005; //Increase angle over time
+                phi += 0.001; //Increase angle over time
                 double x = Math.cos(phi)*tris[i] - Math.sin(phi)*tris[i+1] ;
                 double y = Math.sin(phi)*tris[i] + Math.cos(phi)*tris[i+1] ;
                 tris[i] =   (int)(x+ cenX);

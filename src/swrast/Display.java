@@ -27,9 +27,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import java.awt.Canvas;
-import java.awt.Graphics;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferStrategy;
 import java.awt.image.DataBufferByte;
@@ -62,20 +60,19 @@ public class Display extends Canvas
 	 * @param height How tall the display is, in pixels.
 	 * @param title  The text displayed in the window's title bar.
 	 */
-	public Display(int width, int height, String title)
+	public Display(int internalWidth, int internalHeight, int width, int height, String title)
 	{
 		//Set the canvas's preferred, minimum, and maximum size to prevent
 		//unintentional resizing.
-		Dimension size = new Dimension(width, height);
-		setPreferredSize(size);
-		setMinimumSize(size);
-		setMaximumSize(size);
+//		Dimension size = new Dimension(width, height);
+//		setPreferredSize(size);
+//		setMinimumSize(size);
+//		setMaximumSize(size);
 
 		//Creates images used for display.
-		m_frameBuffer = new RenderContext(width, height);
-		m_displayImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-		m_displayComponents = 
-			((DataBufferByte)m_displayImage.getRaster().getDataBuffer()).getData();
+		m_frameBuffer = new RenderContext(internalWidth, internalHeight);
+		m_displayImage = new BufferedImage(internalWidth, internalHeight, BufferedImage.TYPE_3BYTE_BGR);
+		m_displayComponents = 	((DataBufferByte)m_displayImage.getRaster().getDataBuffer()).getData();
 
 		//m_frameBuffer.Clear((byte)0x80);
 		//m_frameBuffer.DrawPixel(100, 100, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0xFF);
@@ -90,6 +87,9 @@ public class Display extends Canvas
 		m_frame.setTitle(title);
 		m_frame.setSize(width, height);
 		m_frame.setVisible(true);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		m_frame.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+
 
 		//Allocates 1 display buffer, and gets access to it via the buffer
 		//strategy and a graphics object for drawing into it.
@@ -107,7 +107,7 @@ public class Display extends Canvas
 		//Therefore, this call should effectively copy the frameBuffer into the displayImage.
 		m_frameBuffer.CopyToByteArray(m_displayComponents);
 		//Can simulate low resolution display using this function
-		m_graphics.drawImage(m_displayImage, 0, 0, m_frameBuffer.GetWidth(), m_frameBuffer.GetHeight(), null);
+		m_graphics.drawImage(m_displayImage, 0, 0, m_frame.getWidth(), m_frame.getHeight(), null);
 		m_bufferStrategy.show();
 	}
 }
