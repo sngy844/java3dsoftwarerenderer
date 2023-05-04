@@ -165,7 +165,7 @@ public class RenderContext extends Bitmap
 		else{
 			//Mid point
 			int My = y1;
-			int Mx = (int) ((float) (y1 - y0) * (x2 - x0)) / (y2 - y0) + x0;
+			int Mx = (int) (((float) (y1 - y0) * (x2 - x0)) / (y2 - y0) + x0);
 			drawFlatBottomTriangleFill(x0, y0, x1, y1, Mx, My, r, g, b);
 
 			drawFlatTopTriangleFill(x1, y1, Mx, My, x2, y2, r,g,b);
@@ -187,7 +187,7 @@ public class RenderContext extends Bitmap
 				temp = x0;			x0 = x1;		x1=temp;
 		}
 		int My = y1;
-		int Mx =(int)((float)(y1-y0)*(x2-x0))/(y2-y0) + x0;
+		int Mx =(int)(((float)(y1-y0)*(x2-x0))/(y2-y0) + x0);    //Same with linear interpolation
 		return new int[]{Mx,My};
 	}
 	int filter =0;
@@ -231,7 +231,7 @@ public class RenderContext extends Bitmap
 			}
 
 			//Draw a span / line from xstart to xend
-			for(int x=(int)(xstart); x<=(int)(xend);x++) {
+			for(int x=(int)(xstart+0.5); x<=(int)(xend);x++) {
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
 				GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
@@ -246,9 +246,6 @@ public class RenderContext extends Bitmap
 					m_pixelComponents[index + 1] = (byte) finalB;
 					m_pixelComponents[index + 2] = (byte) finalG;
 					m_pixelComponents[index + 3] = (byte) finalR;
-					if(y == 28) {
-						continue;
-					}
 
 				}
 
@@ -339,7 +336,7 @@ public class RenderContext extends Bitmap
 			}
 
 			//Draw a span / line from xstart to xend
-			for(int x=(int)xstart; x<=(int)xend;x++) {
+			for(int x=(int)(xstart+0.5); x<=(int)xend;x++) {
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
 				GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
@@ -413,6 +410,38 @@ public class RenderContext extends Bitmap
 			} // end for each x span start end
 		}//end for each y scan line
 	}
+
+
+	public void  drawTriangleFillSlope(int x0, int y0, int x1, int y1, int x2, int y2){
+		//Sort by y so y0 < y1 < y2;
+		int temp;
+		if(y0 > y1){
+			temp = x0;	x0=x1;	 x1 = temp;
+			temp = y0;	y0=y1;	 y1 = temp;
+		}
+		if(y1 > y2){
+			temp = y1;	y1=y2;	 y2 = temp;
+			temp = x1;	x1=x2;	 x2 = temp;
+		}
+		if(y0 > y1){
+			temp = y0;	y0 = y1; y1=temp;
+			temp = x0;	x0 = x1; x1=temp;
+		}
+
+		if(y1 == y2)
+			drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, (byte) 0, (byte) 0, (byte) 0);
+		else if(y0==y1)
+			drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,(byte) 0, (byte) 0, (byte) 0);
+		else{
+			float My = y1;
+			int Mx = (int) ( (My-y0)*(x2-x0)/(y2-y0) + x0);
+
+			drawFlatBottomTriangleSlopeFill(x0,y0,Mx, (int) My,x1,y1, (byte) 0, (byte) 0, (byte) 0);
+
+			drawFlatTopTriangleSlopeFill(x1,y1,Mx, (int) My,x2,y2, (byte) 0, (byte) 0, (byte) 0);
+		}
+	}
+
 
 
 	public void bindTexture(byte[] text, int txtW, int filter){
