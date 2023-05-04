@@ -106,6 +106,7 @@ public class Display extends Canvas
 		//Display components should be the byte array used for displayImage's pixels.
 		//Therefore, this call should effectively copy the frameBuffer into the displayImage.
 		m_frameBuffer.CopyToByteArray(m_displayComponents);
+		//Can simulate low resolution display using this function
 		m_graphics.drawImage(m_displayImage, 0, 0, m_frameBuffer.GetWidth(), m_frameBuffer.GetHeight(), null);
 		m_bufferStrategy.show();
 	}
