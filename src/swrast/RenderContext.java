@@ -231,19 +231,24 @@ public class RenderContext extends Bitmap
 			}
 
 			//Draw a span / line from xstart to xend
-			for(int x=(int)xstart; x<=(int)xend;x++) {
+			for(int x=(int)(xstart); x<=(int)(xend);x++) {
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
+				//Alos need to take of the case point is on edge of triangle
 				GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
 
 				if(filter == 0) {
-					float finalR = weights[0] * r0 + weights[1] * r1 + weights[2] * r2;
-					float finalG = weights[0] * g0 + weights[1] * g1 + weights[2] * g2;
-					float finalB = weights[0] * b0 + weights[1] * b1 + weights[2] * b2;
+					float finalG = weights[0] * g0 + weights[1] * g1 + weights[2] * g2; /*finalG = finalG < 0 ? 0 : finalG;*/
+					float finalR = weights[0] * r0 + weights[1] * r1 + weights[2] * r2; /*finalR = finalR < 0 ? 0 : finalR;*/
+					float finalB = weights[0] * b0 + weights[1] * b1 + weights[2] * b2; /*finalB = finalB < 0 ? 0 : finalB;*/
+
 					index = (y * m_width + x) * 4;
 					m_pixelComponents[index] = (byte) 255;
 					m_pixelComponents[index + 1] = (byte) finalB;
 					m_pixelComponents[index + 2] = (byte) finalG;
 					m_pixelComponents[index + 3] = (byte) finalR;
+					if(y == 28) {
+						continue;
+					}
 
 				}
 
@@ -336,6 +341,7 @@ public class RenderContext extends Bitmap
 			//Draw a span / line from xstart to xend
 			for(int x=(int)xstart; x<=(int)xend;x++) {
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
+				//Alos need to take of the case point is on edge of triangle
 				GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
 
 				if(filter == 0) {

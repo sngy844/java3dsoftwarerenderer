@@ -35,8 +35,8 @@ public class Main_FlatBottomTriangleSlopeTest {
         int tris[] = new int[]{
                 // Condition y1 = y2
                 500/4,100/4,850/4,600/4,150/4,600/4,
-                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
-                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
+//                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
+//                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
         target.bindTexture(brickTexture,textW,filter);
         int frame = 0;
@@ -45,8 +45,8 @@ public class Main_FlatBottomTriangleSlopeTest {
 
             target.Clear((byte) 0x00);
 
-            for (int i = 0; i < tris.length; i += 2)
-                target.drawPoint(tris[i], tris[i + 1], (byte) 255, (byte) 0, (byte) 0);
+//            for (int i = 0; i < tris.length; i += 2)
+//                target.drawPoint(tris[i], tris[i + 1], (byte) 255, (byte) 0, (byte) 0);
 
             if (isDrawVertices) {
                 for (int i = 0; i < tris.length; i += 6)
@@ -77,7 +77,7 @@ public class Main_FlatBottomTriangleSlopeTest {
                 //isDrawVertices = !isDrawVertices;
                 elapsedTime = 0;
                 frame = 0;
-                filter = (filter+1)%3;
+                //filter = (filter+1)%3;
                 target.bindTexture(brickTexture,textW,filter);
             }
 

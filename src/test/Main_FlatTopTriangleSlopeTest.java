@@ -59,13 +59,13 @@ public class Main_FlatTopTriangleSlopeTest {
                             (byte) 255, (byte) 255, (byte) 255);
             }
 
-            for(int x =0 ; x<textW; x++)
-                for(int y =0 ; y<textW; y++){
-                    byte r = brickTexture[(y*textW+x)*4 +3];
-                    byte g = brickTexture[(y*textW+x)*4 +2];
-                    byte b = brickTexture[(y*textW+x)*4 +1];
-                    target.DrawPixel(x,y,r,g,b);
-                }
+//            for(int x =0 ; x<textW; x++)
+//                for(int y =0 ; y<textW; y++){
+//                    byte r = brickTexture[(y*textW+x)*4 +3];
+//                    byte g = brickTexture[(y*textW+x)*4 +2];
+//                    byte b = brickTexture[(y*textW+x)*4 +1];
+//                    target.DrawPixel(x,y,r,g,b);
+//                }
 
             display.SwapBuffers();
 
