@@ -202,15 +202,9 @@ public class RenderContext extends Bitmap
 	// <=>	x = x0 + (y-y0)*inverse_slope  -> this gives you an x-coordinate of a point that lay on the line at given y.
 	//
 	// Equation (2) can be expaned in similar way and will give the same result
-	//
-	public void drawFlatBottomTriangleSlopeFill(int x0, int y0, int x1, int y1, int x2, int y2, byte r, byte g, byte b){
-		int r0=255,	g0=0,	b0=0;
-		int r1=0,	g1=255,	b1=0;
-		int r2=0,	g2=0,	b2=255;
-
-		float u0 = 0.5f, v0=0f;
-		float u1 = 1, v1=1;
-		float u2 = 0, v2=1;
+	// Another way to think is to know how much to scale deltaX based on how much 1/deltaY: x= x0 + deltaX*k*1/deltaY
+	public void drawFlatBottomTriangleSlopeFill(int x0, int y0, int x1, int y1, int x2, int y2,
+												float u0, float v0, float u1, float v1, float u2, float v2){
 
 		float inverse_slope_1 = (float)(x1 - x0)/(y1-y0); //left side
 		float inverse_slope_2 = (float)(x2 - x0)/(y2-y0); //right side
@@ -236,24 +230,11 @@ public class RenderContext extends Bitmap
 				//Alos need to take of the case point is on edge of triangle
 				GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
 
-				if(filter == 0) {
-					float finalG = weights[0] * g0 + weights[1] * g1 + weights[2] * g2; /*finalG = finalG < 0 ? 0 : finalG;*/
-					float finalR = weights[0] * r0 + weights[1] * r1 + weights[2] * r2; /*finalR = finalR < 0 ? 0 : finalR;*/
-					float finalB = weights[0] * b0 + weights[1] * b1 + weights[2] * b2; /*finalB = finalB < 0 ? 0 : finalB;*/
-
-					index = (y * m_width + x) * 4;
-					m_pixelComponents[index] = (byte) 255;
-					m_pixelComponents[index + 1] = (byte) finalB;
-					m_pixelComponents[index + 2] = (byte) finalG;
-					m_pixelComponents[index + 3] = (byte) finalR;
-
-				}
-
 				//Interpolate U V coordinate
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
 
-				if(filter ==1) {
+				if(filter ==0) {
 					//Coordinate on real texture - assume texture is square dimension
 					int textX = (int) (finalU * (textW -1) +0.5);
 					int textY = (int) (finalV*  (textW -1) +0.5);
@@ -268,7 +249,7 @@ public class RenderContext extends Bitmap
 					m_pixelComponents[index+2]= (byte) textG;
 					m_pixelComponents[index+3]= (byte) textR;
 				}
-				else if(filter == 2) {
+				else if(filter == 1) {
 					//Coordinate on real texture - assume texture is square dimension
 					int textX = (int) (finalU * (textW -1));
 					int textY = (int) (finalV*  (textW -1));
@@ -412,31 +393,52 @@ public class RenderContext extends Bitmap
 	}
 
 
-	public void  drawTriangleFillSlope(int x0, int y0, int x1, int y1, int x2, int y2){
+	public void  drawTriangleFillSlope(int x0, int y0, int x1, int y1, int x2, int y2,
+									   float u0, float v0,
+									   float u1, float v1,
+									   float u2, float v2){
 		//Sort by y so y0 < y1 < y2;
 		int temp;
+		float tempF;
 		if(y0 > y1){
 			temp = x0;	x0=x1;	 x1 = temp;
 			temp = y0;	y0=y1;	 y1 = temp;
+
+			tempF = u0; u0=u1; u1= tempF;
+			tempF = v0; v0=v1; v1= tempF;
 		}
 		if(y1 > y2){
 			temp = y1;	y1=y2;	 y2 = temp;
 			temp = x1;	x1=x2;	 x2 = temp;
+
+			tempF = u1; u1=u2; u2= tempF;
+			tempF = v1; v1=v2; v2= tempF;
 		}
 		if(y0 > y1){
 			temp = y0;	y0 = y1; y1=temp;
 			temp = x0;	x0 = x1; x1=temp;
+
+			tempF = u0; u0=u1; u1= tempF;
+			tempF = v0; v0=v1; v1= tempF;
 		}
 
 		if(y1 == y2)
-			drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, (byte) 0, (byte) 0, (byte) 0);
+			drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, u0,v0, u1,v1,u2,v2);
 		else if(y0==y1)
 			drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,(byte) 0, (byte) 0, (byte) 0);
 		else{
 			float My = y1;
 			int Mx = (int) ( (My-y0)*(x2-x0)/(y2-y0) + x0);
 
-			drawFlatBottomTriangleSlopeFill(x0,y0,Mx, (int) My,x1,y1, (byte) 0, (byte) 0, (byte) 0);
+			float Mu = ( (My-y0)*(u2-u0)/(y2-y0) + u0);
+			float Mv = ( (My-y0)*(v2-v0)/(y2-y0) + v0);
+
+			//Mv=0.5f
+			;
+			drawFlatBottomTriangleSlopeFill(x0,y0,Mx, (int) My,x1,y1,
+					u0,v0,
+					Mu,Mv,
+					u1,v1);
 
 			drawFlatTopTriangleSlopeFill(x1,y1,Mx, (int) My,x2,y2, (byte) 0, (byte) 0, (byte) 0);
 		}

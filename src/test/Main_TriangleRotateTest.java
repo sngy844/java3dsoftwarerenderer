@@ -3,10 +3,27 @@ package test;
 import swrast.Display;
 import swrast.RenderContext;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class Main_TriangleRotateTest {
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
+        InputStream inputStream = Main_SignedAreaTest.class.getResourceAsStream("texture.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        String [] brickPxString =properties.getProperty("brick").split(",");
+        final int textW = 64;
+        byte brickTexture[] = new byte[brickPxString.length];
+        for(int i =0 ; i< brickPxString.length; i+=4){
+            brickTexture [i] = (byte) Integer.parseInt(brickPxString[i+3],16); //Alpha
+            brickTexture [i+1] = (byte) Integer.parseInt(brickPxString[i+0],16); //B
+            brickTexture [i+2] = (byte) Integer.parseInt(brickPxString[i+1],16); //G
+            brickTexture [i+3] = (byte) Integer.parseInt(brickPxString[i+2],16);//R
+        }
+
         //
-        Display display = new Display(180, 180,1000,1000, "Software Rendering");
+        Display display = new Display(200, 200,1000,1000, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -44,7 +61,7 @@ public class Main_TriangleRotateTest {
                 tris[i+4] -= cenX;
                 tris[i+5] -= cenY;
 
-                phi += 0.001; //Increase angle over time
+                phi += 0.000; //Increase angle over time
                 double x = Math.cos(phi)*tris[i] - Math.sin(phi)*tris[i+1] ;
                 double y = Math.sin(phi)*tris[i] + Math.cos(phi)*tris[i+1] ;
                 tris[i] =   (int)(x+ cenX);
@@ -64,10 +81,14 @@ public class Main_TriangleRotateTest {
 
 
             {
+                target.bindTexture(brickTexture,textW,0);
                 for(int i =0 ; i< tris.length; i+=6)
                     target.drawTriangleFillSlope(tris[i],tris[i+1],
                             tris[i+2],tris[i+3],
-                            tris[i+4],tris[i+5]
+                            tris[i+4],tris[i+5],
+                            0.5f,0,
+                            1,1,
+                            0f,0.5f
                             //(byte)255,(byte)255,(byte)255)
                     );
             }

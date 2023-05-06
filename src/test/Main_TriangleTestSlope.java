@@ -48,8 +48,10 @@ public class Main_TriangleTestSlope {
                 for(int i =0 ; i< tris.length; i+=6)
                     target.drawTriangleFillSlope(tris[i],tris[i+1],
                             tris[i+2],tris[i+3],
-                            tris[i+4],tris[i+5]
-                     //       (byte)255,(byte)255,(byte)255
+                            tris[i+4],tris[i+5],
+                            0,0,
+                            1,0,
+                            0.5f,1
                     )                        ;
             }
 

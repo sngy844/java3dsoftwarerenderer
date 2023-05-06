@@ -34,7 +34,7 @@ public class Main_FlatBottomTriangleSlopeTest {
         // TODO: check winding
         int tris[] = new int[]{
                 // Condition y1 = y2
-                500/4,100/4,850/4,600/4,150/4,600/4,
+                500/4,100/4,850/4,600/4,150/4,600/4
 //                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
 //                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
@@ -53,7 +53,10 @@ public class Main_FlatBottomTriangleSlopeTest {
                     target.drawFlatBottomTriangleSlopeFill(tris[i], tris[i + 1],
                             tris[i + 2], tris[i + 3],
                             tris[i + 4], tris[i + 5],
-                            (byte) 255, (byte) 255, (byte) 255);
+                                0.5f,0,
+                                1, 1,
+                                0,1
+                           );
             }
 
             for(int x =0 ; x<textW; x++)
