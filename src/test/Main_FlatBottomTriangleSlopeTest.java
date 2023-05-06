@@ -24,7 +24,7 @@ public class Main_FlatBottomTriangleSlopeTest {
 
 
         //
-        Display display = new Display(801, 801,1024,1014, "Software Rendering");
+        Display display = new Display(200, 200,1024,1014, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -34,7 +34,7 @@ public class Main_FlatBottomTriangleSlopeTest {
         // TODO: check winding
         int tris[] = new int[]{
                 // Condition y1 = y2
-                500/4,100/4,850/4,600/4,150/4,600/4
+                100,20,144,109,70,109
 //                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
 //                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
@@ -54,8 +54,8 @@ public class Main_FlatBottomTriangleSlopeTest {
                             tris[i + 2], tris[i + 3],
                             tris[i + 4], tris[i + 5],
                                 0.5f,0,
-                                1, 1,
-                                0,1
+                                0.75f, 0.5f,
+                                0,0.5f
                            );
             }
 
@@ -66,6 +66,10 @@ public class Main_FlatBottomTriangleSlopeTest {
                     byte b = brickTexture[(y*textW+x)*4 +1];
                     target.DrawPixel(x,y,r,g,b);
                 }
+
+            target.DrawPixel((int) (0.5f*textW), 0, (byte) 255, (byte) 255, (byte) 0);
+            target.DrawPixel((int) (0.75f*textW), (int) (0.5f*textW), (byte) 255, (byte) 255, (byte) 0);
+            target.DrawPixel((int) (0.0f*textW), (int) (0.5f*textW), (byte) 255, (byte) 255, (byte) 0);
 
             display.SwapBuffers();
 

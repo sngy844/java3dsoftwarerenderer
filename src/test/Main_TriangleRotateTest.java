@@ -30,7 +30,7 @@ public class Main_TriangleRotateTest {
         double elapsedTime = 0;
         boolean isDrawVertices = false;
         //The original triangle vertices
-        final int originalTris [] = new int[]{480/5 ,100/5 , 650/5,800/5,150/5 ,550/5};
+        final int originalTris [] = new int[]{500/5 ,100/5 , 850/5,800/5,350/5 ,550/5};
 
         //Buffer to hold transformed vertices
         int tris[] = new int[originalTris.length];
@@ -101,7 +101,13 @@ public class Main_TriangleRotateTest {
                 target.drawPoint(midPoint[0], midPoint[1], (byte) 255, (byte) 0, (byte) 255);
             }
 
-
+            for(int x =0 ; x<textW; x++)
+                for(int y =0 ; y<textW; y++){
+                    byte r = brickTexture[(y*textW+x)*4 +3];
+                    byte g = brickTexture[(y*textW+x)*4 +2];
+                    byte b = brickTexture[(y*textW+x)*4 +1];
+                    target.DrawPixel(x,y,r,g,b);
+                }
 
 
             display.SwapBuffers();

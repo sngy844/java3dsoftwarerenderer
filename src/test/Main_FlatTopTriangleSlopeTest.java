@@ -15,7 +15,7 @@ public class Main_FlatTopTriangleSlopeTest {
         Properties properties = new Properties();
         properties.load(inputStream);
 
-        final String textureName = "tile";
+        final String textureName = "brick";
         String [] brickPxString =properties.getProperty(textureName).split(",");
         final int textW = Integer.parseInt(properties.getProperty(String.format("%s_width",textureName)));
         byte brickTexture[] = new byte[brickPxString.length];
@@ -27,7 +27,7 @@ public class Main_FlatTopTriangleSlopeTest {
         }
 
         //
-        Display display = new Display(801, 801,1024,1014, "Software Rendering");
+        Display display = new Display(200, 200,1024,1014, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -37,7 +37,11 @@ public class Main_FlatTopTriangleSlopeTest {
         // TODO: check winding
         int tris[] = new int[]{
                 // Condition y0 = y1
-                87,25,262,25,175,150
+
+                30,109,
+                104,109,
+                129,159
+               // 87,25,262,25,175,150
 //                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
 //                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
@@ -56,16 +60,23 @@ public class Main_FlatTopTriangleSlopeTest {
                     target.drawFlatTopTriangleSlopeFill(tris[i], tris[i + 1],
                             tris[i + 2], tris[i + 3],
                             tris[i + 4], tris[i + 5],
-                            (byte) 255, (byte) 255, (byte) 255);
+                            0,0.5f,
+                            0.75f, 0.5f,
+                            1,1
+
+                    );
             }
 
-//            for(int x =0 ; x<textW; x++)
-//                for(int y =0 ; y<textW; y++){
-//                    byte r = brickTexture[(y*textW+x)*4 +3];
-//                    byte g = brickTexture[(y*textW+x)*4 +2];
-//                    byte b = brickTexture[(y*textW+x)*4 +1];
-//                    target.DrawPixel(x,y,r,g,b);
-//                }
+            for(int x =0 ; x<textW; x++)
+                for(int y =0 ; y<textW; y++){
+                    byte r = brickTexture[(y*textW+x)*4 +3];
+                    byte g = brickTexture[(y*textW+x)*4 +2];
+                    byte b = brickTexture[(y*textW+x)*4 +1];
+                    target.DrawPixel(x,y,r,g,b);
+                }
+            target.DrawPixel((int) (0.f* (textW-1)), (int) (0.5f*(textW-1)), (byte) 255, (byte) 255, (byte) 0);
+            target.DrawPixel((int) (0.75f*(textW-1)), (int) (0.5f*(textW-1)), (byte) 255, (byte) 255, (byte) 0);
+            target.DrawPixel((int) (1f* (textW-1)), (int) (1f*(textW-1)), (byte) 255, (byte) 255, (byte) 0);
 
             display.SwapBuffers();
 
@@ -80,8 +91,8 @@ public class Main_FlatTopTriangleSlopeTest {
                 //isDrawVertices = !isDrawVertices;
                 elapsedTime = 0;
                 frame = 0;
-                filter = (filter+1)%3;
-                target.bindTexture(brickTexture,textW,filter);
+                //filter = (filter+1)%3;
+                //target.bindTexture(brickTexture,textW,filter);
             }
 
         }
