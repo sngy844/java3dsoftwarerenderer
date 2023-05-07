@@ -24,7 +24,7 @@ public class Main_TriangleRotateTest {
         }
 
         //
-        Display display = new Display(200, 200,1000,1000, "Software Rendering");
+        Display display = new Display(300, 300,1000,1000, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -32,9 +32,26 @@ public class Main_TriangleRotateTest {
         boolean isDrawVertices = false;
         //The original triangle vertices
         final int originalTris [] = new int[]{
-                500/5 ,100/5 ,
-                850/5,800/5,
-                350/5 ,550/5};
+                350/5 ,250/5 ,
+                850/5,750/5,
+                350/5 ,750/5,
+
+                350/5 ,250/5 ,
+                850/5 ,250/5,
+                850/5,750/5,
+
+
+        };
+        final float originalTrisUv[] = new float[]{
+                 0.0f,0,
+                1,1,
+                0f,1f,
+
+              0.0f,0,
+                1,0,
+                1f,1f
+        };
+
 
         //Buffer to hold transformed vertices
         int tris[] = new int[originalTris.length];
@@ -55,17 +72,23 @@ public class Main_TriangleRotateTest {
             //Reset to original vertices. We CAN'T keep doing transformation of already transformed vertices due to truncation error
             System.arraycopy(originalTris,0,tris,0,originalTris.length);
 
+            double cenX=0,cenY=0;
+            for(int i =0 ; i< tris.length; i+=6) {
+                cenX += (tris[i] + tris[i + 2] + tris[i + 4]);
+                cenY += (tris[i + 1] + tris[i + 3] + tris[i + 5]);
+            }
+            cenX = cenX/(tris.length/2);
+            cenY = cenY/(tris.length/2);
+
             for(int i =0 ; i< tris.length; i+=6){
-                double cenX = (tris[i] + tris[i+2] + tris[4])/3.0;
-                double cenY = (tris[i+1] + tris[i+3] + tris[5])/3.0;
-                tris[i] -= cenX;
+                tris[i]   -= cenX;
                 tris[i+1] -= cenY;
                 tris[i+2] -= cenX;
                 tris[i+3] -= cenY;
                 tris[i+4] -= cenX;
                 tris[i+5] -= cenY;
 
-                phi += 0.0000; //Increase angle over time
+                phi += 0.0002; //Increase angle over time
                 double x = Math.cos(phi)*tris[i] - Math.sin(phi)*tris[i+1] ;
                 double y = Math.sin(phi)*tris[i] + Math.cos(phi)*tris[i+1] ;
                 tris[i] =   (int)(x+ cenX);
@@ -90,9 +113,9 @@ public class Main_TriangleRotateTest {
                     target.drawTriangleFillSlope(tris[i],tris[i+1],
                             tris[i+2],tris[i+3],
                             tris[i+4],tris[i+5],
-                            0.5f,0,
-                            1,1,
-                            0f,0.5f
+                            originalTrisUv[i],originalTrisUv[i+1],
+                            originalTrisUv[i+2],originalTrisUv[i+3],
+                            originalTrisUv[i+4],originalTrisUv[i+5]
                             //(byte)255,(byte)255,(byte)255)
                     );
             }
@@ -104,6 +127,8 @@ public class Main_TriangleRotateTest {
                 int midPoint[] = target.getMidPoint(tris[i],tris[i+1],tris[i+2],tris[i+3],tris[i+4],tris[i+5]);
                 target.drawPoint(midPoint[0], midPoint[1], (byte) 255, (byte) 0, (byte) 255);
             }
+
+            target.drawPoint((int) cenX, (int) cenY, (byte) 255, (byte) 0, (byte) 255);
 
             for(int x =0 ; x<textW; x++)
                 for(int y =0 ; y<textW; y++){
