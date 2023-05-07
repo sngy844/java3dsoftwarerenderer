@@ -27,7 +27,7 @@ public class Main_FlatTopTriangleSlopeTest {
         }
 
         //
-        Display display = new Display(200, 200,1024,1014, "Software Rendering");
+        Display display = new Display(200, 200,1000,1000, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -38,9 +38,9 @@ public class Main_FlatTopTriangleSlopeTest {
         int tris[] = new int[]{
                 // Condition y0 = y1
 
-                30,109,
-                104,109,
-                129,159
+                70,109,
+                144,109,
+                169,159
                // 87,25,262,25,175,150
 //                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
 //                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
@@ -61,7 +61,7 @@ public class Main_FlatTopTriangleSlopeTest {
                             tris[i + 2], tris[i + 3],
                             tris[i + 4], tris[i + 5],
                             0,0.5f,
-                            0.75f, 0.5f,
+                            0.8201439f,0.64028776f,
                             1,1
 
                     );

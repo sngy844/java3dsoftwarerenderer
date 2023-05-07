@@ -410,21 +410,27 @@ public class RenderContext extends Bitmap
 			drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0, u1,v1,u2,v2);
 		else{
 			float My = y1;
-			int Mx = (int) ( (My-y0)*(x2-x0)/(y2-y0) + x0);
+			float Mx = ( (My-y0)*(x2-x0)/(y2-y0) + x0);
 
-			float Mv = v1;
-			float Mu = (Mv - v0)*(u2-u0)/(v2-v0)   + u0;
+			GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,Mx,My,weights);
 
-			//Mv=0.5f
+			//Can't do this kind of linear interpolation
+			//float Mv = v1;
+			//float Mu = (Mv - v0)*(u2-u0)/(v2-v0)   + u0;
+
+			// Have to do this kind of interpolation since u,v values are not linear in x-y space?!
+			float Mv2 = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
+			float Mu2 = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
+
 			;
-			drawFlatBottomTriangleSlopeFill(x0,y0,Mx, (int) My,x1,y1,
+			drawFlatBottomTriangleSlopeFill(x0,y0, (int) Mx, (int) My,x1,y1,
 					u0,v0,
-					Mu,Mv,
+					Mu2,Mv2,
 					u1,v1);
 
-			drawFlatTopTriangleSlopeFill(x1,y1,Mx, (int) My,x2,y2,
+			drawFlatTopTriangleSlopeFill(x1,y1, (int) Mx, (int) My,x2,y2,
 					u1,v1,
-					Mu,Mv,
+					Mu2,Mv2,
 					u2,v2
 					);
 		}

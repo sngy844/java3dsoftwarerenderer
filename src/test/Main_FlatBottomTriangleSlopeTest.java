@@ -22,9 +22,8 @@ public class Main_FlatBottomTriangleSlopeTest {
             brickTexture [i+3] = (byte) Integer.parseInt(brickPxString[i+2],16);//R
         }
 
-
         //
-        Display display = new Display(200, 200,1024,1014, "Software Rendering");
+        Display display = new Display(200, 200,1000,1000, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -54,7 +53,7 @@ public class Main_FlatBottomTriangleSlopeTest {
                             tris[i + 2], tris[i + 3],
                             tris[i + 4], tris[i + 5],
                                 0.5f,0,
-                                0.75f, 0.5f,
+                            0.8201439f,0.64028776f,
                                 0,0.5f
                            );
             }

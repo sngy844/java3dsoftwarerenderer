@@ -12,8 +12,9 @@ public class Main_TriangleRotateTest {
         InputStream inputStream = Main_SignedAreaTest.class.getResourceAsStream("texture.properties");
         Properties properties = new Properties();
         properties.load(inputStream);
-        String [] brickPxString =properties.getProperty("brick").split(",");
-        final int textW = 64;
+        final String textureName = "brick";
+        String [] brickPxString =properties.getProperty(textureName).split(",");
+        final int textW = Integer.parseInt(properties.getProperty(String.format("%s_width",textureName)));
         byte brickTexture[] = new byte[brickPxString.length];
         for(int i =0 ; i< brickPxString.length; i+=4){
             brickTexture [i] = (byte) Integer.parseInt(brickPxString[i+3],16); //Alpha
@@ -30,7 +31,10 @@ public class Main_TriangleRotateTest {
         double elapsedTime = 0;
         boolean isDrawVertices = false;
         //The original triangle vertices
-        final int originalTris [] = new int[]{500/5 ,100/5 , 850/5,800/5,350/5 ,550/5};
+        final int originalTris [] = new int[]{
+                500/5 ,100/5 ,
+                850/5,800/5,
+                350/5 ,550/5};
 
         //Buffer to hold transformed vertices
         int tris[] = new int[originalTris.length];
@@ -61,7 +65,7 @@ public class Main_TriangleRotateTest {
                 tris[i+4] -= cenX;
                 tris[i+5] -= cenY;
 
-                phi += 0.000; //Increase angle over time
+                phi += 0.0000; //Increase angle over time
                 double x = Math.cos(phi)*tris[i] - Math.sin(phi)*tris[i+1] ;
                 double y = Math.sin(phi)*tris[i] + Math.cos(phi)*tris[i+1] ;
                 tris[i] =   (int)(x+ cenX);
