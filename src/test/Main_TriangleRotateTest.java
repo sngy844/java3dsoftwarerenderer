@@ -24,7 +24,7 @@ public class Main_TriangleRotateTest {
         }
 
         //
-        Display display = new Display(300, 300,1000,1000, "Software Rendering");
+        Display display = new Display(320, 240,1024,768, "Software Rendering - Texture Mapping And Filtering Test");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -40,6 +40,14 @@ public class Main_TriangleRotateTest {
                 850/5 ,250/5,
                 850/5,750/5,
 
+                //2nd Square
+                870/5 ,250/5 ,
+                1350/5, 750/5,
+                870/5 ,750/5,
+
+                870/5 ,250/5 ,
+                1350/5, 250/5,
+                1350/5,750/5,
 
         };
         final float originalTrisUv[] = new float[]{
@@ -48,6 +56,14 @@ public class Main_TriangleRotateTest {
                 0f,1f,
 
               0.0f,0,
+                1,0,
+                1f,1f,
+
+                0.0f,0,
+                1,1,
+                0f,1f,
+
+                0.0f,0,
                 1,0,
                 1f,1f
         };
@@ -58,7 +74,7 @@ public class Main_TriangleRotateTest {
         System.arraycopy(originalTris,0,tris,0,originalTris.length);
 
         int frame =0;
-        boolean toggle= true;
+        int filter =0;
         double phi = 0;
         while(true)
         {
@@ -67,68 +83,71 @@ public class Main_TriangleRotateTest {
             elapsedTime +=delta;
             previousTime = currentTime;
 
-            target.Clear((byte) 0x00);
-
             //Reset to original vertices. We CAN'T keep doing transformation of already transformed vertices due to truncation error
             System.arraycopy(originalTris,0,tris,0,originalTris.length);
 
-            double cenX=0,cenY=0;
-            for(int i =0 ; i< tris.length; i+=6) {
-                cenX += (tris[i] + tris[i + 2] + tris[i + 4]);
-                cenY += (tris[i + 1] + tris[i + 3] + tris[i + 5]);
-            }
-            cenX = cenX/(tris.length/2);
-            cenY = cenY/(tris.length/2);
+            target.Clear((byte) 0x00);
+            target.drawGrid();
 
-            for(int i =0 ; i< tris.length; i+=6){
-                tris[i]   -= cenX;
-                tris[i+1] -= cenY;
-                tris[i+2] -= cenX;
-                tris[i+3] -= cenY;
-                tris[i+4] -= cenX;
-                tris[i+5] -= cenY;
-
-                phi += 0.0002; //Increase angle over time
-                double x = Math.cos(phi)*tris[i] - Math.sin(phi)*tris[i+1] ;
-                double y = Math.sin(phi)*tris[i] + Math.cos(phi)*tris[i+1] ;
-                tris[i] =   (int)(x+ cenX);
-                tris[i+1] = (int)(y+ cenY);
-
-                x = Math.cos(phi)*tris[i+2] - Math.sin(phi)*tris[i+3] ;
-                y = Math.sin(phi)*tris[i+2] + Math.cos(phi)*tris[i+3] ;
-                tris[i+2] = (int)(x+ cenX);
-                tris[i+3] = (int)(y+ cenY);
-
-                x = Math.cos(phi)*tris[i+4] - Math.sin(phi)*tris[i+5] ;
-                y = Math.sin(phi)*tris[i+4] + Math.cos(phi)*tris[i+5] ;
-                tris[i+4] = (int)(x + cenX);
-                tris[i+5] = (int)(y+ cenY);
-
-            }
+            //Rotation Test
+//            double cenX=0,cenY=0;
+//            for(int i =0 ; i< tris.length; i+=6) {
+//                cenX += (tris[i] + tris[i + 2] + tris[i + 4]);
+//                cenY += (tris[i + 1] + tris[i + 3] + tris[i + 5]);
+//            }
+//            cenX = cenX/(tris.length/2);
+//            cenY = cenY/(tris.length/2);
+//
+//            for(int i =0 ; i< tris.length; i+=6){
+//                tris[i]   -= cenX;
+//                tris[i+1] -= cenY;
+//                tris[i+2] -= cenX;
+//                tris[i+3] -= cenY;
+//                tris[i+4] -= cenX;
+//                tris[i+5] -= cenY;
+//
+//                phi += 0.000; //Increase angle over time
+//                double x = Math.cos(phi)*tris[i] - Math.sin(phi)*tris[i+1] ;
+//                double y = Math.sin(phi)*tris[i] + Math.cos(phi)*tris[i+1] ;
+//                tris[i] =   (int)(x+ cenX);
+//                tris[i+1] = (int)(y+ cenY);
+//
+//                x = Math.cos(phi)*tris[i+2] - Math.sin(phi)*tris[i+3] ;
+//                y = Math.sin(phi)*tris[i+2] + Math.cos(phi)*tris[i+3] ;
+//                tris[i+2] = (int)(x+ cenX);
+//                tris[i+3] = (int)(y+ cenY);
+//
+//                x = Math.cos(phi)*tris[i+4] - Math.sin(phi)*tris[i+5] ;
+//                y = Math.sin(phi)*tris[i+4] + Math.cos(phi)*tris[i+5] ;
+//                tris[i+4] = (int)(x + cenX);
+//                tris[i+5] = (int)(y+ cenY);
+//            }
 
 
             {
-                target.bindTexture(brickTexture,textW,0);
-                for(int i =0 ; i< tris.length; i+=6)
-                    target.drawTriangleFillSlope(tris[i],tris[i+1],
-                            tris[i+2],tris[i+3],
-                            tris[i+4],tris[i+5],
-                            originalTrisUv[i],originalTrisUv[i+1],
-                            originalTrisUv[i+2],originalTrisUv[i+3],
-                            originalTrisUv[i+4],originalTrisUv[i+5]
-                            //(byte)255,(byte)255,(byte)255)
+
+                for(int i =0 ; i< tris.length; i+=6) {
+                    if(i == 0)target.bindTexture(brickTexture, textW, 0);
+                    if(i == 12)target.bindTexture(brickTexture, textW, 1);
+                    target.drawTriangleFillSlope(tris[i], tris[i + 1],
+                            tris[i + 2], tris[i + 3],
+                            tris[i + 4], tris[i + 5],
+                            originalTrisUv[i], originalTrisUv[i + 1],
+                            originalTrisUv[i + 2], originalTrisUv[i + 3],
+                            originalTrisUv[i + 4], originalTrisUv[i + 5]
                     );
+                }
             }
 
-            for(int i =0 ; i< tris.length; i+=2) {
-                target.drawPoint(tris[i], tris[i + 1], (byte) 255, (byte) 0, (byte) 0);
-            }
-            for(int i =0 ; i< tris.length; i+=6){
-                int midPoint[] = target.getMidPoint(tris[i],tris[i+1],tris[i+2],tris[i+3],tris[i+4],tris[i+5]);
-                target.drawPoint(midPoint[0], midPoint[1], (byte) 255, (byte) 0, (byte) 255);
-            }
+//            for(int i =0 ; i< tris.length; i+=2) {
+//                target.drawPoint(tris[i], tris[i + 1], (byte) 255, (byte) 0, (byte) 0);
+//            }
+//            for(int i =0 ; i< tris.length; i+=6){
+//                int midPoint[] = target.getMidPoint(tris[i],tris[i+1],tris[i+2],tris[i+3],tris[i+4],tris[i+5]);
+//                target.drawPoint(midPoint[0], midPoint[1], (byte) 255, (byte) 0, (byte) 255);
+//            }
 
-            target.drawPoint((int) cenX, (int) cenY, (byte) 255, (byte) 0, (byte) 255);
+//            target.drawPoint((int) cenX, (int) cenY, (byte) 255, (byte) 0, (byte) 255);
 
             for(int x =0 ; x<textW; x++)
                 for(int y =0 ; y<textW; y++){
@@ -147,6 +166,7 @@ public class Main_TriangleRotateTest {
                 isDrawVertices = !isDrawVertices;
                 elapsedTime=0;
                 frame =0;
+
             }
 
         }

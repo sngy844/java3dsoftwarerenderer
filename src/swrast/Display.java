@@ -98,6 +98,10 @@ public class Display extends Canvas
 		m_graphics = m_bufferStrategy.getDrawGraphics();
 	}
 
+	public void setWindowTitle(String str){
+		this.m_frame.setTitle(str);
+	}
+
 	/**
 	 * Displays in the window.
 	 */
