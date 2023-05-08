@@ -103,8 +103,24 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatBottomTriangleSlopeFill
     jint x0, jint y0, jint x1, jint y1, jint x2, jint y2,
     jfloat u0, jfloat v0, jfloat u1, jfloat v1, jfloat u2, jfloat v2,
     jint filter, jbyteArray jTexture, jint textW ,jbyteArray jPixelComponent, jint m_width) {
-	char * m_pixelComponents = (*env)->GetByteArrayElements(env, jPixelComponent, NULL);
-	char * texture = (*env)->GetByteArrayElements(env, jTexture, NULL);
+
+//    jboolean isCopy=0;
+//	char * m_pixelComponents = (*env)->GetByteArrayElements(env, jPixelComponent, &isCopy);
+//	if(isCopy){
+//	    (*env)->ReleaseByteArrayElements(env, jPixelComponent, m_pixelComponents, 0);
+//	    return;
+//	}
+//	isCopy=0;
+//	char * texture = (*env)->GetByteArrayElements(env, jTexture, &isCopy);
+//    if(isCopy){
+//    (*env)->ReleaseByteArrayElements(env, jTexture, texture, 0);
+//	    return;
+//	}
+//
+	char * m_pixelComponents= (*env)->GetPrimitiveArrayCritical(env,jPixelComponent,0);
+	if(!m_pixelComponents) return;
+	char * texture= (*env)->GetPrimitiveArrayCritical(env,jTexture,0);
+	if(!texture) return;
 
 	float inverse_slope_1 = (float)(x1 - x0) / (y1 - y0); //left side
 	float inverse_slope_2 = (float)(x2 - x0) / (y2 - y0); //right side
@@ -194,8 +210,11 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatBottomTriangleSlopeFill
 	
 	//printf("From C\n");
 	
-	(*env)->ReleaseByteArrayElements(env, jPixelComponent, m_pixelComponents, 0);
-	(*env)->ReleaseByteArrayElements(env, jTexture, texture, 0);
+//	(*env)->ReleaseByteArrayElements(env, jPixelComponent, m_pixelComponents, 0);
+//	(*env)->ReleaseByteArrayElements(env, jTexture, texture, 0);
+
+    (*env)->ReleasePrimitiveArrayCritical(env,jPixelComponent, m_pixelComponents, 0);
+    (*env)->ReleasePrimitiveArrayCritical(env, jTexture, texture, 0);
 }
 
 
@@ -206,8 +225,23 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatTopTriangleSlopeFill
 	jfloat u0, jfloat v0, jfloat u1, jfloat v1, jfloat u2, jfloat v2,
 	jint filter, jbyteArray jTexture, jint textW, jbyteArray jPixelComponent, jint m_width) {
 
-	char * m_pixelComponents = (*env)->GetByteArrayElements(env, jPixelComponent, NULL);
-	char * texture = (*env)->GetByteArrayElements(env, jTexture, NULL);
+	//    jboolean isCopy=0;
+    //	char * m_pixelComponents = (*env)->GetByteArrayElements(env, jPixelComponent, &isCopy);
+    //	if(isCopy){
+    //	    (*env)->ReleaseByteArrayElements(env, jPixelComponent, m_pixelComponents, 0);
+    //	    return;
+    //	}
+    //	isCopy=0;
+    //	char * texture = (*env)->GetByteArrayElements(env, jTexture, &isCopy);
+    //    if(isCopy){
+    //    (*env)->ReleaseByteArrayElements(env, jTexture, texture, 0);
+    //	    return;
+    //	}
+    //
+    char * m_pixelComponents= (*env)->GetPrimitiveArrayCritical(env,jPixelComponent,0);
+    if(!m_pixelComponents) return;
+    char * texture= (*env)->GetPrimitiveArrayCritical(env,jTexture,0);
+    if(!texture) return;
 
 	const float inverse_slope_1 = (float)(x2 - x0) / (y2 - y0); //left side
 	const float inverse_slope_2 = (float)(x2 - x1) / (y2 - y1); //right side
@@ -296,7 +330,10 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatTopTriangleSlopeFill
 	}//end for each y scan line
 
 
-	(*env)->ReleaseByteArrayElements(env, jPixelComponent, m_pixelComponents, 0);
-	(*env)->ReleaseByteArrayElements(env, jTexture, texture, 0);
+//	(*env)->ReleaseByteArrayElements(env, jPixelComponent, m_pixelComponents, 0);
+//	(*env)->ReleaseByteArrayElements(env, jTexture, texture, 0);
+
+    (*env)->ReleasePrimitiveArrayCritical(env,jPixelComponent, m_pixelComponents, 0);
+    (*env)->ReleasePrimitiveArrayCritical(env, jTexture, texture, 0);
 
 }

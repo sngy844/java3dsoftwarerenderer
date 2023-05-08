@@ -406,15 +406,15 @@ public class RenderContext extends Bitmap
 		}
 
 		if(y1 == y2)
-			drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, u0,v0, u1,v1,u2,v2);
-//			GfxNative.drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, u0,v0, u1,v1,u2,v2
-//					,filter, texture,textW,m_pixelComponents,m_width
-//			);
+			//drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, u0,v0, u1,v1,u2,v2);
+			GfxNative.drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, u0,v0, u1,v1,u2,v2
+					,filter, texture,textW,m_pixelComponents,m_width
+			);
 		else if(y0==y1)
-			drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0, u1,v1,u2,v2);
-//			GfxNative.drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0, u1,v1,u2,v2
-//					,filter, texture,textW,m_pixelComponents,m_width
-//			);
+			//drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0, u1,v1,u2,v2);
+			GfxNative.drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0, u1,v1,u2,v2
+					,filter, texture,textW,m_pixelComponents,m_width
+			);
 		else{
 			float My = y1;
 			float Mx = ( (My-y0)*(x2-x0)/(y2-y0) + x0);
@@ -430,11 +430,11 @@ public class RenderContext extends Bitmap
 			float Mu2 = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 
 			;
-			GfxNative.drawFlatBottomTriangleSlopeFill(x0,y0, (int) Mx, (int) My,x1,y1,
+			drawFlatBottomTriangleSlopeFill(x0,y0, (int) Mx, (int) My,x1,y1,
 					u0,v0,
 					Mu2,Mv2,
 					u1,v1
-					,filter, texture,textW,m_pixelComponents,m_width
+			//		,filter, texture,textW,m_pixelComponents,m_width
 					);
 
 			drawFlatTopTriangleSlopeFill(x1,y1, (int) Mx, (int) My,x2,y2,
