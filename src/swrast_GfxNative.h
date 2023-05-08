@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     swrast_GfxNative
+ * Method:    testDirectBuffer
+ * Signature: (Ljava/nio/ByteBuffer;)V
+ */
+JNIEXPORT void JNICALL Java_swrast_GfxNative_testDirectBuffer
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     swrast_GfxNative
  * Method:    testNative
  * Signature: ()V
  */

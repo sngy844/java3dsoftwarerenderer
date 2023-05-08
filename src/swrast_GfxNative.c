@@ -13,6 +13,15 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_testPassInteger(JNIEnv* env, jclass
 
 }
 
+JNIEXPORT void JNICALL Java_swrast_GfxNative_testDirectBuffer (JNIEnv *env, jclass jclass, jobject jbuffer){
+    int * buffer =(*env)->GetDirectBufferAddress(env,jbuffer);
+    jlong length = (*env)->GetDirectBufferCapacity(env,jbuffer);
+    if(buffer){
+        for(int i =0 ; i < length;i++)
+            buffer[i] = i;
+    }
+}
+
 
 
 JNIEXPORT void JNICALL Java_swrast_GfxNative_baryCentricWeight

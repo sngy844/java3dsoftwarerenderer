@@ -3,8 +3,21 @@ package test;
 import swrast.GfxMath;
 import swrast.GfxNative;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+
 public class Main_NativeTest {
     public static void main(String[] args) {
+        final int INT_BYTE_SIZES = 4;
+        ByteBuffer bb = ByteBuffer.allocateDirect(100  * INT_BYTE_SIZES);
+        bb.order(ByteOrder.nativeOrder());
+        IntBuffer intBuffer= bb.asIntBuffer();
+        GfxNative.testDirectBuffer(intBuffer);
+        for(int i =0; i< intBuffer.capacity(); i++){
+            System.out.print(intBuffer.get(i)+" ");
+        }
+
         GfxNative.testNative();
         GfxNative.testPassInteger(10);
 
