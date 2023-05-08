@@ -15,7 +15,7 @@ public class GfxMath {
         return (ac_x * ab_y - ac_y * ab_x)* 0.5f;
     }
 
-    public static float[] barycentricWeight(float ax, float ay,
+    public static float[] baryCentricWeight(float ax, float ay,
                                          float bx, float by,
                                          float cx, float cy,
                                          float px, float py,

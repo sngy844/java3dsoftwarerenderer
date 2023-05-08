@@ -39,6 +39,30 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_baryCentricWeight
 JNIEXPORT jfloat JNICALL Java_swrast_GfxNative_areaTriangle
   (JNIEnv *, jclass, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
 
+/*
+ * Class:     swrast_GfxNative
+ * Method:    drawGrid
+ * Signature: ([I[BI)V
+ */
+JNIEXPORT void JNICALL Java_swrast_GfxNative_drawGrid
+  (JNIEnv *, jclass, jintArray, jbyteArray, jint);
+
+/*
+ * Class:     swrast_GfxNative
+ * Method:    drawFlatBottomTriangleSlopeFill
+ * Signature: (IIIIIIFFFFFFI[BI[BI)V
+ */
+JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatBottomTriangleSlopeFill
+  (JNIEnv *, jclass, jint, jint, jint, jint, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jint, jbyteArray, jint, jbyteArray, jint);
+
+/*
+ * Class:     swrast_GfxNative
+ * Method:    drawFlatTopTriangleSlopeFill
+ * Signature: (IIIIIIFFFFFFI[BI[BI)V
+ */
+JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatTopTriangleSlopeFill
+  (JNIEnv *, jclass, jint, jint, jint, jint, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jint, jbyteArray, jint, jbyteArray, jint);
+
 #ifdef __cplusplus
 }
 #endif

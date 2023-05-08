@@ -27,14 +27,15 @@ public class RenderContext extends Bitmap
 	}
 
 	public void drawGrid(){
-		int index ;
-		for(int i =0 ; i< gridIndex.length ; i++){
-			index = gridIndex[i];
-			m_pixelComponents[index ] = 	 (byte)255;
-			m_pixelComponents[index +1] = (byte)255;
-			m_pixelComponents[index +2] = (byte)255;
-			m_pixelComponents[index +3] = (byte)255;
-		}
+//		int index ;
+//		for(int i =0 ; i< gridIndex.length ; i++){
+//			index = gridIndex[i];
+//			m_pixelComponents[index ] = 	 (byte)255;
+//			m_pixelComponents[index +1] = (byte)255;
+//			m_pixelComponents[index +2] = (byte)255;
+//			m_pixelComponents[index +3] = (byte)255;
+//		}
+		GfxNative.drawGrid(this.gridIndex,this.m_pixelComponents,gridIndex.length);
 	}
 
 
@@ -228,7 +229,7 @@ public class RenderContext extends Bitmap
 			for(int x=(int)(xstart); x<=(int)(xend);x++) {
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
-				GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
+				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
 
 				//Interpolate U V coordinate
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
@@ -313,7 +314,7 @@ public class RenderContext extends Bitmap
 			for(int x=(int)(xstart); x<=(int)xend;x++) {
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
-				GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
+				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
 
 				//Interpolate U V coordinate
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
@@ -406,13 +407,19 @@ public class RenderContext extends Bitmap
 
 		if(y1 == y2)
 			drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, u0,v0, u1,v1,u2,v2);
+//			GfxNative.drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, u0,v0, u1,v1,u2,v2
+//					,filter, texture,textW,m_pixelComponents,m_width
+//			);
 		else if(y0==y1)
 			drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0, u1,v1,u2,v2);
+//			GfxNative.drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0, u1,v1,u2,v2
+//					,filter, texture,textW,m_pixelComponents,m_width
+//			);
 		else{
 			float My = y1;
 			float Mx = ( (My-y0)*(x2-x0)/(y2-y0) + x0);
 
-			GfxMath.barycentricWeight(x0,y0,x1,y1,x2,y2,Mx,My,weights);
+			GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,Mx,My,weights);
 
 			//Can't do this kind of linear interpolation
 			//float Mv = v1;
@@ -423,10 +430,12 @@ public class RenderContext extends Bitmap
 			float Mu2 = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 
 			;
-			drawFlatBottomTriangleSlopeFill(x0,y0, (int) Mx, (int) My,x1,y1,
+			GfxNative.drawFlatBottomTriangleSlopeFill(x0,y0, (int) Mx, (int) My,x1,y1,
 					u0,v0,
 					Mu2,Mv2,
-					u1,v1);
+					u1,v1
+					,filter, texture,textW,m_pixelComponents,m_width
+					);
 
 			drawFlatTopTriangleSlopeFill(x1,y1, (int) Mx, (int) My,x2,y2,
 					u1,v1,

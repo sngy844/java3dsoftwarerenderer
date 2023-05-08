@@ -18,7 +18,7 @@ public class Main_SignedAreaTest {
         //Barycentric wieght only care winding order (clockwise in this case)
         //Choosing which vertex to start doesn't matter as long as the winding is correct
         float weights[] = new float[]{0.0f, 0.0f, 0.0f};
-        GfxMath.barycentricWeight(0, 0, 0, 1, 2, 0, 0.5f, 0.5f, weights);
+        GfxMath.baryCentricWeight(0, 0, 0, 1, 2, 0, 0.5f, 0.5f, weights);
         System.out.println("alpha:" + weights[0]);
         System.out.println("beta:" + weights[1]);
         System.out.println("gamma:" + weights[2]);
@@ -28,7 +28,7 @@ public class Main_SignedAreaTest {
         float py = weights[0] * 0 + weights[1] * 1 + weights[2] * 0;
 
         //
-        GfxMath.barycentricWeight(2, 0, 0, 0, 0, 1, 0.5f, 0.5f, weights);
+        GfxMath.baryCentricWeight(2, 0, 0, 0, 0, 1, 0.5f, 0.5f, weights);
         System.out.println("alpha:" + weights[0]);
         System.out.println("beta:" + weights[1]);
         System.out.println("gamma:" + weights[2]);
@@ -38,7 +38,7 @@ public class Main_SignedAreaTest {
         py = weights[0] * 0 + weights[1] * 0 + weights[2] * 1;
 
         //
-        GfxMath.barycentricWeight(0, 1,2, 0, 0, 0, 0.5f, 0.5f, weights);
+        GfxMath.baryCentricWeight(0, 1,2, 0, 0, 0, 0.5f, 0.5f, weights);
         System.out.println("alpha:" + weights[0]);
         System.out.println("beta:" + weights[1]);
         System.out.println("gamma:" + weights[2]);

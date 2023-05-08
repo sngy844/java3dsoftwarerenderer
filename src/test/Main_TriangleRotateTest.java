@@ -24,7 +24,7 @@ public class Main_TriangleRotateTest {
         }
 
         //
-        Display display = new Display(320, 240,1024,768, "Software Rendering - Texture Mapping And Filtering Test");
+        Display display = new Display(1024, 768,1024,768, "Software Rendering - Texture Mapping And Filtering Test");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -87,7 +87,7 @@ public class Main_TriangleRotateTest {
             System.arraycopy(originalTris,0,tris,0,originalTris.length);
 
             target.Clear((byte) 0x00);
-            target.drawGrid();
+            //target.drawGrid();
 
             //Rotation Test
 //            double cenX=0,cenY=0;
