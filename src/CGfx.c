@@ -68,16 +68,27 @@ void drawFlatBottomTriangleSlopeFill(int x0, int y0, int x1, int y1, int x2, int
 				//Coordinate on real texture - assume texture is square dimension
 				int textX = (int)(finalU * (textW - 1));
 				int textY = (int)(finalV * (textW - 1));
-				//Nearest neightbor (no filtering)
+				//DrawPixel(x,y,r,g,b); //Cost of function call
+				int index = (y * m_width + x) * 4;
+#ifdef SDL_FORMAT
+                //Nearest neightbor (no filtering)
+				char textR = texture[(textY * textW + textX) * 4 + 2];
+				char textG = texture[(textY * textW + textX) * 4 + 1];
+				char textB = texture[(textY * textW + textX) * 4 + 0];
+				pixelComponents[index] = textB;
+				pixelComponents[index + 1] = textG;
+				pixelComponents[index + 2] = textR;
+				pixelComponents[index + 3] = 255;
+#else
+                //Nearest neightbor (no filtering)
 				char textR = texture[(textY * textW + textX) * 4 + 3];
 				char textG = texture[(textY * textW + textX) * 4 + 2];
 				char textB = texture[(textY * textW + textX) * 4 + 1];
-				//DrawPixel(x,y,r,g,b); //Cost of function call
-				int index = (y * m_width + x) * 4;
 				pixelComponents[index] = 255;
 				pixelComponents[index + 1] = textB;
 				pixelComponents[index + 2] = textG;
 				pixelComponents[index + 3] = textR;
+#endif
 			}
 			else if (filter == 1) {
 				//Coordinate on real texture - assume texture is square dimension
@@ -159,16 +170,27 @@ const float inverse_slope_1 = (float)(x2 - x0) / (y2 - y0); //left side
 				//Coordinate on real texture - assume texture is square dimension
 				int textX = (int)(finalU * (textW - 1));
 				int textY = (int)(finalV * (textW - 1));
-				//Nearest neightbor (no filtering)
+
+				int index = (y * m_width + x) * 4;
+#ifdef SDL_FORMAT
+                //Nearest neightbor (no filtering)
+				char textR = texture[(textY * textW + textX) * 4 + 2];
+				char textG = texture[(textY * textW + textX) * 4 + 1];
+				char textB = texture[(textY * textW + textX) * 4 + 0];
+				pixelComponents[index] = textB;
+				pixelComponents[index + 1] = textG;
+				pixelComponents[index + 2] = textR;
+				pixelComponents[index + 3] = 255;
+#else
+                //Nearest neightbor (no filtering)
 				char textR = texture[(textY * textW + textX) * 4 + 3];
 				char textG = texture[(textY * textW + textX) * 4 + 2];
 				char textB = texture[(textY * textW + textX) * 4 + 1];
-				//DrawPixel(x,y,r,g,b); //Cost of function call
-				int index = (y * m_width + x) * 4;
 				pixelComponents[index] = 255;
 				pixelComponents[index + 1] = textB;
 				pixelComponents[index + 2] = textG;
 				pixelComponents[index + 3] = textR;
+#endif
 			}
 			else if (filter == 1) {
 				//Coordinate on real texture - assume texture is square dimension

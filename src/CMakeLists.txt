@@ -18,8 +18,9 @@ else()
 
 
 if(BUILD_C_DEMO)
+ add_definitions(-DSDL_FORMAT)
  find_package(SDL2 REQUIRED)
- add_executable(cdemo main.cpp display.cpp display.h)
+ add_executable(cdemo main.cpp display.cpp display.h CGfx.c CGfx.h)
  target_link_libraries(cdemo gfx_native ${SDL2_LIBRARIES})
  target_include_directories(cdemo PRIVATE ${SDL2_INCLUDE_DIRS})
 endif()

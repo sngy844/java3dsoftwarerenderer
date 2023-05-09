@@ -49,7 +49,7 @@ bool initialize_window(void) {
 void draw_grid(void) {
     for (int y = 0; y < window_height; y += 10) {
         for (int x = 0; x < window_width; x += 10) {
-            color_buffer[(window_width * y) + x] = 0xFF444444;
+            color_buffer[(window_width * y) + x] = 0xFFFFFFFF;
         }
     }
 }
