@@ -24,7 +24,7 @@ public class Main_TriangleRotateTest {
         }
 
         //
-        Display display = new Display(1920, 1080,1920,1080, "Software Rendering - Texture Mapping And Filtering Test");
+        Display display = new Display(640, 480,1024,768, "Software Rendering - Texture Mapping And Filtering Test");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
