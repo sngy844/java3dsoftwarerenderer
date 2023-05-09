@@ -10,10 +10,15 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_testNative(JNIEnv* env, jobject thi
 JNIEXPORT void JNICALL Java_swrast_GfxNative_testPassInteger(JNIEnv* env, jclass ojb, jint intValue)
 {
 	printf("Integer value:%i",intValue);
-
 }
 
-
+JNIEXPORT void JNICALL Java_swrast_GfxNative_printGfxNativeVersion(JNIEnv* env, jclass obj) {
+#ifdef NDEBUG
+	printf("Gfx Native - RELEASE\n");
+#else
+	printf("Gfx Native - DEBUG\n");
+#endif
+}
 
 JNIEXPORT void JNICALL Java_swrast_GfxNative_baryCentricWeight
 (JNIEnv* env, jclass obj, jfloat ax, jfloat ay, jfloat bx, jfloat by, jfloat cx, jfloat cy, jfloat px, jfloat py, jfloatArray weights) {
@@ -54,9 +59,10 @@ JNIEXPORT jfloat JNICALL Java_swrast_GfxNative_areaTriangle(JNIEnv* env, jclass 
 }
 
 JNIEXPORT void JNICALL Java_swrast_GfxNative_drawGrid(JNIEnv* env, jclass obj, jintArray jGridIndex, jbyteArray jPixelComponent, jint length) {
-    int * gridIndex = (*env)->GetIntArrayElements(env, jGridIndex, NULL);
-    char * pixelComponent = (*env)->GetByteArrayElements(env, jPixelComponent, NULL);
-    long index;
+    int * gridIndex = (*env)->GetPrimitiveArrayCritical(env, jGridIndex, 0);
+    char * pixelComponent = (*env)->GetPrimitiveArrayCritical(env, jPixelComponent, 0);
+    
+	long index;
     for (long i = 0; i < length; i++) {
         index = gridIndex[i];
         pixelComponent[index] = 255;
@@ -65,8 +71,8 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawGrid(JNIEnv* env, jclass obj, j
         pixelComponent[index + 3] = 255;
     }
 
-    (*env)->ReleaseByteArrayElements(env, jPixelComponent, pixelComponent, 0);
-    (*env)->ReleaseIntArrayElements(env, jGridIndex, gridIndex, 0);
+    (*env)->ReleasePrimitiveArrayCritical(env, jPixelComponent, pixelComponent, 0);
+    (*env)->ReleasePrimitiveArrayCritical(env, jGridIndex, gridIndex, 0);
 }
 
 
@@ -97,6 +103,7 @@ static float lerp(float a, float b, float t) {
 	return a + t * (b - a);
 }
 
+static int numThreadToRun =1;
 
 JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatBottomTriangleSlopeFill
 (JNIEnv* env, jclass obj,
@@ -143,7 +150,7 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatBottomTriangleSlopeFill
 
 		int x = 0;
 		//Draw a span / line from xstart to xend
-#pragma omp parallel for
+#pragma omp parallel for num_threads(numThreadToRun)
 		for ( x = (int)(xstart); x <= (int)(xend); x++) {
 			float weights[] = { 0,0,0 };
 			//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
@@ -264,8 +271,10 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatTopTriangleSlopeFill
 
 		int x = 0;
 		//Draw a span / line from xstart to xend
-#pragma omp parallel for
+#pragma omp parallel for num_threads(numThreadToRun)
 		for (x = (int)(xstart); x <= (int)xend; x++) {
+	/*		int numThread = omp_get_thread_num();
+			printf("Num Thread:%d\n", numThread);*/
 			//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 			//Alos need to take of the case point is on edge of triangle
 			float weights[] = { 0,0,0 };
@@ -336,4 +345,28 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatTopTriangleSlopeFill
     (*env)->ReleasePrimitiveArrayCritical(env,jPixelComponent, m_pixelComponents, 0);
     (*env)->ReleasePrimitiveArrayCritical(env, jTexture, texture, 0);
 
+}
+
+
+
+JNIEXPORT void JNICALL Java_swrast_GfxNative_copyToByteArray(JNIEnv* env, jclass obj, jbyteArray jdest, jbyteArray jPixelComponent, jint totalPixels) {
+	
+	char* m_pixelComponents = (*env)->GetPrimitiveArrayCritical(env, jPixelComponent, 0);
+	if (!m_pixelComponents) return;
+	char* dest = (*env)->GetPrimitiveArrayCritical(env, jdest, 0);
+	if (!dest) return;
+
+	int i = 0;
+#pragma omp parallel for num_threads(1)
+	for (i = 0; i < totalPixels; i++)
+	{
+		int index3 = i * 3; 		int index4 = i * 4;
+		dest[index3] =		m_pixelComponents[index4 + 1];
+		dest[index3 + 1] = m_pixelComponents[index4 + 2];
+		dest[index3 + 2] = m_pixelComponents[index4 + 3];
+	}
+
+
+	(*env)->ReleasePrimitiveArrayCritical(env, jPixelComponent, m_pixelComponents, 0);
+	(*env)->ReleasePrimitiveArrayCritical(env, jdest, dest, 0);
 }

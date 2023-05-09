@@ -25,6 +25,14 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_testPassInteger
 
 /*
  * Class:     swrast_GfxNative
+ * Method:    printGfxNativeVersion
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_swrast_GfxNative_printGfxNativeVersion
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     swrast_GfxNative
  * Method:    baryCentricWeight
  * Signature: (FFFFFFFF[F)V
  */
@@ -62,6 +70,14 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatBottomTriangleSlopeFill
  */
 JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatTopTriangleSlopeFill
   (JNIEnv *, jclass, jint, jint, jint, jint, jint, jint, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jint, jbyteArray, jint, jbyteArray, jint);
+
+/*
+ * Class:     swrast_GfxNative
+ * Method:    copyToByteArray
+ * Signature: ([B[BI)V
+ */
+JNIEXPORT void JNICALL Java_swrast_GfxNative_copyToByteArray
+  (JNIEnv *, jclass, jbyteArray, jbyteArray, jint);
 
 #ifdef __cplusplus
 }

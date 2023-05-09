@@ -157,15 +157,16 @@ public class Bitmap
 	 */
 	public void CopyToByteArray(byte[] dest)
 	{
-		int index3;
-		int index4;
-		final int totalPixels =  m_width * m_height;
-		for(int i = 0; i < totalPixels; i++)
-		{
-			index3 =  i*3; 		index4 = i*4;
-			dest[index3    ] = m_pixelComponents[index4 + 1];
-			dest[index3 + 1] = m_pixelComponents[index4 + 2];
-			dest[index3 + 2] = m_pixelComponents[index4 + 3];
-		}
+//		int index3;
+//		int index4;
+//		final int totalPixels =  m_width * m_height;
+//		for(int i = 0; i < totalPixels; i++)
+//		{
+//			index3 =  i*3; 		index4 = i*4;
+//			dest[index3    ] = m_pixelComponents[index4 + 1];
+//			dest[index3 + 1] = m_pixelComponents[index4 + 2];
+//			dest[index3 + 2] = m_pixelComponents[index4 + 3];
+//		}
+		GfxNative.copyToByteArray(dest,m_pixelComponents,m_width * m_height);
 	}
 }
