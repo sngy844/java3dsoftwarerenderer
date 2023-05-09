@@ -144,7 +144,8 @@ void update(void) {
 // Render function to draw objects on the display
 ///////////////////////////////////////////////////////////////////////////////
 void render(void) {
-    SDL_RenderClear(renderer);
+    //SDL_RenderClear(renderer);
+
     clear_color_buffer(0xFF000000);
     draw_grid();
 
@@ -158,6 +159,17 @@ void render(void) {
                                     1.0f,0.0f,
                                     1.0f,1.0f,
                                     0 /*filter*/, (char *)REDBRICK_TEXTURE,textW, (char *)color_buffer,window_width);
+
+    drawFlatBottomTriangleSlopeFill(511,0,1011,500,511,500,
+                                    0.0f,0.0f,
+                                    1.0f,1.0f,
+                                    0.0f,1.0f,
+                                    1 /*filter*/, (char *)REDBRICK_TEXTURE,textW, (char *)color_buffer,window_width);
+    drawFlatTopTriangleSlopeFill(   511,0,1011,0,1011,500,
+                                    0.0f,0.0f,
+                                    1.0f,0.0f,
+                                    1.0f,1.0f,
+                                    1 /*filter*/, (char *)REDBRICK_TEXTURE,textW, (char *)color_buffer,window_width);
 
     render_color_buffer();
     SDL_RenderPresent(renderer);
@@ -182,7 +194,11 @@ int main(int , char **) {
     while (is_running) {
         process_input();
         update();
+
+        int time_to_wait = SDL_GetTicks();
         render();
+        int frameTime = SDL_GetTicks()- time_to_wait;
+        SDL_Log("Render Frametime: %d - FPS:%f",frameTime,1000.0/frameTime);
     }
 
     destroy_window();

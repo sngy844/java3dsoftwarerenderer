@@ -105,6 +105,26 @@ void drawFlatBottomTriangleSlopeFill(int x0, int y0, int x1, int y1, int x2, int
 				int textY3 = textY + 1 < textW ? textY + 1 : textY;
 				float tx = finalU * (textW - 1);
 				float ty = finalV * (textW - 1);
+#ifdef SDL_FORMAT
+				//interpolate horizontal and vertical
+				float y_upB = lerp((texture[(textY * textW + textX) * 4 + 0] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 0] & 0xFF), (tx - textX) / (textX1 - textX));
+				float y_downB = lerp((texture[(textY2 * textW + textX2) * 4 + 0] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 0] & 0xFF), (tx - textX2) / (textX3 - textX2));
+				float y_targetB = lerp(y_upB, y_downB, (ty - textY) / (textY2 - textY));
+
+				float y_upG = lerp((texture[(textY * textW + textX) * 4 + 1] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 1] & 0xFF), (tx - textX) / (textX1 - textX));
+				float y_downG = lerp((texture[(textY2 * textW + textX2) * 4 + 1] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 1] & 0xFF), (tx - textX2) / (textX3 - textX2));
+				float y_targetG = lerp(y_upG, y_downG, (ty - textY) / (textY2 - textY));
+
+				float y_upR = lerp((texture[(textY * textW + textX) * 4 + 2] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 2] & 0xFF), (tx - textX) / (textX1 - textX));
+				float y_downR = lerp((texture[(textY2 * textW + textX2) * 4 + 2] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 2] & 0xFF), (tx - textX2) / (textX3 - textX2));
+				float y_targetR = lerp(y_upR, y_downR, (ty - textY) / (textY2 - textY));
+
+				int index = (y * m_width + x) * 4;
+				pixelComponents[index] = (char)y_targetB;
+				pixelComponents[index + 1] = (char)y_targetG;
+				pixelComponents[index + 2] = (char)y_targetR;
+				pixelComponents[index + 3] = 255;
+#else
 				//interpolate horizontal and vertical
 				float y_upB = lerp((texture[(textY * textW + textX) * 4 + 1] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 1] & 0xFF), (tx - textX) / (textX1 - textX));
 				float y_downB = lerp((texture[(textY2 * textW + textX2) * 4 + 1] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 1] & 0xFF), (tx - textX2) / (textX3 - textX2));
@@ -118,13 +138,12 @@ void drawFlatBottomTriangleSlopeFill(int x0, int y0, int x1, int y1, int x2, int
 				float y_downR = lerp((texture[(textY2 * textW + textX2) * 4 + 3] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 3] & 0xFF), (tx - textX2) / (textX3 - textX2));
 				float y_targetR = lerp(y_upR, y_downR, (ty - textY) / (textY2 - textY));
 
-
-				//DrawPixel(x,y,r,g,b); //Cost of function call
 				int index = (y * m_width + x) * 4;
 				pixelComponents[index] = 255;
 				pixelComponents[index + 1] = (char)y_targetB;
 				pixelComponents[index + 2] = (char)y_targetG;
 				pixelComponents[index + 3] = (char)y_targetR;
+#endif
 			}
 		} // end for each x span start end
 	}//end for each y scan line
@@ -207,6 +226,27 @@ const float inverse_slope_1 = (float)(x2 - x0) / (y2 - y0); //left side
 				int textY3 = textY + 1 < textW ? textY + 1 : textY;
 				float tx = finalU * (textW - 1);
 				float ty = finalV * (textW - 1);
+
+#ifdef SDL_FORMAT
+				//interpolate horizontal and vertical
+				float y_upB = lerp((texture[(textY * textW + textX) * 4 + 0] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 0] & 0xFF), (tx - textX) / (textX1 - textX));
+				float y_downB = lerp((texture[(textY2 * textW + textX2) * 4 + 0] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 0] & 0xFF), (tx - textX2) / (textX3 - textX2));
+				float y_targetB = lerp(y_upB, y_downB, (ty - textY) / (textY2 - textY));
+
+				float y_upG = lerp((texture[(textY * textW + textX) * 4 + 1] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 1] & 0xFF), (tx - textX) / (textX1 - textX));
+				float y_downG = lerp((texture[(textY2 * textW + textX2) * 4 + 1] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 1] & 0xFF), (tx - textX2) / (textX3 - textX2));
+				float y_targetG = lerp(y_upG, y_downG, (ty - textY) / (textY2 - textY));
+
+				float y_upR = lerp((texture[(textY * textW + textX) * 4 + 2] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 2] & 0xFF), (tx - textX) / (textX1 - textX));
+				float y_downR = lerp((texture[(textY2 * textW + textX2) * 4 + 2] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 2] & 0xFF), (tx - textX2) / (textX3 - textX2));
+				float y_targetR = lerp(y_upR, y_downR, (ty - textY) / (textY2 - textY));
+
+				int index = (y * m_width + x) * 4;
+				pixelComponents[index] = (char)y_targetB;
+				pixelComponents[index + 1] = (char)y_targetG;
+				pixelComponents[index + 2] = (char)y_targetR;
+				pixelComponents[index + 3] = 255;
+#else
 				//interpolate horizontal and vertical
 				float y_upB = lerp((texture[(textY * textW + textX) * 4 + 1] & 0xFF), (texture[(textY1 * textW + textX1) * 4 + 1] & 0xFF), (tx - textX) / (textX1 - textX));
 				float y_downB = lerp((texture[(textY2 * textW + textX2) * 4 + 1] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 1] & 0xFF), (tx - textX2) / (textX3 - textX2));
@@ -220,13 +260,12 @@ const float inverse_slope_1 = (float)(x2 - x0) / (y2 - y0); //left side
 				float y_downR = lerp((texture[(textY2 * textW + textX2) * 4 + 3] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 3] & 0xFF), (tx - textX2) / (textX3 - textX2));
 				float y_targetR = lerp(y_upR, y_downR, (ty - textY) / (textY2 - textY));
 
-
-				//DrawPixel(x,y,r,g,b); //Cost of function call
 				int index = (y * m_width + x) * 4;
 				pixelComponents[index] = 255;
 				pixelComponents[index + 1] = (char)y_targetB;
 				pixelComponents[index + 2] = (char)y_targetG;
 				pixelComponents[index + 3] = (char)y_targetR;
+#endif
 			}
 		} // end for each x span start end
 	}//end for each y scan line
