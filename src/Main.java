@@ -9,7 +9,7 @@ public class Main
 {
 	public static void main(String[] args) throws IOException {
 		//
-		Display display = new Display(450, 450,1024,1024, "Software Rendering");
+		Display display = new Display(1024, 1024,1024,1024, "Software Rendering");
 		RenderContext target = display.GetFrameBuffer();
 
 		DrawHead draw = new DrawHead(target, Main.class.getResourceAsStream("vertices.properties"));

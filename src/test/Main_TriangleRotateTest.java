@@ -24,7 +24,7 @@ public class Main_TriangleRotateTest {
         }
 
         //
-        Display display = new Display(320, 240,1024,768, "Software Rendering - Texture Mapping And Filtering Test");
+        Display display = new Display(1920, 1080,1920,1080, "Software Rendering - Texture Mapping And Filtering Test");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -73,7 +73,7 @@ public class Main_TriangleRotateTest {
         int tris[] = new int[originalTris.length];
         System.arraycopy(originalTris,0,tris,0,originalTris.length);
 
-        int frame =0;
+        int frame =0; float frameTime =0;
         int filter =0;
         double phi = 0;
         while(true)
@@ -86,8 +86,9 @@ public class Main_TriangleRotateTest {
             //Reset to original vertices. We CAN'T keep doing transformation of already transformed vertices due to truncation error
             System.arraycopy(originalTris,0,tris,0,originalTris.length);
 
+            currentTime = System.nanoTime();
             target.Clear((byte) 0x00);
-            //target.drawGrid();
+            target.drawGrid();
 
             //Rotation Test
 //            double cenX=0,cenY=0;
@@ -160,12 +161,15 @@ public class Main_TriangleRotateTest {
 
             display.SwapBuffers();
 
+            frameTime += (System.nanoTime() - currentTime)/1000000.0;
+
             frame++;
             if(elapsedTime >=1000) {
-                System.out.println("FPS:"+frame);
+                System.out.println("FPS:"+frame + " Frametime:"+frameTime/frame);
                 isDrawVertices = !isDrawVertices;
                 elapsedTime=0;
                 frame =0;
+                frameTime =0;
 
             }
 

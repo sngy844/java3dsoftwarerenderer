@@ -6,11 +6,15 @@ import java.nio.IntBuffer;
 public class GfxNative {
     static{
         System.loadLibrary("gfx_native");
+        printGfxNativeVersion();
     }
 
     static public native void testDirectBuffer(IntBuffer byteBuffer);
     static public native void testNative();
     static public native void testPassInteger(int t);
+
+    static public native void printGfxNativeVersion();
+
     static public native void baryCentricWeight(float ax, float ay,
                                                 float bx, float by,
                                                 float cx, float cy,
@@ -33,4 +37,8 @@ public class GfxNative {
                                                               int filter,
                                                               byte[] texture, int textureWidth ,byte[] pixelComponents,int frameBufferWidth
     );
+
+    static public native void copyToByteArray(byte[] dest, byte[] pixelComponent, int totalPixels);
+
+
 }
