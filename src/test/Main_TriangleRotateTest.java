@@ -24,7 +24,7 @@ public class Main_TriangleRotateTest {
         }
 
         //
-        Display display = new Display(640, 480,1024,768, "Software Rendering - Texture Mapping And Filtering Test");
+        Display display = new Display(1024, 768,1024,768, "Software Rendering - Texture Mapping And Filtering Test");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -32,22 +32,14 @@ public class Main_TriangleRotateTest {
         boolean isDrawVertices = false;
         //The original triangle vertices
         final int originalTris [] = new int[]{
-                350/5 ,250/5 ,
-                850/5,750/5,
-                350/5 ,750/5,
+                0,0,500,500,0,500,
 
-                350/5 ,250/5 ,
-                850/5 ,250/5,
-                850/5,750/5,
+                0,0,500,0,500,500,
 
                 //2nd Square
-                870/5 ,250/5 ,
-                1350/5, 750/5,
-                870/5 ,750/5,
+                511,0,1011,500,511,500,
 
-                870/5 ,250/5 ,
-                1350/5, 250/5,
-                1350/5,750/5,
+                511,0,1011,0,1011,500,
 
         };
         final float originalTrisUv[] = new float[]{
@@ -88,7 +80,7 @@ public class Main_TriangleRotateTest {
 
             currentTime = System.nanoTime();
             target.Clear((byte) 0x00);
-            target.drawGrid();
+//            target.drawGrid();
 
             //Rotation Test
 //            double cenX=0,cenY=0;
@@ -150,13 +142,13 @@ public class Main_TriangleRotateTest {
 
 //            target.drawPoint((int) cenX, (int) cenY, (byte) 255, (byte) 0, (byte) 255);
 
-            for(int x =0 ; x<textW; x++)
-                for(int y =0 ; y<textW; y++){
-                    byte r = brickTexture[(y*textW+x)*4 +3];
-                    byte g = brickTexture[(y*textW+x)*4 +2];
-                    byte b = brickTexture[(y*textW+x)*4 +1];
-                    target.DrawPixel(x,y,r,g,b);
-                }
+//            for(int x =0 ; x<textW; x++)
+//                for(int y =0 ; y<textW; y++){
+//                    byte r = brickTexture[(y*textW+x)*4 +3];
+//                    byte g = brickTexture[(y*textW+x)*4 +2];
+//                    byte b = brickTexture[(y*textW+x)*4 +1];
+//                    target.DrawPixel(x,y,r,g,b);
+//                }
 
 
             display.SwapBuffers();

@@ -145,9 +145,9 @@ void update(void) {
 ///////////////////////////////////////////////////////////////////////////////
 void render(void) {
     //SDL_RenderClear(renderer);
-
+    
     clear_color_buffer(0xFF000000);
-    draw_grid();
+    //draw_grid();
 
     drawFlatBottomTriangleSlopeFill(0,0,500,500,0,500,
                                     0.0f,0.0f,
@@ -190,15 +190,21 @@ int main(int , char **) {
 
 
     setup();
-
+    int frameTime = 0;
+    int frame =0;
     while (is_running) {
         process_input();
-        update();
+        //update();
 
         int time_to_wait = SDL_GetTicks();
         render();
-        int frameTime = SDL_GetTicks()- time_to_wait;
-        SDL_Log("Render Frametime: %d - FPS:%f",frameTime,1000.0/frameTime);
+        frameTime += SDL_GetTicks()- time_to_wait;
+        frame++;
+        if (frameTime >= 1000) {
+            SDL_Log("FPS:%d",frame);
+            frame = 0;
+            frameTime = 0;
+        }
     }
 
     destroy_window();
