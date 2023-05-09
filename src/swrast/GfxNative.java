@@ -1,11 +1,15 @@
 package swrast;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
 public class GfxNative {
     static{
         System.loadLibrary("gfx_native");
         printGfxNativeVersion();
     }
 
+    static public native void testDirectBuffer(IntBuffer byteBuffer);
     static public native void testNative();
     static public native void testPassInteger(int t);
 

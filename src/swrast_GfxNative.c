@@ -10,6 +10,7 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_testNative(JNIEnv* env, jobject thi
 JNIEXPORT void JNICALL Java_swrast_GfxNative_testPassInteger(JNIEnv* env, jclass ojb, jint intValue)
 {
 	printf("Integer value:%i",intValue);
+
 }
 
 JNIEXPORT void JNICALL Java_swrast_GfxNative_printGfxNativeVersion(JNIEnv* env, jclass obj) {
@@ -19,6 +20,17 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_printGfxNativeVersion(JNIEnv* env, 
 	printf("Gfx Native - DEBUG\n");
 #endif
 }
+
+JNIEXPORT void JNICALL Java_swrast_GfxNative_testDirectBuffer (JNIEnv *env, jclass jclass, jobject jbuffer){
+    int * buffer =(*env)->GetDirectBufferAddress(env,jbuffer);
+    jlong length = (*env)->GetDirectBufferCapacity(env,jbuffer);
+    if(buffer){
+        for(int i =0 ; i < length;i++)
+            buffer[i] = i;
+    }
+}
+
+
 
 JNIEXPORT void JNICALL Java_swrast_GfxNative_baryCentricWeight
 (JNIEnv* env, jclass obj, jfloat ax, jfloat ay, jfloat bx, jfloat by, jfloat cx, jfloat cy, jfloat px, jfloat py, jfloatArray weights) {
@@ -61,7 +73,7 @@ JNIEXPORT jfloat JNICALL Java_swrast_GfxNative_areaTriangle(JNIEnv* env, jclass 
 JNIEXPORT void JNICALL Java_swrast_GfxNative_drawGrid(JNIEnv* env, jclass obj, jintArray jGridIndex, jbyteArray jPixelComponent, jint length) {
     int * gridIndex = (*env)->GetPrimitiveArrayCritical(env, jGridIndex, 0);
     char * pixelComponent = (*env)->GetPrimitiveArrayCritical(env, jPixelComponent, 0);
-    
+
 	long index;
     for (long i = 0; i < length; i++) {
         index = gridIndex[i];
@@ -350,7 +362,7 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatTopTriangleSlopeFill
 
 
 JNIEXPORT void JNICALL Java_swrast_GfxNative_copyToByteArray(JNIEnv* env, jclass obj, jbyteArray jdest, jbyteArray jPixelComponent, jint totalPixels) {
-	
+
 	char* m_pixelComponents = (*env)->GetPrimitiveArrayCritical(env, jPixelComponent, 0);
 	if (!m_pixelComponents) return;
 	char* dest = (*env)->GetPrimitiveArrayCritical(env, jdest, 0);
