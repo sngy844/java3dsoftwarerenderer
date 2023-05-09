@@ -36,30 +36,8 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_testDirectBuffer (JNIEnv *env, jcla
 JNIEXPORT void JNICALL Java_swrast_GfxNative_baryCentricWeight
 (JNIEnv* env, jclass obj, jfloat ax, jfloat ay, jfloat bx, jfloat by, jfloat cx, jfloat cy, jfloat px, jfloat py, jfloatArray weights) {
 	jfloat * inCweights =(*env)->GetFloatArrayElements(env, weights, NULL);
-	/*inCweights[0] = 2.5f;
-	inCweights[1] = 3.7f;
-	inCweights[2] = 4.8f;*/
 
-    float ac_x = cx - ax; float ab_x = bx - ax;
-    float ac_y = cy - ay; float ab_y = by - ay;
-    // Cross AC AB , gives signed area of big triangle
-    float area_abc = ac_x * ab_y - ac_y * ab_x;
-
-    // PC PB
-    float pc_x = cx - px; float pb_x = bx - px;
-    float pc_y = cy - py; float pb_y = by - py;
-    // Cross PC PB, gives signed area of CPA -> weighted for A
-    float area_cpb = pc_x * pb_y - pc_y * pb_x;
-
-    /*float ac_x = cx - ax;*/ float ap_x = px - ax;
-    /*float ac_y = cy - ay;*/ float ap_y = py - ay;
-    // Cross AC AP, give signed area of APC -> weighted for B
-    float area_apc = ac_x * ap_y - ac_y * ap_x;
-
-    inCweights[0] = area_cpb / area_abc; //Alpha
-    inCweights[1] = area_apc / area_abc; //Beta
-    inCweights[2] = 1 - inCweights[0] - inCweights[1]; //Gamma
-
+    baryCentricWeight(ax,ay,bx,by,cx,cy,px,py,inCweights);
 
 	(*env)->ReleaseFloatArrayElements(env, weights, inCweights,0);
 }
@@ -95,30 +73,12 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatBottomTriangleSlopeFill
     jfloat u0, jfloat v0, jfloat u1, jfloat v1, jfloat u2, jfloat v2,
     jint filter, jbyteArray jTexture, jint textW ,jbyteArray jPixelComponent, jint m_width) {
 
-//    jboolean isCopy=0;
-//	char * m_pixelComponents = (*env)->GetByteArrayElements(env, jPixelComponent, &isCopy);
-//	if(isCopy){
-//	    (*env)->ReleaseByteArrayElements(env, jPixelComponent, m_pixelComponents, 0);
-//	    return;
-//	}
-//	isCopy=0;
-//	char * texture = (*env)->GetByteArrayElements(env, jTexture, &isCopy);
-//    if(isCopy){
-//    (*env)->ReleaseByteArrayElements(env, jTexture, texture, 0);
-//	    return;
-//	}
-//
 	char * m_pixelComponents= (*env)->GetPrimitiveArrayCritical(env,jPixelComponent,0);
 	if(!m_pixelComponents) return;
 	char * texture= (*env)->GetPrimitiveArrayCritical(env,jTexture,0);
 	if(!texture) return;
 
 	drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0,u1,v1,u2,v2,filter,texture,textW,m_pixelComponents,m_width);
-	
-	//printf("From C\n");
-	
-//	(*env)->ReleaseByteArrayElements(env, jPixelComponent, m_pixelComponents, 0);
-//	(*env)->ReleaseByteArrayElements(env, jTexture, texture, 0);
 
     (*env)->ReleasePrimitiveArrayCritical(env,jPixelComponent, m_pixelComponents, 0);
     (*env)->ReleasePrimitiveArrayCritical(env, jTexture, texture, 0);
@@ -137,9 +97,7 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatTopTriangleSlopeFill
     char * texture= (*env)->GetPrimitiveArrayCritical(env,jTexture,0);
     if(!texture) return;
 
-
     drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0,u1,v1,u2,v2,filter,texture,textW,m_pixelComponents,m_width);
-
 
     (*env)->ReleasePrimitiveArrayCritical(env,jPixelComponent, m_pixelComponents, 0);
     (*env)->ReleasePrimitiveArrayCritical(env, jTexture, texture, 0);
