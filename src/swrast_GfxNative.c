@@ -1,4 +1,5 @@
 #include "swrast_GfxNative.h"
+#include "CGfx.h"
 
 // Implementation of the native method sayHello()
 JNIEXPORT void JNICALL Java_swrast_GfxNative_testNative(JNIEnv* env, jobject thisObj) {
@@ -76,34 +77,6 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawGrid(JNIEnv* env, jclass obj, j
 
     (*env)->ReleaseByteArrayElements(env, jPixelComponent, pixelComponent, 0);
     (*env)->ReleaseIntArrayElements(env, jGridIndex, gridIndex, 0);
-}
-
-
-static void baryCentricWeight(float ax, float ay, float bx, float by, float cx, float cy, float px, float py,float * inCweights) {
-	float ac_x = cx - ax; float ab_x = bx - ax;
-	float ac_y = cy - ay; float ab_y = by - ay;
-	// Cross AC AB , gives signed area of big triangle
-	float area_abc = ac_x * ab_y - ac_y * ab_x;
-
-	// PC PB
-	float pc_x = cx - px; float pb_x = bx - px;
-	float pc_y = cy - py; float pb_y = by - py;
-	// Cross PC PB, gives signed area of CPA -> weighted for A
-	float area_cpb = pc_x * pb_y - pc_y * pb_x;
-
-	/*float ac_x = cx - ax;*/ float ap_x = px - ax;
-	/*float ac_y = cy - ay;*/ float ap_y = py - ay;
-	// Cross AC AP, give signed area of APC -> weighted for B
-	float area_apc = ac_x * ap_y - ac_y * ap_x;
-
-	inCweights[0] = area_cpb / area_abc; //Alpha
-	inCweights[1] = area_apc / area_abc; //Beta
-	inCweights[2] = 1 - inCweights[0] - inCweights[1]; //Gamma
-
-}
-
-static float lerp(float a, float b, float t) {
-	return a + t * (b - a);
 }
 
 
