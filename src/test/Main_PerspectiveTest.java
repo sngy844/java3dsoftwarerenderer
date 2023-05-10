@@ -33,14 +33,14 @@ public class Main_PerspectiveTest {
         boolean isDrawVertices = false;
         //The original triangle vertices
         final float originalTris [] = new float[]{
-                0,0,1,
-                1,1,1,
-                1,0,1
+                -1,-1.0f,4,
+                -1,1,4,
+                 1,1,4
         };
         final float originalTrisUv[] = new float[]{
                 0.0f,0,
-                1,1,
-                0f,1f,
+                0,1,
+                1f,1f,
 
                 0.0f,0,
                 1,0,
@@ -58,7 +58,7 @@ public class Main_PerspectiveTest {
         //Buffer to hold transformed vertices
         float transformedTris[] = new float[originalTris.length];
         float aspect = (float)display.getFrameBufferHeight() / display.getFramebufferWidth();
-        final float [] [] perspectiveMatrix = GfxMath.perspective((float) (Math.PI/4.0f),aspect,0.1f,100.0f);
+        final float [] [] perspectiveMatrix = GfxMath.perspective((float) (Math.PI/3.0f),aspect,0.1f,100.0f);
 
 
         int frame =0; float frameTime =0;
@@ -81,14 +81,13 @@ public class Main_PerspectiveTest {
                     vertex[2] = originalTris[i+2];
                     vertex[3] = 1.0f;
                     GfxMath.mat4_mult_vec4_project(result, perspectiveMatrix, vertex);
-                    GfxMath.perspectiveDivide(vertex);
-
-                    result[0] += (display.getFramebufferWidth()/2.0f);
-                    result[1] += (display.getFrameBufferHeight()/2.0f);
+                    GfxMath.perspectiveDivide(result);
 
                     result[0] *= (display.getFramebufferWidth()/2.0f);
                     result[1] *= (display.getFrameBufferHeight()/2.0f);
 
+                    result[0] += (display.getFramebufferWidth()/2.0f);
+                    result[1] += (display.getFrameBufferHeight()/2.0f);
 
 
                     transformedTris[i] =    result[0];
