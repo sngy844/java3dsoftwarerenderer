@@ -114,4 +114,11 @@ public class Display extends Canvas
 		m_graphics.drawImage(m_displayImage, 0, 0, m_frame.getWidth(), m_frame.getHeight(), null);
 		m_bufferStrategy.show();
 	}
+
+	public int getFramebufferWidth(){
+		return m_frameBuffer.m_width;
+	}
+	public int getFrameBufferHeight(){
+		return m_frameBuffer.m_height;
+	}
 }

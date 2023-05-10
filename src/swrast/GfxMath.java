@@ -75,4 +75,61 @@ public class GfxMath {
             return String.format("Vec2(%.03f,%.03f)",x,y);
         }
     }
+
+    public static float [][] perspective(float fov, float aspect, float znear, float zfar){
+
+        float  [][] matrix = new float[4][4];
+        matrix[0][0] = (float) (aspect * (1 / Math.tan(fov / 2)));
+        matrix[1][1] = (float) (1 / Math.tan(fov / 2));
+        matrix[2][2] = zfar / (zfar - znear);
+        matrix[2][3] = (-zfar * znear) / (zfar - znear);
+        matrix[3][2] = 1.0f;
+
+        return matrix;
+    }
+
+    public static void mat4_mult_vec4(float[] result, float [][] mat, float [] vec4){
+        result[0] = mat[0][0] * vec4[0] + mat[0][1] * vec4[1] + mat[0][2] * vec4[2] + mat[0][3] * vec4[3];
+        result[1] = mat[1][0] * vec4[0] + mat[1][1] * vec4[1] + mat[1][2] * vec4[2] + mat[1][3] * vec4[3];
+        result[2] = mat[2][0] * vec4[0] + mat[2][1] * vec4[1] + mat[2][2] * vec4[2] + mat[2][3] * vec4[3];
+        result[3] = mat[3][0] * vec4[0] + mat[3][1] * vec4[1] + mat[3][2] * vec4[2] + mat[3][3] * vec4[3];
+    }
+
+    public static void perspectiveDivide(float [] result){
+         if(result[3] != 0.0){
+            result[0] /=result[3];
+            result[1] /=result[3];
+            result[2] /=result[3];
+        }
+    }
+
+    public static void mat4_mult_vec4_project(float[] result, float [][] mat_proj, float [] vec4){
+        mat4_mult_vec4(result,mat_proj,vec4);
+
+    }
+
+    public static void mat4_mult_mat4(float[][] result, float [][] a , float [][]b){
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                result[i][j] = a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j] + a[i][3] * b[3][j];
+            }
+        }
+    }
+
+    public static void identity(float [][] a){
+        for(int i =0 ; i< 4; i++)
+            for(int k=0; k<4; k++) {
+                if(i == k)
+                    a[i][k]=1f;
+                else
+                    a[i][k] = 0;
+            }
+    }
+
+    static public float[][] mat4_identity(){
+        float [][]  mat = new float[4][4];
+        identity(mat);
+        return mat;
+    }
+
 }
