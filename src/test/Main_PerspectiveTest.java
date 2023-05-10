@@ -36,6 +36,10 @@ public class Main_PerspectiveTest {
                 -1,-1.0f,4,
                 -1,1,4,
                  1,1,4
+
+//                0,0,4,
+//                0,1,4,
+//                1,1,4,
         };
         final float originalTrisUv[] = new float[]{
                 0.0f,0,
@@ -58,12 +62,13 @@ public class Main_PerspectiveTest {
         //Buffer to hold transformed vertices
         float transformedTris[] = new float[originalTris.length];
         float aspect = (float)display.getFrameBufferHeight() / display.getFramebufferWidth();
-        final float [] [] perspectiveMatrix = GfxMath.perspective((float) (Math.PI/3.0f),aspect,0.1f,100.0f);
+        float [] [] perspectiveMatrix = GfxMath.perspective((float) (Math.PI/3.0f),aspect,0.1f,100.0f);
+        GfxMath.identity(perspectiveMatrix);
 
 
         int frame =0; float frameTime =0;
         int filter =0;
-        double phi = 0;
+        double phi = 0; boolean once = true;
         while(true)
         {
             long currentTime = System.nanoTime();
@@ -83,19 +88,18 @@ public class Main_PerspectiveTest {
                     GfxMath.mat4_mult_vec4_project(result, perspectiveMatrix, vertex);
                     GfxMath.perspectiveDivide(result);
 
-                    result[0] *= (display.getFramebufferWidth()/2.0f);
-                    result[1] *= (display.getFrameBufferHeight()/2.0f);
+                    result[0] *= (display.getFramebufferWidth()-1)/2.0f;
+                    result[1] *= (display.getFrameBufferHeight()-1)/2.0f;
 
-                    result[0] += (display.getFramebufferWidth()/2.0f);
-                    result[1] += (display.getFrameBufferHeight()/2.0f);
-
+                    result[0] += (display.getFramebufferWidth()-1)/2.0f;
+                    result[1] += (display.getFrameBufferHeight()-1)/2.0f;
 
                     transformedTris[i] =    result[0];
                     transformedTris[i+ 1] = result[1];
                     transformedTris[i+ 2] = result[2];
             }
             currentTime = System.nanoTime();
-            target.Clear((byte) 0x00);
+            target.Clear((byte) 0xFF);
 //            target.drawGrid();
 
             //Rotation Test
@@ -150,8 +154,12 @@ public class Main_PerspectiveTest {
             }
 
 
-            display.SwapBuffers();
 
+            display.SwapBuffers();
+            if(once) {
+                display.save();
+                once =false;
+            }
             frameTime += (System.nanoTime() - currentTime)/1000000.0;
 
             frame++;
@@ -161,6 +169,7 @@ public class Main_PerspectiveTest {
                 elapsedTime=0;
                 frame =0;
                 frameTime =0;
+
 
             }
 

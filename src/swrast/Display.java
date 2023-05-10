@@ -31,6 +31,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferStrategy;
 import java.awt.image.DataBufferByte;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.JFrame;
 
 /**
@@ -120,5 +123,34 @@ public class Display extends Canvas
 	}
 	public int getFrameBufferHeight(){
 		return m_frameBuffer.m_height;
+	}
+
+	public void save(){
+		String fileName = "buffer.ppm";
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(fileName, false));
+			writer.append("P3\n");
+			writer.append(String.format("%s %s\n", m_frameBuffer.GetWidth(),m_frameBuffer.GetHeight()));
+			writer.append("255\n");
+
+			for(int i=0; i< m_frameBuffer.GetHeight();i++){
+				for(int k=0 ; k< m_frameBuffer.GetWidth();k++){
+					writer.append(String.format("%d %d %d ",
+
+							m_displayComponents[(i* m_frameBuffer.m_width+k)*3+2]&0xFF,
+							m_displayComponents[(i* m_frameBuffer.m_width+k)*3+1]&0xFF,
+							m_displayComponents[(i* m_frameBuffer.m_width+k)*3+0]&0xFF
+							)
+					);
+				}
+				writer.append("\n");
+			}
+
+
+			writer.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
