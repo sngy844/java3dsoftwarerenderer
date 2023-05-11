@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     swrast_GfxNative
  * Method:    testDirectBuffer
- * Signature: (Ljava/nio/ByteBuffer;)V
+ * Signature: (Ljava/nio/IntBuffer;)V
  */
 JNIEXPORT void JNICALL Java_swrast_GfxNative_testDirectBuffer
   (JNIEnv *, jclass, jobject);
@@ -86,6 +86,14 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_drawFlatTopTriangleSlopeFill
  */
 JNIEXPORT void JNICALL Java_swrast_GfxNative_copyToByteArray
   (JNIEnv *, jclass, jbyteArray, jbyteArray, jint);
+
+/*
+ * Class:     swrast_GfxNative
+ * Method:    openPNGFile
+ * Signature: (Ljava/lang/String;[I)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_swrast_GfxNative_openPNGFile
+  (JNIEnv *, jclass, jstring, jintArray);
 
 #ifdef __cplusplus
 }

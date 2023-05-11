@@ -1,5 +1,6 @@
 #include "swrast_GfxNative.h"
 #include "CGfx.h"
+#include "upng.h"
 
 // Implementation of the native method sayHello()
 JNIEXPORT void JNICALL Java_swrast_GfxNative_testNative(JNIEnv* env, jobject thisObj) {
@@ -125,4 +126,44 @@ JNIEXPORT void JNICALL Java_swrast_GfxNative_copyToByteArray(JNIEnv* env, jclass
 
 	(*env)->ReleasePrimitiveArrayCritical(env, jPixelComponent, m_pixelComponents, 0);
 	(*env)->ReleasePrimitiveArrayCritical(env, jdest, dest, 0);
+}
+
+
+JNIEXPORT jbyteArray JNICALL Java_swrast_GfxNative_openPNGFile(JNIEnv* env, jclass clss, jstring filePath, jintArray jdims) {
+    const char* inCStr = (*env)->GetStringUTFChars(env, filePath, NULL);
+    printf("In Png file:%s\n", inCStr);
+    upng_t * png = upng_new_from_file(inCStr);
+    (*env)->ReleaseStringUTFChars(env, filePath, inCStr); //Release java string
+    
+    if (!png) {
+        printf("Can't open png file.\n");
+        upng_free(png);
+    }
+
+    upng_decode(png);
+    const unsigned char* pngPixels = upng_get_buffer(png);
+    const int pngBufferSize = upng_get_size(png);
+    unsigned int pngWidth = upng_get_width(png);
+    unsigned int pngHeight = upng_get_height(png);
+    printf("Png Buffer Size:%d\n", pngBufferSize);
+
+    //Return width & height for java size
+    int * cDims = (*env)->GetPrimitiveArrayCritical(env, jdims, NULL);
+    cDims[0] = pngWidth;
+    cDims[1] = pngHeight;
+    (*env)->ReleasePrimitiveArrayCritical(env, jdims, cDims, 0);
+
+    //Allocate for java size
+    jbyteArray retByteArray = (*env)->NewByteArray(env, pngBufferSize);
+    //Copy to java size 
+    char * cRetByteArray = (*env)->GetPrimitiveArrayCritical(env, retByteArray,NULL );
+    for (long i = 0; i < pngBufferSize; i++)
+        cRetByteArray[i] = pngPixels[i];
+
+    (*env)->ReleasePrimitiveArrayCritical(env, retByteArray, cRetByteArray, 0);
+
+    upng_free(png);
+
+    return retByteArray;
+
 }

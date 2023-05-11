@@ -40,5 +40,5 @@ public class GfxNative {
 
     static public native void copyToByteArray(byte[] dest, byte[] pixelComponent, int totalPixels);
 
-
+    static public native byte[] openPNGFile(String pngFilePath, int[] dims);
 }

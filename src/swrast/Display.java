@@ -146,8 +146,6 @@ public class Display extends Canvas
 				}
 				writer.append("\n");
 			}
-
-
 			writer.close();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
