@@ -25,7 +25,7 @@ public class Main_PerspectiveTest {
         }
 
         //
-        Display display = new Display(1024, 768,1024,768, "Software Rendering - Texture Mapping And Filtering Test");
+        Display display = new Display(1024, 768,1024,768, "Software Rendering - Perspective Projection Test");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
@@ -61,13 +61,21 @@ public class Main_PerspectiveTest {
 
         //Buffer to hold transformed vertices
         float transformedTris[] = new float[originalTris.length];
-        float aspect = (float)display.getFrameBufferHeight() / display.getFramebufferWidth();
-        float [] [] perspectiveMatrix = GfxMath.perspective((float) (Math.PI/3.0f),aspect,0.1f,100.0f);
-        GfxMath.identity(perspectiveMatrix);
+        final float aspect = (float)display.getFrameBufferHeight() / display.getFramebufferWidth();
+        final float znear = 0.1f;
+        final float zfar =100.0f;
+        final float fov = (float) (Math.PI/3.0f);
 
+        final float [] [] perspectiveMatrix = GfxMath.perspective(fov,aspect,znear,zfar);
+        //GfxMath.identity(perspectiveMatrix);
+
+        final float fovFactor = 1.0f/ (float) (Math.tan(fov/2.0f));
+        final float aspect_times_fovfactor= aspect * fovFactor;
+        final float zfar_over_deltaz = znear / (zfar - znear);
+        final float zfar_over_deltaz_time_znear = zfar_over_deltaz * znear;
 
         int frame =0; float frameTime =0;
-        int filter =0;
+        boolean useMatrixProj =true;
         double phi = 0; boolean once = true;
         while(true)
         {
@@ -85,7 +93,18 @@ public class Main_PerspectiveTest {
                     vertex[1] = originalTris[i+1];
                     vertex[2] = originalTris[i+2];
                     vertex[3] = 1.0f;
-                    GfxMath.mat4_mult_vec4_project(result, perspectiveMatrix, vertex);
+
+                    //There won't be any visual difference with projection using matrix or hand rolling...
+                    if(useMatrixProj)
+                        GfxMath.mat4_mult_vec4_project(result, perspectiveMatrix, vertex);
+                    else {
+                        //Hand rolling maybe more efficient since don't have multiple zeros with other?!
+                        result[0] = aspect_times_fovfactor * vertex[0];
+                        result[1] = fovFactor * vertex[1];
+                        result[2] = zfar_over_deltaz * vertex[2] - zfar_over_deltaz_time_znear;
+                        result[3] = vertex[2]; //Keep original Z
+                    }
+                    //Perspective divide also normalize x,y,z
                     GfxMath.perspectiveDivide(result);
 
                     result[0] *= (display.getFramebufferWidth()-1)/2.0f;
@@ -169,7 +188,7 @@ public class Main_PerspectiveTest {
                 elapsedTime=0;
                 frame =0;
                 frameTime =0;
-
+                useMatrixProj = !useMatrixProj;
 
             }
 
