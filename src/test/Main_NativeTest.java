@@ -14,7 +14,7 @@ public class Main_NativeTest {
     public static void main(String[] args) {
         //Get regular array returned from native call
         int dims [] = new int[2]; //Dim[0] width, dim[2] height
-        byte[] pngData =GfxNative.openPNGFile("C:\\Users\\Son Nguyen\\Downloads\\67gu9oeb.png",dims);
+        byte[] pngData =GfxNative.openPNGFile("res/67gu9oeb.png",dims);
         save("nativepng.ppm",pngData,dims[0],dims[1]);
 
         //Direct Buffer test
