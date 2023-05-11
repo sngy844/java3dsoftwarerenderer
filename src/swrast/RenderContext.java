@@ -1,5 +1,9 @@
 package swrast;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import static swrast.GfxMath.lerp;
 
 public class RenderContext extends Bitmap
@@ -454,5 +458,29 @@ public class RenderContext extends Bitmap
 		this.filter = filter;
 	}
 
+	public void save(){
+		String fileName = "buffer.ppm";
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(fileName, false));
+			writer.append("P3\n");
+			writer.append(String.format("%s %s\n", m_width,m_height));
+			writer.append("255\n");
 
+			for(int i=0; i< m_height;i++){
+				for(int k=0 ; k< m_width;k++){
+					writer.append(String.format("%d %d %d ",
+							m_pixelComponents[(i* m_width+k)*4+1]&0xFF,
+							m_pixelComponents[(i* m_width+k)*4+2]&0xFF,
+							m_pixelComponents[(i* m_width+k)*4+3]&0xFF
+							)
+					);
+				}
+				writer.append("\n");
+			}
+			writer.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
