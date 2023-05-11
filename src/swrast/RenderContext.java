@@ -1,8 +1,6 @@
 package swrast;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 import static swrast.GfxMath.lerp;
 
@@ -60,6 +58,12 @@ public class RenderContext extends Bitmap
 			}
 		}
 		else if(delta_y  == 0){
+			if(x0 > x1){
+				int temp = x0;
+				x0=x1;
+				x1= temp;
+			}
+
 			for(int i =x0 ; i<= x1; i++ ){
 				this.DrawPixel(i, y1 , r, g, b);
 			}
@@ -482,5 +486,49 @@ public class RenderContext extends Bitmap
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void saveTarga(){
+		String fileName = "buffer.tga";
+
+		try (FileOutputStream fos = new FileOutputStream(fileName,false))
+		{
+			fos.write (0x00);	/* ID Length, 0 => No ID	*/
+			fos.write (0x00);	/* Color Map Type, 0 => No color map included	*/
+			fos.write (0x02);	/* Image Type, 2 => Uncompressed, True-color Image */
+			fos.write (0x00);	/* Next five bytes are about the color map entries */
+			fos.write (0x00);	/* 2 bytes Index, 2 bytes length, 1 byte size */
+			fos.write (0x00);
+			fos.write (0x00);
+			fos.write (0x00);
+			fos.write (0x00);	/* X-origin of Image	*/
+			fos.write (0x00);
+			fos.write (0x00);	/* Y-origin of Image	*/
+			fos.write (0x00);
+			fos.write (m_width & 0xff);      /* Image Width	*/
+			fos.write ((m_width>>8) & 0xff);
+			fos.write (m_height & 0xff);     /* Image Height	*/
+			fos.write ((m_height>>8) & 0xff);
+			fos.write (0x18);		/* Pixel Depth, 0x18 => 24 Bits	*/
+			fos.write (0x20);		/* Image Descriptor	*/
+			for (int y=0; y< m_height;y++) {
+				for (int x=0; x<m_width; x++) {
+					byte r, g, b;
+					int i = (y*m_width + x) * 4;
+					r = (m_pixelComponents[i+1]);
+					g = (m_pixelComponents[i+2]);
+					b = (m_pixelComponents[i+3]);
+
+					fos.write(b); /* write blue */
+					fos.write(g); /* write green */
+					fos.write(r); /* write red */
+				}
+			}
+			fos.close();
+			System.out.println("Successfully written data to the file");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

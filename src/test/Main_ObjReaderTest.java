@@ -119,7 +119,7 @@ public class Main_ObjReaderTest {
            System.out.println(String.format("%f %f %f",v2_x,v2_y,v2_z));
         }
         //Try projection and draw in buffer and save
-        RenderContext target = new RenderContext(1024,768);
+        RenderContext target = new RenderContext(640,480);
         final float aspect = (float)target.GetHeight() / target.GetWidth();
         final float znear = 0.1f;
         final float zfar =100.0f;
@@ -132,11 +132,19 @@ public class Main_ObjReaderTest {
 
         float [] result_v0 = new float[4]; float [] result_v1 = new float[4]; float [] result_v2 = new float[4];
         float [] v0 = new float[4]; float [] v1 = new float[4];float [] v2 = new float[4];
-        for(int i =0 ; i< vertices.size();i+=9){
-            v0[0] = vertices.get(i);   v1[0] = vertices.get(i+3);   v2[0] = vertices.get(i+6);
-            v0[1] = vertices.get(i+1); v1[1] = vertices.get(i+4);   v2[1] = vertices.get(i+7);
-            v0[2] = vertices.get(i+2); v1[2] = vertices.get(i+5);   v2[2] = vertices.get(i+8);
-            v0[3] = 1.0f;              v1[3] = 1.0f;                v2[3] = 1.0f;
+        for(int i =0; i< faceIndices.size() ; i+=9){
+            int v0_idx = faceIndices.get(i)-1 ;  int t0_idx = faceIndices.get(i+1)-1; int n0_idx = faceIndices.get(i+2)-1;
+            int v1_idx = faceIndices.get(i+3)-1; int t1_idx = faceIndices.get(i+4)-1; int n1_idx = faceIndices.get(i+5)-1;
+            int v2_idx = faceIndices.get(i+6)-1; int t2_idx = faceIndices.get(i+7)-1; int n2_idx = faceIndices.get(i+8)-1;
+
+            v0_idx *=3; t0_idx*=2; n0_idx*=3;
+            v1_idx *=3; t1_idx*=2; n1_idx*=3;
+            v2_idx *=3; t2_idx*=2; n2_idx*=3;
+
+            v0[0] = vertices.get(v0_idx);        v1[0] = vertices.get(v1_idx+0);      v2[0] = vertices.get(v2_idx);
+            v0[1] = vertices.get(v0_idx+1);      v1[1] = vertices.get(v1_idx+1);      v2[1] = vertices.get(v2_idx+1);
+            v0[2] = vertices.get(v0_idx+2)-5;    v1[2] = vertices.get(v1_idx+2)-5;  v2[2] = vertices.get(v2_idx+2)-5;
+            v0[3] = 1.0f;                        v1[3] = 1.0f;                        v2[3] = 1.0f;
 
             result_v0[0] = aspect_times_fovfactor * v0[0];
             result_v0[1] = fovFactor * v0[1];
@@ -162,12 +170,24 @@ public class Main_ObjReaderTest {
             result_v0[0] += (target.GetWidth()-1)/2.0f;  result_v1[0] += (target.GetWidth()-1)/2.0f;  result_v2[0] += (target.GetWidth()-1)/2.0f;
             result_v0[1] += (target.GetHeight()-1)/2.0f; result_v1[1] += (target.GetHeight()-1)/2.0f; result_v2[1] += (target.GetHeight()-1)/2.0f;
 
-            target.drawLine((int) result_v0[0], (int) result_v0[1],
-                    (int) result_v1[0], (int) result_v1[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
+//            target.drawLine((int) result_v0[0], (int) result_v0[1],
+//                    (int) result_v1[0], (int) result_v1[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
+//            target.drawLine((int) result_v1[0], (int) result_v1[1],
+//                    (int) result_v2[0], (int) result_v2[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
+//            target.drawLine((int) result_v2[0], (int) result_v2[1],
+//                    (int) result_v0[0], (int) result_v0[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
+
+            target.drawTriangleFill((int) result_v0[0], (int) result_v0[1],
+                    (int) result_v1[0], (int) result_v1[1],
+                    (int) result_v2[0], (int) result_v2[1],
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff
+                    );
+
         }
 
-
-        target.save();
+        System.out.println("Finished Rendering - Writing to file");
+        //target.save();
+        target.saveTarga();
     }
 
 
