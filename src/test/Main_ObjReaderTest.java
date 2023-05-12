@@ -36,7 +36,7 @@ public class Main_ObjReaderTest {
         }
 
         try {
-            reader = new BufferedReader(new FileReader("res/model.obj"));
+            reader = new BufferedReader(new FileReader("res/leon_head.obj"));
             String line = reader.readLine();
 
             while (line != null) {
@@ -54,7 +54,7 @@ public class Main_ObjReaderTest {
                     }
                     if(isTextCoord){
                         textCoords.add(Float.parseFloat(splitLine[1]));
-                        textCoords.add(Float.parseFloat(splitLine[2]));
+                        textCoords.add(1.0f - Float.parseFloat(splitLine[2]));
                     }
                     if(isNormal){
                         vertNormals.add(Float.parseFloat(splitLine[1]));
@@ -118,7 +118,7 @@ public class Main_ObjReaderTest {
         RenderContext target = display.GetFrameBuffer();
 
         target.Clear((byte) 125);
-        target.bindTexture(null,textureW,textureH,0);
+        target.bindTexture(textureData,textureW,textureH,0);
         final float aspect = (float)target.GetHeight() / target.GetWidth();
         final float znear = 0.1f;
         final float zfar =100.0f;
@@ -130,9 +130,11 @@ public class Main_ObjReaderTest {
         final float zfar_over_deltaz_time_znear = zfar_over_deltaz * znear;
 
         float [] result_v0 = new float[4]; float [] result_v1 = new float[4]; float [] result_v2 = new float[4];
+        float [] camPointOnFaceVec = new float[4];
         float [] v0 = new float[4]; float [] v1 = new float[4];float [] v2 = new float[4];
         double phi =0;
         boolean drawPoint = false;
+        final float rotAmount = 0.000005f;
     while (true) {
         target.Clear((byte) 125);
         for(int i =0 ; i< vertices.size() && drawPoint ;i+=3){
@@ -179,7 +181,7 @@ public class Main_ObjReaderTest {
 //            v2[2] -= 3.f;
 
             //Rotation X
-            phi += 0.00001; //Increase angle over time
+            phi += rotAmount; //Increase angle over time
             float y = (float) (Math.cos(phi)*v0[0] - Math.sin(phi)*v0[2]);
             float z = (float) (Math.sin(phi)*v0[0] + Math.cos(phi)*v0[2]);
             v0[0] = y;
@@ -193,6 +195,19 @@ public class Main_ObjReaderTest {
             v2[0] = y;
             v2[2] = z -4.5f;
 
+            //Backface culling
+            //Face normal
+            result_v0[3] = 0.0f;
+            calculateFaceNormal(result_v0,v0,v1,v2);
+            normalizeVec(result_v0);
+            camPointOnFaceVec[0] = -v0[0];
+            camPointOnFaceVec[1] = -v0[1];
+            camPointOnFaceVec[2] = -v0[2];
+            camPointOnFaceVec[3] = 0;
+            float angleDot = dot(camPointOnFaceVec,result_v0);
+            if(angleDot < 0){
+                continue;
+            }
 
             result_v0[0] = aspect_times_fovfactor * v0[0];
             result_v0[1] = fovFactor * v0[1];
@@ -222,10 +237,10 @@ public class Main_ObjReaderTest {
 //            target.DrawPixel((int) result_v1[0], (int) result_v1[1],(byte) 0xff, (byte) 0xff, (byte) 0xff);
 //            target.DrawPixel((int) result_v2[0], (int) result_v2[1],(byte) 0xff, (byte) 0xff, (byte) 0xff);
 
-            target.drawTriangleWire((int) result_v0[0], (int) result_v0[1],
-                                    (int) result_v1[0], (int) result_v1[1],
-                                    (int) result_v2[0], (int) result_v2[1],
-                    (byte) 0xff, (byte) 0xff, (byte) 0xff);
+//            target.drawTriangleWire((int) result_v0[0], (int) result_v0[1],
+//                                    (int) result_v1[0], (int) result_v1[1],
+//                                    (int) result_v2[0], (int) result_v2[1],
+//                    (byte) 0xff, (byte) 0xff, (byte) 0xff);
 
 //            target.drawLine((int) result_v0[0], (int) result_v0[1],
 //                    (int) result_v1[0], (int) result_v1[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
@@ -240,13 +255,13 @@ public class Main_ObjReaderTest {
 //                    (byte) 0xff, (byte) 0xff, (byte) 0xff
 //                    );
 
-//            target.drawTriangleFillSlope((int) result_v0[0], (int) result_v0[1],
-//                                    (int) result_v1[0], (int) result_v1[1],
-//                                    (int) result_v2[0], (int) result_v2[1],
-//                                    v0_u,v0_v,
-//                                    v1_u,v1_v,
-//                                    v2_u,v2_v
-//                                    );
+            target.drawTriangleFillSlope((int) result_v0[0], (int) result_v0[1],
+                                    (int) result_v1[0], (int) result_v1[1],
+                                    (int) result_v2[0], (int) result_v2[1],
+                                    v0_u,v0_v,
+                                    v1_u,v1_v,
+                                    v2_u,v2_v
+                                    );
         }
         display.SwapBuffers();
     }
@@ -254,6 +269,33 @@ public class Main_ObjReaderTest {
 //        target.saveTarga();
     }
 
+    static void calculateFaceNormal(float[] result,float[] v0 , float[] v1, float[] v2){
+        float v1v2_x = v2[0] -  v1[0];
+        float v1v2_y = v2[1] -  v1[1];
+        float v1v2_z = v2[2] - v1[2];
+
+        float v1v0_x = v0[0] -  v1[0];
+        float v1v0_y = v0[1] -  v1[1];
+        float v1v0_z = v0[2] - v1[2];
+
+        //Cross product
+        result[0] = v1v2_y * v1v0_z - v1v2_z * v1v0_y;
+        result[1] = v1v2_z * v1v0_x - v1v2_x * v1v0_z;
+        result[2] = v1v2_x * v1v0_y - v1v2_y * v1v0_x;
+
+    }
+
+    static void normalizeVec(float [] result){
+        float mag = (float) Math.sqrt(result[0]*result[0] + result[1]*result[1] + result[2]*result[2] + result[3]*result[3]);
+        result[0] /= mag;
+        result[1] /= mag;
+        result[2] /= mag;
+        result[3] /= mag;
+    }
+
+    static float dot(float[] v0 , float [] v1){
+        return v0[0]*v1[0] +        v0[1]*v1[1] +        v0[2]*v1[2] +        v0[3]*v1[3];
+    }
 
     void debugPrintIndices(List<Integer> faceIndices,List<Float> vertices, List<Float> textCoords, List<Float> vertNormals){
         //Reprint test
