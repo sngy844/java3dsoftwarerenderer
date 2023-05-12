@@ -15,7 +15,8 @@ public class Main_PerspectiveTest {
         properties.load(inputStream);
         final String textureName = "brick";
         String [] brickPxString =properties.getProperty(textureName).split(",");
-        final int textW = Integer.parseInt(properties.getProperty(String.format("%s_width",textureName)));
+        final int textureW = Integer.parseInt(properties.getProperty(String.format("%s_width",textureName)));
+        final int textureH = textureW;
         byte brickTexture[] = new byte[brickPxString.length];
         for(int i =0 ; i< brickPxString.length; i+=4){
             brickTexture [i] = (byte) Integer.parseInt(brickPxString[i+3],16); //Alpha
@@ -159,7 +160,7 @@ public class Main_PerspectiveTest {
             {
 
                 for(int i =0 ; i< transformedTris.length; i+=9) {
-                    if(i == 0)target.bindTexture(brickTexture, textW, 0);
+                    if(i == 0)target.bindTexture(brickTexture, textureW, textureH, 0);
                     //if(i == 1)target.bindTexture(brickTexture, textW, 1);
                     target.drawTriangleFillSlope(
                             (int) transformedTris[i],     (int) transformedTris[i + 1],//2

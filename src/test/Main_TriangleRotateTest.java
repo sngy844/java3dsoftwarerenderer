@@ -15,6 +15,7 @@ public class Main_TriangleRotateTest {
         final String textureName = "brick";
         String [] brickPxString =properties.getProperty(textureName).split(",");
         final int textW = Integer.parseInt(properties.getProperty(String.format("%s_width",textureName)));
+        final int textH = textW;
         byte brickTexture[] = new byte[brickPxString.length];
         for(int i =0 ; i< brickPxString.length; i+=4){
             brickTexture [i] = (byte) Integer.parseInt(brickPxString[i+3],16); //Alpha
@@ -120,8 +121,8 @@ public class Main_TriangleRotateTest {
             {
 
                 for(int i =0 ; i< tris.length; i+=6) {
-                    if(i == 0)target.bindTexture(brickTexture, textW, 0);
-                    if(i == 12)target.bindTexture(brickTexture, textW, 1);
+                    if(i == 0)target.bindTexture(brickTexture, textW, textH, 0);
+                    if(i == 12)target.bindTexture(brickTexture, textW, textH, 1);
                     target.drawTriangleFillSlope(tris[i], tris[i + 1],
                             tris[i + 2], tris[i + 3],
                             tris[i + 4], tris[i + 5],

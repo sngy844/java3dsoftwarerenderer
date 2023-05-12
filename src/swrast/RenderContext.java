@@ -12,6 +12,7 @@ public class RenderContext extends Bitmap
 
 	byte texture[];
 	int textW;
+	int textH;
 
 	public RenderContext(int width, int height)	{
 		super(width, height);
@@ -235,6 +236,15 @@ public class RenderContext extends Bitmap
 
 			//Draw a span / line from xstart to xend
 			for(int x=(int)(xstart); x<=(int)(xend);x++) {
+				index =(y*m_width+x)*4;
+				if(texture == null){
+					m_pixelComponents[index]=(byte)255;
+					m_pixelComponents[index+1]= (byte) 255;
+					m_pixelComponents[index+2]= (byte) 255;
+					m_pixelComponents[index+3]= (byte) 255;
+					continue;
+				}
+
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
 				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
@@ -243,16 +253,21 @@ public class RenderContext extends Bitmap
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
 
+				finalV = finalV < 0 ? 0 :finalV;
+				finalU = finalU < 0 ? 0 :finalU;
+				finalV = finalV > 1 ? 1 :finalV;
+				finalU = finalU > 1 ? 1 :finalU;
+
 				if(filter ==0) {
 					//Coordinate on real texture - assume texture is square dimension
 					int textX = (int) (finalU * (textW -1));
-					int textY = (int) (finalV*  (textW -1));
+					int textY = (int) (finalV*  (textH -1));
 					//Nearest neightbor (no filtering)
 					byte textR = this.texture[(textY*textW+textX)*4+3];
 					byte textG = this.texture[(textY*textW+textX)*4+2];
 					byte textB = this.texture[(textY*textW+textX)*4+1];
-					//DrawPixel(x,y,r,g,b); //Cost of function call
-					index =(y*m_width+x)*4;
+
+
 					m_pixelComponents[index]=(byte)255;
 					m_pixelComponents[index+1]= textB;
 					m_pixelComponents[index+2]= textG;
@@ -261,7 +276,7 @@ public class RenderContext extends Bitmap
 				else if(filter == 1) {
 					//Coordinate on real texture - assume texture is square dimension
 					int textX = (int) (finalU * (textW -1));
-					int textY = (int) (finalV*  (textW -1));
+					int textY = (int) (finalV*  (textH -1));
 
 					//Billinear Filtering
 					int textX1 = textX + 1 < textW ? textX + 1 : textX;
@@ -288,7 +303,6 @@ public class RenderContext extends Bitmap
 
 
 					//DrawPixel(x,y,r,g,b); //Cost of function call
-					index = (y * m_width + x) * 4;
 					m_pixelComponents[index] = (byte) 255;
 					m_pixelComponents[index + 1] = (byte) y_targetB;
 					m_pixelComponents[index + 2] = (byte) y_targetG;
@@ -320,6 +334,14 @@ public class RenderContext extends Bitmap
 
 			//Draw a span / line from xstart to xend
 			for(int x=(int)(xstart); x<=(int)xend;x++) {
+				index =(y*m_width+x)*4;
+				if(texture == null){
+					m_pixelComponents[index]=(byte)255;
+					m_pixelComponents[index+1]= (byte) 255;
+					m_pixelComponents[index+2]= (byte) 255;
+					m_pixelComponents[index+3]= (byte) 255;
+					continue;
+				}
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
 				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
@@ -328,16 +350,20 @@ public class RenderContext extends Bitmap
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
 
+				finalV = finalV < 0 ? 0 :finalV;
+				finalU = finalU < 0 ? 0 :finalU;
+				finalV = finalV > 1 ? 1 :finalV;
+				finalU = finalU > 1 ? 1 :finalU;
+
 				if(filter ==0) {
 					//Coordinate on real texture - assume texture is square dimension
 					int textX = (int) (finalU * (textW -1));
-					int textY = (int) (finalV*  (textW -1));
+					int textY = (int) (finalV*  (textH -1));
 					//Nearest neightbor (no filtering)
 					byte textR = this.texture[(textY*textW+textX)*4+3];
 					byte textG = this.texture[(textY*textW+textX)*4+2];
 					byte textB = this.texture[(textY*textW+textX)*4+1];
-					//DrawPixel(x,y,r,g,b); //Cost of function call
-					index =(y*m_width+x)*4;
+
 					m_pixelComponents[index]=(byte)255;
 					m_pixelComponents[index+1]= textB;
 					m_pixelComponents[index+2]= textG;
@@ -346,7 +372,7 @@ public class RenderContext extends Bitmap
 				else if(filter == 1) {
 					//Coordinate on real texture - assume texture is square dimension
 					int textX = (int) (finalU * (textW -1));
-					int textY = (int) (finalV*  (textW -1));
+					int textY = (int) (finalV*  (textH -1));
 
 					//Billinear Filtering
 					int textX1 = textX + 1 < textW ? textX + 1 : textX;
@@ -371,9 +397,6 @@ public class RenderContext extends Bitmap
 					float y_downR = lerp((texture[(textY2 * textW + textX2) * 4 + 3] & 0xFF), (texture[(textY3 * textW + textX3) * 4 + 3] & 0xFF), (tx - textX2) / (textX3 - textX2));
 					float y_targetR = lerp(y_upR, y_downR, (ty - textY) / (textY2 - textY));
 
-
-					//DrawPixel(x,y,r,g,b); //Cost of function call
-					index = (y * m_width + x) * 4;
 					m_pixelComponents[index] = (byte) 255;
 					m_pixelComponents[index + 1] = (byte) y_targetB;
 					m_pixelComponents[index + 2] = (byte) y_targetG;
@@ -437,28 +460,35 @@ public class RenderContext extends Bitmap
 			float Mv2 = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
 			float Mu2 = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 
-			;
-			GfxNative.drawFlatBottomTriangleSlopeFill(x0,y0, (int) Mx, (int) My,x1,y1,
+			drawFlatBottomTriangleSlopeFill(x0,y0, (int) Mx, (int) My,x1,y1,
 					u0,v0,
 					Mu2,Mv2,
-					u1,v1
-					,filter, texture,textW,m_pixelComponents,m_width
-					);
-
-			GfxNative.drawFlatTopTriangleSlopeFill(x1,y1, (int) Mx, (int) My,x2,y2,
+					u1,v1);
+//			GfxNative.drawFlatBottomTriangleSlopeFill(x0,y0, (int) Mx, (int) My,x1,y1,
+//					u0,v0,
+//					Mu2,Mv2,
+//					u1,v1
+//					,filter, texture,textW,m_pixelComponents,m_width
+//					);
+			drawFlatTopTriangleSlopeFill(x1,y1, (int) Mx, (int) My,x2,y2,
 					u1,v1,
 					Mu2,Mv2,
-					u2,v2
-					,filter, texture,textW,m_pixelComponents,m_width
-					);
+					u2,v2);
+//			GfxNative.drawFlatTopTriangleSlopeFill(x1,y1, (int) Mx, (int) My,x2,y2,
+//					u1,v1,
+//					Mu2,Mv2,
+//					u2,v2
+//					,filter, texture,textW,m_pixelComponents,m_width
+//					);
 		}
 	}
 
 
 
-	public void bindTexture(byte[] text, int txtW, int filter){
+	public void bindTexture(byte[] text, int textureW, int textureH, int filter){
 		this.texture = text;
-		this.textW = txtW;
+		this.textW = textureW;
+		this.textH = textureH;
 		this.filter = filter;
 	}
 
@@ -519,9 +549,9 @@ public class RenderContext extends Bitmap
 					g = (m_pixelComponents[i+2]);
 					b = (m_pixelComponents[i+3]);
 
-					fos.write(b); /* write blue */
+					fos.write(r); /* write blue */
 					fos.write(g); /* write green */
-					fos.write(r); /* write red */
+					fos.write(b); /* write red */
 				}
 			}
 			fos.close();

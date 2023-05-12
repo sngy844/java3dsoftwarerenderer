@@ -42,7 +42,7 @@ public class Main_NativeTest {
         System.out.println(String.format("Area 1: %f - Area 2: %f - Area 3: %f\n\n\n", area1, area2, area3));
     }
 
-    static void save(String fileName,byte[] m_displayComponents,int width, int height){
+    static void save(String fileName,byte[] pixelData4C,int width, int height){
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(fileName, false));
@@ -53,9 +53,9 @@ public class Main_NativeTest {
             for(int i=0; i< height;i++){
                 for(int k=0 ; k< width;k++){
                     writer.append(String.format("%d %d %d ",
-                                m_displayComponents[(i* width+k)*4+2]&0xFF,
-                                m_displayComponents[(i* width+k)*4+1]&0xFF,
-                                m_displayComponents[(i* width+k)*4+0]&0xFF
+                                pixelData4C[(i* width+k)*4+2]&0xFF,
+                                pixelData4C[(i* width+k)*4+1]&0xFF,
+                                pixelData4C[(i* width+k)*4+0]&0xFF
                             )
                     );
                 }

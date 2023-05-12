@@ -18,6 +18,7 @@ public class Main_FlatTopTriangleSlopeTest {
         final String textureName = "brick";
         String [] brickPxString =properties.getProperty(textureName).split(",");
         final int textW = Integer.parseInt(properties.getProperty(String.format("%s_width",textureName)));
+        final int textH = textW;
         byte brickTexture[] = new byte[brickPxString.length];
         for(int i =0 ; i< brickPxString.length; i+=4){
             brickTexture [i] = (byte) Integer.parseInt(brickPxString[i+3],16); //Alpha
@@ -45,7 +46,7 @@ public class Main_FlatTopTriangleSlopeTest {
 //                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
 //                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
-        target.bindTexture(brickTexture,textW,filter);
+        target.bindTexture(brickTexture, textW, textH,filter);
         int frame = 0;
         while (true) {
             long currentTime = System.nanoTime();
