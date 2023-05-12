@@ -1,10 +1,13 @@
 package test;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import swrast.Display;
 import swrast.GfxMath;
 import swrast.GfxNative;
 import swrast.RenderContext;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main_ObjReaderTest {
+    static boolean drawPoint = false;
+    static boolean drawWire= true;
+    static boolean drawTexture = false;
+
     public static void main(String[] args) {
         List<Float> vertices =  new ArrayList<>();
         List<Float> textCoords =  new ArrayList<>();
@@ -117,6 +124,8 @@ public class Main_ObjReaderTest {
         Display display = new Display(1024,768,1024,768, "Software Rendering - Obj, Perspective, Transform ,Backface Culling, Z Buffer Test");
         RenderContext target = display.GetFrameBuffer();
 
+
+
         target.Clear((byte) 125);
         target.bindTexture(textureData,textureW,textureH,0);
         final float aspect = (float)target.GetHeight() / target.GetWidth();
@@ -133,8 +142,30 @@ public class Main_ObjReaderTest {
         float [] camPointOnFaceVec = new float[4];
         float [] v0 = new float[4]; float [] v1 = new float[4];float [] v2 = new float[4];
         double phi =0;
-        boolean drawPoint = false;
+
         final float rotAmount = 0.000005f;
+
+        display.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                //throw new NotImplementedException();
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                char keyCode = e.getKeyChar();
+                if(keyCode == 't') drawTexture = !drawTexture;
+                if(keyCode == 'p') drawPoint = !drawPoint;
+                if(keyCode == 'w') drawWire = !drawWire;
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                //throw new NotImplementedException();
+            }
+        });
+
+
     while (true) {
         target.Clear((byte) 125);
         target.clearZBuffer();
@@ -238,10 +269,6 @@ public class Main_ObjReaderTest {
 //            target.DrawPixel((int) result_v1[0], (int) result_v1[1],(byte) 0xff, (byte) 0xff, (byte) 0xff);
 //            target.DrawPixel((int) result_v2[0], (int) result_v2[1],(byte) 0xff, (byte) 0xff, (byte) 0xff);
 
-//            target.drawTriangleWire((int) result_v0[0], (int) result_v0[1],
-//                                    (int) result_v1[0], (int) result_v1[1],
-//                                    (int) result_v2[0], (int) result_v2[1],
-//                    (byte) 0xff, (byte) 0xff, (byte) 0xff);
 
 //            target.drawLine((int) result_v0[0], (int) result_v0[1],
 //                    (int) result_v1[0], (int) result_v1[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
@@ -255,7 +282,7 @@ public class Main_ObjReaderTest {
 //                    (int) result_v2[0], (int) result_v2[1],
 //                    (byte) 0xff, (byte) 0xff, (byte) 0xff
 //                    );
-
+            if(drawTexture)
             target.drawTriangleFillSlope((int) result_v0[0], (int) result_v0[1],result_v0[3],
                                     (int) result_v1[0], (int) result_v1[1],result_v1[3],
                                     (int) result_v2[0], (int) result_v2[1],result_v2[3],
@@ -263,6 +290,12 @@ public class Main_ObjReaderTest {
                                     v1_u,v1_v,
                                     v2_u,v2_v
                                     );
+            if(drawWire)
+            target.drawTriangleWire((int) result_v0[0], (int) result_v0[1],
+                    (int) result_v1[0], (int) result_v1[1],
+                    (int) result_v2[0], (int) result_v2[1],
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff);
+
         }
         display.SwapBuffers();
     }

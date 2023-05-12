@@ -237,7 +237,7 @@ public class RenderContext extends Bitmap
 			}
 
 			//Draw a span / line from xstart to xend
-			for(int x=(int)(xstart); x<=(int)(xend);x++) {
+			for(int x=(int)(xstart+0.5); x<=(int)(xend);x++) {
 				index =(y*m_width+x)*4;
 				if(texture == null){
 					m_pixelComponents[index]=(byte)255;
@@ -342,7 +342,7 @@ public class RenderContext extends Bitmap
 			}
 
 			//Draw a span / line from xstart to xend
-			for(int x=(int)(xstart); x<=(int)xend;x++) {
+			for(int x=(int)(xstart+0.5); x<=(int)xend;x++) {
 				index =(y*m_width+x)*4;
 				if(texture == null){
 					m_pixelComponents[index]=(byte)255;
