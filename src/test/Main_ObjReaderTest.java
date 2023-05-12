@@ -18,6 +18,7 @@ public class Main_ObjReaderTest {
     static boolean drawPoint = false;
     static boolean drawWire= true;
     static boolean drawTexture = false;
+    static float rotAmount = 0.000005f;
 
     public static void main(String[] args) {
         List<Float> vertices =  new ArrayList<>();
@@ -27,7 +28,7 @@ public class Main_ObjReaderTest {
 
         BufferedReader reader;
         int dims [] = new int[2]; //Dim[0] width, dim[2] height
-        byte[] pngData = GfxNative.openPNGFile("res/emd48.png",dims);
+        byte[] pngData = GfxNative.openPNGFile("res/f22.png",dims);
         int textureW = dims[0];
         int textureH = dims[1];
         //Convert to R-G-B
@@ -43,7 +44,7 @@ public class Main_ObjReaderTest {
         }
 
         try {
-            reader = new BufferedReader(new FileReader("res/leon_head.obj"));
+            reader = new BufferedReader(new FileReader("res/f22.obj"));
             String line = reader.readLine();
 
             while (line != null) {
@@ -143,7 +144,7 @@ public class Main_ObjReaderTest {
         float [] v0 = new float[4]; float [] v1 = new float[4];float [] v2 = new float[4];
         double phi =0;
 
-        final float rotAmount = 0.000005f;
+
 
         display.addKeyListener(new KeyListener() {
             @Override
@@ -157,6 +158,10 @@ public class Main_ObjReaderTest {
                 if(keyCode == 't') drawTexture = !drawTexture;
                 if(keyCode == 'p') drawPoint = !drawPoint;
                 if(keyCode == 'w') drawWire = !drawWire;
+                if(keyCode == 'r') {
+                    if(rotAmount == 0) rotAmount = 0.000005f;
+                    else rotAmount = 0;
+                }
             }
 
             @Override
