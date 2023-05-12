@@ -27,10 +27,11 @@ public class Main_ObjReaderTest {
         byte[] textureData = new byte[textureH*textureW*4];
         for(int y =0 ; y< textureH; y++){
             for(int x =0 ; x<textureW; x++){
-                textureData[(y*textureW+x)*4] = (byte) 255;
-                textureData[(y*textureW+x)*4+3] =  pngData[(y*textureW+x)*4+0];
-                textureData[(y*textureW+x)*4+2] =  pngData[(y*textureW+x)*4+1];
-                textureData[(y*textureW+x)*4+1] =  pngData[(y*textureW+x)*4+2];
+                int idx =(y*textureW+x)*4;
+                textureData[idx] = (byte) 255;
+                textureData[idx+3] =  pngData[idx+0];
+                textureData[idx+2] =  pngData[idx+1];
+                textureData[idx+1] =  pngData[idx+2];
             }
         }
 
