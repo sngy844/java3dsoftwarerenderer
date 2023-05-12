@@ -123,9 +123,9 @@ public class Main_TriangleRotateTest {
                 for(int i =0 ; i< tris.length; i+=6) {
                     if(i == 0)target.bindTexture(brickTexture, textW, textH, 0);
                     if(i == 12)target.bindTexture(brickTexture, textW, textH, 1);
-                    target.drawTriangleFillSlope(tris[i], tris[i + 1],
-                            tris[i + 2], tris[i + 3],
-                            tris[i + 4], tris[i + 5],
+                    target.drawTriangleFillSlope(tris[i], tris[i + 1],0,
+                            tris[i + 2], tris[i + 3],0,
+                            tris[i + 4], tris[i + 5],0,
                             originalTrisUv[i], originalTrisUv[i + 1],
                             originalTrisUv[i + 2], originalTrisUv[i + 3],
                             originalTrisUv[i + 4], originalTrisUv[i + 5]

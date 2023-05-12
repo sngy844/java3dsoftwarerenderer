@@ -163,9 +163,9 @@ public class Main_PerspectiveTest {
                     if(i == 0)target.bindTexture(brickTexture, textureW, textureH, 0);
                     //if(i == 1)target.bindTexture(brickTexture, textW, 1);
                     target.drawTriangleFillSlope(
-                            (int) transformedTris[i],     (int) transformedTris[i + 1],//2
-                            (int) transformedTris[i + 3], (int) transformedTris[i + 4],//5
-                            (int) transformedTris[i + 6], (int) transformedTris[i + 7],
+                            (int) transformedTris[i],     (int) transformedTris[i + 1],0,//2
+                            (int) transformedTris[i + 3], (int) transformedTris[i + 4],0,//5
+                            (int) transformedTris[i + 6], (int) transformedTris[i + 7],0,
                             originalTrisUv[i],     originalTrisUv[i + 1],
                             originalTrisUv[i + 2], originalTrisUv[i + 3],
                             originalTrisUv[i + 4], originalTrisUv[i + 5]

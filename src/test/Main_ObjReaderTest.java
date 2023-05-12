@@ -114,7 +114,7 @@ public class Main_ObjReaderTest {
 
         //
         //Try projection and draw in buffer and save
-        Display display = new Display(1024,768,1024,768, "Software Rendering");
+        Display display = new Display(1024,768,1024,768, "Software Rendering - Obj, Perspective, Transform ,Backface Culling, Z Buffer Test");
         RenderContext target = display.GetFrameBuffer();
 
         target.Clear((byte) 125);
@@ -137,6 +137,7 @@ public class Main_ObjReaderTest {
         final float rotAmount = 0.000005f;
     while (true) {
         target.Clear((byte) 125);
+        target.clearZBuffer();
         for(int i =0 ; i< vertices.size() && drawPoint ;i+=3){
             v0[0] = vertices.get(i);
             v0[1] = vertices.get(i+1);
@@ -255,9 +256,9 @@ public class Main_ObjReaderTest {
 //                    (byte) 0xff, (byte) 0xff, (byte) 0xff
 //                    );
 
-            target.drawTriangleFillSlope((int) result_v0[0], (int) result_v0[1],
-                                    (int) result_v1[0], (int) result_v1[1],
-                                    (int) result_v2[0], (int) result_v2[1],
+            target.drawTriangleFillSlope((int) result_v0[0], (int) result_v0[1],result_v0[3],
+                                    (int) result_v1[0], (int) result_v1[1],result_v1[3],
+                                    (int) result_v2[0], (int) result_v2[1],result_v2[3],
                                     v0_u,v0_v,
                                     v1_u,v1_v,
                                     v2_u,v2_v

@@ -1,6 +1,7 @@
 package swrast;
 
 import java.io.*;
+import java.util.Arrays;
 
 import static swrast.GfxMath.lerp;
 
@@ -9,7 +10,7 @@ public class RenderContext extends Bitmap
 	//Index on framebuffer to draw grid
 	int gridIndex [];
 	final float weights[];
-
+	final float zBuffer [];
 	byte texture[];
 	int textW;
 	int textH;
@@ -17,6 +18,7 @@ public class RenderContext extends Bitmap
 	public RenderContext(int width, int height)	{
 		super(width, height);
 		this.weights= new float[3];
+		this.zBuffer = new float[width*height];
 		
 		final int spacing = 25;
 
@@ -213,7 +215,7 @@ public class RenderContext extends Bitmap
 	//
 	// Equation (2) can be expaned in similar way and will give the same result
 	// Another way to think is to know how much to scale deltaX based on how much 1/deltaY: x= x0 + deltaX*k*1/deltaY
-	public void drawFlatBottomTriangleSlopeFill(int x0, int y0, int x1, int y1, int x2, int y2,
+	public void drawFlatBottomTriangleSlopeFill(int x0, int y0, float w0, int x1, int y1, float w1,int x2, int y2, float w2,
 												float u0, float v0, float u1, float v1, float u2, float v2){
 
 		float inverse_slope_1 = (float)(x1 - x0)/(y1-y0); //left side
@@ -249,6 +251,12 @@ public class RenderContext extends Bitmap
 				//Alos need to take of the case point is on edge of triangle
 				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
 
+				//Interpolate Z
+				float finalZ =1.0f - ( weights[0]/w0 + weights[1]/w1 + weights[2]/w2 );
+				if(finalZ < zBuffer[y*m_width+x] ){
+					continue;
+				}
+
 				//Interpolate U V coordinate
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
@@ -267,11 +275,12 @@ public class RenderContext extends Bitmap
 					byte textG = this.texture[(textY*textW+textX)*4+2];
 					byte textB = this.texture[(textY*textW+textX)*4+1];
 
-
 					m_pixelComponents[index]=(byte)255;
 					m_pixelComponents[index+1]= textB;
 					m_pixelComponents[index+2]= textG;
 					m_pixelComponents[index+3]= textR;
+
+					zBuffer[y*m_width+x] = finalZ;
 				}
 				else if(filter == 1) {
 					//Coordinate on real texture - assume texture is square dimension
@@ -312,7 +321,7 @@ public class RenderContext extends Bitmap
 		}//end for each y scan line
 	}
 
-	public void drawFlatTopTriangleSlopeFill(int x0, int y0, int x1, int y1, int x2, int y2,float u0, float v0, float u1, float v1, float u2, float v2
+	public void drawFlatTopTriangleSlopeFill(int x0, int y0,float w0, int x1, int y1, float w1, int x2, int y2, float w2,float u0, float v0, float u1, float v1, float u2, float v2
 											 ){
 		float inverse_slope_1 = (float)(x2 - x0)/(y2-y0); //left side
 		float inverse_slope_2 = (float)(x2 - x1)/(y2-y1); //right side
@@ -345,6 +354,11 @@ public class RenderContext extends Bitmap
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
 				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
+				//Interpolate Z
+				float finalZ =1.0f - ( weights[0]/w0 + weights[1]/w1 + weights[2]/w2 );
+				if(finalZ < zBuffer[y*m_width+x] ){
+					continue;
+				}
 
 				//Interpolate U V coordinate
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
@@ -368,6 +382,8 @@ public class RenderContext extends Bitmap
 					m_pixelComponents[index+1]= textB;
 					m_pixelComponents[index+2]= textG;
 					m_pixelComponents[index+3]= textR;
+
+					zBuffer[y*m_width+x] = finalZ;
 				}
 				else if(filter == 1) {
 					//Coordinate on real texture - assume texture is square dimension
@@ -407,7 +423,7 @@ public class RenderContext extends Bitmap
 	}
 
 
-	public void  drawTriangleFillSlope(int x0, int y0, int x1, int y1, int x2, int y2,
+	public void  drawTriangleFillSlope(int x0, int y0, float w0, int x1, int y1, float w1, int x2, int y2, float w2,
 									   float u0, float v0,
 									   float u1, float v1,
 									   float u2, float v2){
@@ -420,6 +436,8 @@ public class RenderContext extends Bitmap
 
 			tempF = u0; u0=u1; u1= tempF;
 			tempF = v0; v0=v1; v1= tempF;
+
+			tempF = w0; w0=w1; w1= tempF;
 		}
 		if(y1 > y2){
 			temp = y1;	y1=y2;	 y2 = temp;
@@ -427,6 +445,8 @@ public class RenderContext extends Bitmap
 
 			tempF = u1; u1=u2; u2= tempF;
 			tempF = v1; v1=v2; v2= tempF;
+
+			tempF = w1; w1=w2; w2= tempF;
 		}
 		if(y0 > y1){
 			temp = y0;	y0 = y1; y1=temp;
@@ -434,15 +454,17 @@ public class RenderContext extends Bitmap
 
 			tempF = u0; u0=u1; u1= tempF;
 			tempF = v0; v0=v1; v1= tempF;
+
+			tempF = w0; w0=w1; w1= tempF;
 		}
 
 		if(y1 == y2)
-			drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, u0,v0, u1,v1,u2,v2);
+			drawFlatBottomTriangleSlopeFill(x0,y0,w0,x1,y1,w1,x2,y2,w2, u0,v0, u1,v1,u2,v2);
 //			GfxNative.drawFlatBottomTriangleSlopeFill(x0,y0,x1,y1,x2,y2, u0,v0, u1,v1,u2,v2
 //					,filter, texture,textW,m_pixelComponents,m_width
 //			);
 		else if(y0==y1)
-			drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0, u1,v1,u2,v2);
+			drawFlatTopTriangleSlopeFill(x0,y0,w0,x1,y1,w1,x2,y2,w2,u0,v0,u1,v1,u2,v2);
 //			GfxNative.drawFlatTopTriangleSlopeFill(x0,y0,x1,y1,x2,y2,u0,v0, u1,v1,u2,v2
 //					,filter, texture,textW,m_pixelComponents,m_width
 //			);
@@ -460,7 +482,9 @@ public class RenderContext extends Bitmap
 			float Mv2 = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
 			float Mu2 = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 
-			drawFlatBottomTriangleSlopeFill(x0,y0, (int) Mx, (int) My,x1,y1,
+			float Mw = weights[0]*w0 + weights[1]*w1 + weights[2]*w2;
+
+			drawFlatBottomTriangleSlopeFill(x0,y0,w0, (int) Mx, (int) My, Mw,x1,y1,w1,
 					u0,v0,
 					Mu2,Mv2,
 					u1,v1);
@@ -470,7 +494,7 @@ public class RenderContext extends Bitmap
 //					u1,v1
 //					,filter, texture,textW,m_pixelComponents,m_width
 //					);
-			drawFlatTopTriangleSlopeFill(x1,y1, (int) Mx, (int) My,x2,y2,
+			drawFlatTopTriangleSlopeFill(x1,y1,w1, (int) Mx, (int) My, Mw,x2,y2,w2,
 					u1,v1,
 					Mu2,Mv2,
 					u2,v2);
@@ -560,5 +584,9 @@ public class RenderContext extends Bitmap
 			e.printStackTrace();
 		}
 
+	}
+
+	public void clearZBuffer(){
+		Arrays.fill(zBuffer,0.0f);
 	}
 }
