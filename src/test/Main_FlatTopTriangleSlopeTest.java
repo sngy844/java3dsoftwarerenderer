@@ -52,15 +52,16 @@ public class Main_FlatTopTriangleSlopeTest {
             long currentTime = System.nanoTime();
 
             target.Clear((byte) 0x00);
+            target.clearZBuffer();
 
             for (int i = 0; i < tris.length; i += 2)
                 target.drawPoint(tris[i], tris[i + 1], (byte) 255, (byte) 0, (byte) 0);
 
             if (isDrawVertices) {
                 for (int i = 0; i < tris.length; i += 6)
-                    target.drawFlatTopTriangleSlopeFill(tris[i], tris[i + 1],0,
-                            tris[i + 2], tris[i + 3],0,
-                            tris[i + 4], tris[i + 5],0,
+                    target.drawTriangleTexture(tris[i], tris[i + 1],1,
+                            tris[i + 2], tris[i + 3],1,
+                            tris[i + 4], tris[i + 5],1,
                             0,0.5f,
                             0.8201439f,0.64028776f,
                             1,1

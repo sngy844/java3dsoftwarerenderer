@@ -38,21 +38,22 @@ public class Main_FlatBottomTriangleSlopeTest {
 //                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
 //                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
-        target.bindTexture(brickTexture, textW, textH,filter);
+        target.bindTexture(null, textW, textH,filter);
         int frame = 0;
         while (true) {
             long currentTime = System.nanoTime();
 
             target.Clear((byte) 0x00);
+            target.clearZBuffer();
 
 //            for (int i = 0; i < tris.length; i += 2)
 //                target.drawPoint(tris[i], tris[i + 1], (byte) 255, (byte) 0, (byte) 0);
 
             if (isDrawVertices) {
                 for (int i = 0; i < tris.length; i += 6)
-                    target.drawFlatBottomTriangleSlopeFill(tris[i], tris[i + 1],0,
-                            tris[i + 2], tris[i + 3],0,
-                            tris[i + 4], tris[i + 5],0,
+                    target.drawTriangleTexture(tris[i], tris[i + 1],1,
+                            tris[i + 2], tris[i + 3],1,
+                            tris[i + 4], tris[i + 5],1,
                                 0.5f,0,
                             0.8201439f,0.64028776f,
                                 0,0.5f

@@ -16,9 +16,10 @@ import java.util.List;
 
 public class Main_ObjReaderTest {
     static boolean drawPoint = false;
-    static boolean drawWire= true;
-    static boolean drawTexture = false;
+    static boolean drawWire= false;
+    static boolean drawTexture =true;
     static float rotAmount = 0.000005f;
+    static boolean culling = false;
 
     public static void main(String[] args) {
         List<Float> vertices =  new ArrayList<>();
@@ -28,7 +29,7 @@ public class Main_ObjReaderTest {
 
         BufferedReader reader;
         int dims [] = new int[2]; //Dim[0] width, dim[2] height
-        byte[] pngData = GfxNative.openPNGFile("res/f22.png",dims);
+        byte[] pngData = GfxNative.openPNGFile("res/emd48.png",dims);
         int textureW = dims[0];
         int textureH = dims[1];
         //Convert to R-G-B
@@ -44,7 +45,7 @@ public class Main_ObjReaderTest {
         }
 
         try {
-            reader = new BufferedReader(new FileReader("res/f22.obj"));
+            reader = new BufferedReader(new FileReader("res/leon_head.obj"));
             String line = reader.readLine();
 
             while (line != null) {
@@ -88,12 +89,12 @@ public class Main_ObjReaderTest {
         }
 
         //Scale the model
-//        float scale = 35;
-//        for(int i =0 ; i< vertices.size();i+=3) {
-//            vertices.set(i,     vertices.get(i)/scale );
-//            vertices.set(i+1,   vertices.get(i+1)/scale );
-//            vertices.set(i+2,   vertices.get(i+2)/scale );
-//        }
+        float scale = 35;
+        for(int i =0 ; i< vertices.size();i+=3) {
+            vertices.set(i,     vertices.get(i)/scale );
+            vertices.set(i+1,   vertices.get(i+1)/scale );
+            vertices.set(i+2,   vertices.get(i+2)/scale );
+        }
 
         //Find min find max - probably do it during the read in file
         float minX = Float.MAX_VALUE; float minY = Float.MAX_VALUE; float minZ = Float.MAX_VALUE;
@@ -156,11 +157,15 @@ public class Main_ObjReaderTest {
             public void keyPressed(KeyEvent e) {
                 char keyCode = e.getKeyChar();
                 if(keyCode == 't') drawTexture = !drawTexture;
+                if(keyCode == 'c') culling = !culling;
                 if(keyCode == 'p') drawPoint = !drawPoint;
                 if(keyCode == 'w') drawWire = !drawWire;
                 if(keyCode == 'r') {
                     if(rotAmount == 0) rotAmount = 0.000005f;
                     else rotAmount = 0;
+                }
+                if((int)keyCode == 27){
+                    System.exit(0);
                 }
             }
 
@@ -234,16 +239,18 @@ public class Main_ObjReaderTest {
 
             //Backface culling
             //Face normal
-            result_v0[3] = 0.0f;
-            calculateFaceNormal(result_v0,v0,v1,v2);
-            normalizeVec(result_v0);
-            camPointOnFaceVec[0] = -v0[0];
-            camPointOnFaceVec[1] = -v0[1];
-            camPointOnFaceVec[2] = -v0[2];
-            camPointOnFaceVec[3] = 0;
-            float angleDot = dot(camPointOnFaceVec,result_v0);
-            if(angleDot < 0){
-                continue;
+            if(culling) {
+                result_v0[3] = 0.0f;
+                calculateFaceNormal(result_v0, v0, v1, v2);
+                normalizeVec(result_v0);
+                camPointOnFaceVec[0] = -v0[0];
+                camPointOnFaceVec[1] = -v0[1];
+                camPointOnFaceVec[2] = -v0[2];
+                camPointOnFaceVec[3] = 0;
+                float angleDot = dot(camPointOnFaceVec, result_v0);
+                if (angleDot < 0) {
+                    continue;
+                }
             }
 
             result_v0[0] = aspect_times_fovfactor * v0[0];
@@ -274,21 +281,14 @@ public class Main_ObjReaderTest {
 //            target.DrawPixel((int) result_v1[0], (int) result_v1[1],(byte) 0xff, (byte) 0xff, (byte) 0xff);
 //            target.DrawPixel((int) result_v2[0], (int) result_v2[1],(byte) 0xff, (byte) 0xff, (byte) 0xff);
 
-
-//            target.drawLine((int) result_v0[0], (int) result_v0[1],
-//                    (int) result_v1[0], (int) result_v1[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
-//            target.drawLine((int) result_v1[0], (int) result_v1[1],
-//                    (int) result_v2[0], (int) result_v2[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
-//            target.drawLine((int) result_v2[0], (int) result_v2[1],
-//                    (int) result_v0[0], (int) result_v0[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
-
 //            target.drawTriangleFill((int) result_v0[0], (int) result_v0[1],
 //                    (int) result_v1[0], (int) result_v1[1],
 //                    (int) result_v2[0], (int) result_v2[1],
 //                    (byte) 0xff, (byte) 0xff, (byte) 0xff
 //                    );
+
             if(drawTexture)
-            target.drawTriangleFillSlope((int) result_v0[0], (int) result_v0[1],result_v0[3],
+            target.drawTriangleTexture((int) result_v0[0], (int) result_v0[1],result_v0[3],
                                     (int) result_v1[0], (int) result_v1[1],result_v1[3],
                                     (int) result_v2[0], (int) result_v2[1],result_v2[3],
                                     v0_u,v0_v,
@@ -304,9 +304,7 @@ public class Main_ObjReaderTest {
         }
         display.SwapBuffers();
     }
-//        System.out.println("Finished Rendering - Writing to file");
-//        target.saveTarga();
-    }
+}
 
     static void calculateFaceNormal(float[] result,float[] v0 , float[] v1, float[] v2){
         float v1v2_x = v2[0] -  v1[0];

@@ -6,7 +6,7 @@ import swrast.RenderContext;
 public class Main_FlatBottomTriangleTest {
     public static void main(String[] args){
     //
-        Display display = new Display(801, 801,1024,1014, "Software Rendering");
+        Display display = new Display(1024, 1024,1024,1014, "Software Rendering");
     RenderContext target = display.GetFrameBuffer();
 
     long previousTime = System.nanoTime();
@@ -33,6 +33,7 @@ public class Main_FlatBottomTriangleTest {
         previousTime = currentTime;
 
         target.Clear((byte) 0x00);
+
 
         for(int i =0 ; i< tris.length; i+=2)
             target.DrawPixel(tris[i], tris[i+1], (byte) 255, (byte) 0, (byte) 0);

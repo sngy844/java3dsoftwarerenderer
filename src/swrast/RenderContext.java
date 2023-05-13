@@ -1,6 +1,5 @@
 package swrast;
 
-import java.io.*;
 import java.util.Arrays;
 
 import static swrast.GfxMath.lerp;
@@ -104,7 +103,6 @@ public class RenderContext extends Bitmap
 		if(inverse_slope_1 > inverse_slope_2){
 			float temp = inverse_slope_1; inverse_slope_1 = inverse_slope_2; inverse_slope_2 = temp;
 		}
-
 
 		float xstart =x0;
 		float xend = x0;
@@ -422,7 +420,7 @@ public class RenderContext extends Bitmap
 		}//end for each y scan line
 	}
 
-
+	@Deprecated
 	public void  drawTriangleFillSlope(int x0, int y0, float w0, int x1, int y1, float w1, int x2, int y2, float w2,
 									   float u0, float v0,
 									   float u1, float v1,
@@ -508,7 +506,6 @@ public class RenderContext extends Bitmap
 	}
 
 
-
 	public void bindTexture(byte[] text, int textureW, int textureH, int filter){
 		this.texture = text;
 		this.textW = textureW;
@@ -517,76 +514,165 @@ public class RenderContext extends Bitmap
 	}
 
 	public void save(){
-		String fileName = "buffer.ppm";
-		BufferedWriter writer = null;
-		try {
-			writer = new BufferedWriter(new FileWriter(fileName, false));
-			writer.append("P3\n");
-			writer.append(String.format("%s %s\n", m_width,m_height));
-			writer.append("255\n");
-
-			for(int i=0; i< m_height;i++){
-				for(int k=0 ; k< m_width;k++){
-					writer.append(String.format("%d %d %d ",
-							m_pixelComponents[(i* m_width+k)*4+1]&0xFF,
-							m_pixelComponents[(i* m_width+k)*4+2]&0xFF,
-							m_pixelComponents[(i* m_width+k)*4+3]&0xFF
-							)
-					);
-				}
-				writer.append("\n");
-			}
-			writer.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		IOUtils.save("buffer.ppm",m_pixelComponents,m_width,m_height);
 	}
 
 	public void saveTarga(){
-		String fileName = "buffer.tga";
-
-		try (FileOutputStream fos = new FileOutputStream(fileName,false))
-		{
-			fos.write (0x00);	/* ID Length, 0 => No ID	*/
-			fos.write (0x00);	/* Color Map Type, 0 => No color map included	*/
-			fos.write (0x02);	/* Image Type, 2 => Uncompressed, True-color Image */
-			fos.write (0x00);	/* Next five bytes are about the color map entries */
-			fos.write (0x00);	/* 2 bytes Index, 2 bytes length, 1 byte size */
-			fos.write (0x00);
-			fos.write (0x00);
-			fos.write (0x00);
-			fos.write (0x00);	/* X-origin of Image	*/
-			fos.write (0x00);
-			fos.write (0x00);	/* Y-origin of Image	*/
-			fos.write (0x00);
-			fos.write (m_width & 0xff);      /* Image Width	*/
-			fos.write ((m_width>>8) & 0xff);
-			fos.write (m_height & 0xff);     /* Image Height	*/
-			fos.write ((m_height>>8) & 0xff);
-			fos.write (0x18);		/* Pixel Depth, 0x18 => 24 Bits	*/
-			fos.write (0x20);		/* Image Descriptor	*/
-			for (int y=0; y< m_height;y++) {
-				for (int x=0; x<m_width; x++) {
-					byte r, g, b;
-					int i = (y*m_width + x) * 4;
-					r = (m_pixelComponents[i+1]);
-					g = (m_pixelComponents[i+2]);
-					b = (m_pixelComponents[i+3]);
-
-					fos.write(r); /* write blue */
-					fos.write(g); /* write green */
-					fos.write(b); /* write red */
-				}
-			}
-			fos.close();
-			System.out.println("Successfully written data to the file");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		IOUtils.saveTarga("buffer.tga",m_pixelComponents,m_width,m_height);
 	}
 
 	public void clearZBuffer(){
 		Arrays.fill(zBuffer,0.0f);
+	}
+
+
+	public void drawTriangleTexture(
+									int x0, int y0, float w0,
+									int x1, int y1, float w1,
+									int x2, int y2, float w2,
+									float u0, float v0,
+									float u1, float v1,
+									float u2, float v2)
+	{
+		//Sort by y so y0 < y1 < y2;
+		int temp;
+		float tempF;
+		if(y0 > y1){
+			temp = x0;	x0=x1;	 x1 = temp;
+			temp = y0;	y0=y1;	 y1 = temp;
+
+			tempF = u0; u0=u1; u1= tempF;
+			tempF = v0; v0=v1; v1= tempF;
+
+			tempF = w0; w0=w1; w1= tempF;
+		}
+		if(y1 > y2){
+			temp = y1;	y1=y2;	 y2 = temp;
+			temp = x1;	x1=x2;	 x2 = temp;
+
+			tempF = u1; u1=u2; u2= tempF;
+			tempF = v1; v1=v2; v2= tempF;
+
+			tempF = w1; w1=w2; w2= tempF;
+		}
+		if(y0 > y1){
+			temp = y0;	y0 = y1; y1=temp;
+			temp = x0;	x0 = x1; x1=temp;
+
+			tempF = u0; u0=u1; u1= tempF;
+			tempF = v0; v0=v1; v1= tempF;
+
+			tempF = w0; w0=w1; w1= tempF;
+		}
+
+		//A triangle can be just flat top or flat bottom or both
+		float deltaY_1 = y1-y0;
+		float deltaY_2 = y2-y0;
+
+		float inverse_slope_1=0;
+		float inverse_slope_2=0;
+
+		if(deltaY_1 != 0) inverse_slope_1= (x1-x0) / deltaY_1;
+		if(deltaY_2 != 0) inverse_slope_2= (x2-x0) / deltaY_2;
+
+		//If it was flat top then don't do this - This is for FLAT BOTTOM
+		if(deltaY_1 != 0){
+			traverseAndFill(y0,y1,x0,y0,inverse_slope_1,inverse_slope_2,
+							x0,y0,w0,
+							x1,y1,w1,
+							x2,y2,w2,
+							u0,v0,
+							u1,v1,
+							u2,v2
+			);
+		}
+
+		deltaY_1 = y2-y1; //Change from above
+		deltaY_2 = y2-y0;
+
+		inverse_slope_1=0;
+		inverse_slope_2=0;
+
+		if(deltaY_1 != 0) inverse_slope_1 = (x2-x1) / deltaY_1;
+		if(deltaY_2 != 0) inverse_slope_2 = (x2-x0) / deltaY_2;
+
+		//This is for FLAT TOP
+		if(deltaY_1 != 0){
+			traverseAndFill(y1,y2,x2,y2,inverse_slope_1,inverse_slope_2,
+					x0,y0,w0,
+					x1,y1,w1,
+					x2,y2,w2,
+					u0,v0,
+					u1,v1,
+					u2,v2);
+		}
+	}
+
+	private void traverseAndFill(int yTop, int yDown, int xPassPoint , int yPassPoint,
+								 float inverse_slope_1, float inverse_slope_2,
+								 int x0, int y0, float w0,
+								 int x1, int y1, float w1,
+								 int x2, int y2, float w2,
+								 float u0, float v0,
+								 float u1, float v1,
+								 float u2, float v2
+	)
+	{
+		for(int y = yTop ; y<=yDown; y++){
+			int xstart = (int) (xPassPoint + (y-yPassPoint)*inverse_slope_1);
+			int xend = 	 (int) (xPassPoint + (y-yPassPoint)*inverse_slope_2);
+			if(xstart > xend){
+				int temp = xstart;
+				xstart = xend;
+				xend = temp;
+			}
+			for(int x = xstart; x<xend; x++){
+				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
+				//Alos need to take of the case point is on edge of triangle
+				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
+
+				//Interpolate Z
+				float finalZ =1.0f - ( weights[0]/w0 + weights[1]/w1 + weights[2]/w2 );
+				if(finalZ < zBuffer[y*m_width+x] ){
+					continue;
+				}
+				zBuffer[y*m_width+x] = finalZ;
+
+				final int index = (y * m_width + x) * 4;
+
+				if(texture== null) {
+					m_pixelComponents[index] = (byte) 255;
+					m_pixelComponents[index + 1] = (byte) 255;
+					m_pixelComponents[index + 2] = (byte) 255;
+					m_pixelComponents[index + 3] = (byte) 255;
+					continue;
+				}
+
+				//Interpolate U V coordinate
+				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
+				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
+
+				finalV = finalV < 0 ? 0 :finalV;
+				finalU = finalU < 0 ? 0 :finalU;
+				finalV = finalV > 1 ? 1 :finalV;
+				finalU = finalU > 1 ? 1 :finalU;
+
+				if(filter ==0) {
+					int textX = (int) (finalU * (textW -1));
+					int textY = (int) (finalV*  (textH -1));
+					//Nearest neightbor (no filtering)
+					byte textR = this.texture[(textY*textW+textX)*4+3];
+					byte textG = this.texture[(textY*textW+textX)*4+2];
+					byte textB = this.texture[(textY*textW+textX)*4+1];
+
+					m_pixelComponents[index]=(byte)255;
+					m_pixelComponents[index+1]= textB;
+					m_pixelComponents[index+2]= textG;
+					m_pixelComponents[index+3]= textR;
+				}
+
+			}//end for x
+		}//end for y
+
 	}
 }
