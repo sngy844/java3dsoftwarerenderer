@@ -15,6 +15,39 @@ public class GfxMath {
         return (ac_x * ab_y - ac_y * ab_x)* 0.5f;
     }
 
+    public static float areaParallelogram(float ax, float ay,
+                                          float bx, float by,
+                                          float cx, float cy){
+        float ac_x = cx - ax; float ab_x = bx - ax;
+        float ac_y = cy - ay; float ab_y = by - ay;
+        // Cross AC AB , gives signed area of big triangle
+        return  ac_x * ab_y - ac_y *ab_x;
+    }
+
+    public static float[] baryCentricWeight(float ax, float ay,
+                                            float bx, float by,
+                                            float cx, float cy,
+                                            float px, float py,
+                                            final float preCalBigArea,
+                                            float weights[]){
+        // PC PB
+        float pc_x = cx - px; float pb_x = bx - px;
+        float pc_y = cy - py; float pb_y = by - py;
+        // Cross PC PB, gives signed area of CPA -> weighted for A
+        float area_cpb = pc_x*pb_y - pc_y *pb_x;
+
+        float ac_x = cx - ax; float ap_x = px - ax;
+        float ac_y = cy - ay; float ap_y = py - ay;
+        // Cross AC AP, give signed area of APC -> weighted for B
+        float area_apc = ac_x * ap_y - ac_y*ap_x;
+
+        weights[0] = area_cpb/preCalBigArea; //Alpha
+        weights[1] = area_apc/preCalBigArea; //Beta
+        weights[2] = 1 - weights[0] - weights[1]; //Gamma
+
+        return  weights;
+    }
+
     public static float[] baryCentricWeight(float ax, float ay,
                                          float bx, float by,
                                          float cx, float cy,

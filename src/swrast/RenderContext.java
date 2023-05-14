@@ -13,12 +13,13 @@ public class RenderContext extends Bitmap
 	byte texture[];
 	int textW;
 	int textH;
+	boolean depth_test;
 
 	public RenderContext(int width, int height)	{
 		super(width, height);
 		this.weights= new float[3];
 		this.zBuffer = new float[width*height];
-		
+		this.depth_test = false;
 		final int spacing = 25;
 
 		gridIndex  = new int[(int)Math.ceil(this.GetWidth()/(float)spacing)*(int)Math.ceil(this.GetHeight()/(float)spacing)];
@@ -513,6 +514,10 @@ public class RenderContext extends Bitmap
 		this.filter = filter;
 	}
 
+	public void setDepthTest(boolean onOff){
+		this.depth_test = onOff;
+	}
+
 	public void save(){
 		IOUtils.save("buffer.ppm",m_pixelComponents,m_width,m_height);
 	}
@@ -565,6 +570,16 @@ public class RenderContext extends Bitmap
 			tempF = w0; w0=w1; w1= tempF;
 		}
 
+		float TopMidX = x1 -x0  ; 	float TopMidY  = y1 - y0;
+		float TopBottomX = x2 -x0  ; float TopBottomY  = y2-  y0;
+		float cross = TopMidX * TopBottomY - TopBottomX*TopMidY;
+		if(cross > 0){
+			System.out.println("Right");
+		}
+		else
+			System.out.println("Left");
+
+
 		//A triangle can be just flat top or flat bottom or both
 		float deltaY_1 = y1-y0;
 		float deltaY_2 = y2-y0;
@@ -583,7 +598,7 @@ public class RenderContext extends Bitmap
 							x2,y2,w2,
 							u0,v0,
 							u1,v1,
-							u2,v2
+							u2,v2,true
 			);
 		}
 
@@ -604,9 +619,19 @@ public class RenderContext extends Bitmap
 					x2,y2,w2,
 					u0,v0,
 					u1,v1,
-					u2,v2);
+					u2,v2,false);
 		}
 	}
+	boolean is_top_left(int x0,int y0,int x1,int y1){
+		int edge_x = x1 - x0;
+		int edge_y = y1 - y0;
+
+		boolean is_top_left =  edge_y == 0 && edge_x >0;
+		boolean is_left_edge =  edge_y <0;
+
+		return is_top_left || is_left_edge;
+	}
+
 
 	private void traverseAndFill(int yTop, int yDown, int xPassPoint , int yPassPoint,
 								 float inverse_slope_1, float inverse_slope_2,
@@ -615,9 +640,10 @@ public class RenderContext extends Bitmap
 								 int x2, int y2, float w2,
 								 float u0, float v0,
 								 float u1, float v1,
-								 float u2, float v2
+								 float u2, float v2, boolean isBottomFlat
 	)
 	{
+		final float preCalBigArea= GfxMath.areaParallelogram(x0,y0,x1,y1,x2,y2);
 		for(int y = yTop ; y<=yDown; y++){
 			int xstart = (int) (xPassPoint + (y-yPassPoint)*inverse_slope_1);
 			int xend = 	 (int) (xPassPoint + (y-yPassPoint)*inverse_slope_2);
@@ -629,14 +655,16 @@ public class RenderContext extends Bitmap
 			for(int x = xstart; x<xend; x++){
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
-				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,weights);
+				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,preCalBigArea,weights);
 
 				//Interpolate Z
-				float finalZ =1.0f - ( weights[0]/w0 + weights[1]/w1 + weights[2]/w2 );
-				if(finalZ < zBuffer[y*m_width+x] ){
-					continue;
+				if(depth_test) {
+					float finalZ = 1.0f - (weights[0] / w0 + weights[1] / w1 + weights[2] / w2);
+					if (finalZ < zBuffer[y * m_width + x]) {
+						continue;
+					}
+					zBuffer[y * m_width + x] = finalZ;
 				}
-				zBuffer[y*m_width+x] = finalZ;
 
 				final int index = (y * m_width + x) * 4;
 
@@ -673,6 +701,11 @@ public class RenderContext extends Bitmap
 
 			}//end for x
 		}//end for y
-
 	}
+
+
+
+
+
+
 }

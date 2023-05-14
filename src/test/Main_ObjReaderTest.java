@@ -19,7 +19,8 @@ public class Main_ObjReaderTest {
     static boolean drawWire= false;
     static boolean drawTexture =true;
     static float rotAmount = 0.000005f;
-    static boolean culling = false;
+    static boolean culling = true;
+    static boolean deptTest = true;
 
     public static void main(String[] args) {
         List<Float> vertices =  new ArrayList<>();
@@ -123,13 +124,14 @@ public class Main_ObjReaderTest {
 
         //
         //Try projection and draw in buffer and save
-        Display display = new Display(1024,768,1024,768, "Software Rendering - Obj, Perspective, Transform ,Backface Culling, Z Buffer Test");
+        Display display = new Display(320,240,1024,768, "Software Rendering - Obj, Perspective, Transform ,Backface Culling, Z Buffer Test");
         RenderContext target = display.GetFrameBuffer();
 
 
 
         target.Clear((byte) 125);
         target.bindTexture(textureData,textureW,textureH,0);
+        target.setDepthTest(deptTest);
         final float aspect = (float)target.GetHeight() / target.GetWidth();
         final float znear = 0.1f;
         final float zfar =100.0f;
@@ -160,6 +162,7 @@ public class Main_ObjReaderTest {
                 if(keyCode == 'c') culling = !culling;
                 if(keyCode == 'p') drawPoint = !drawPoint;
                 if(keyCode == 'w') drawWire = !drawWire;
+                if(keyCode == 'd'){ deptTest = !deptTest; target.setDepthTest(deptTest);}
                 if(keyCode == 'r') {
                     if(rotAmount == 0) rotAmount = 0.000005f;
                     else rotAmount = 0;
