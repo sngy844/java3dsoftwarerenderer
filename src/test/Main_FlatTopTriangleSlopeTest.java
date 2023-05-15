@@ -1,6 +1,7 @@
 package test;
 
 import swrast.Display;
+import swrast.GfxMath;
 import swrast.RenderContext;
 
 import java.io.IOException;
@@ -40,12 +41,21 @@ public class Main_FlatTopTriangleSlopeTest {
                 // Condition y0 = y1
                 50,120,
                 180,80,
-                55,150
+                55,110
 
                // 87,25,262,25,175,150
 //                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
 //                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
+
+        for(int i =0 ; i< tris.length; i+=6){
+            if(!GfxMath.isWindingCW( tris[i],tris[i+1], tris[i+2],tris[i+3],tris[i+4],tris[i+5])){
+                System.out.println("Error not CW winding");
+                System.exit(1);
+            }
+        }
+
+
         target.bindTexture(brickTexture, textW, textH,filter);
         int frame = 0;
         while (true) {

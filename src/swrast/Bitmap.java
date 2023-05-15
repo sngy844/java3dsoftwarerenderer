@@ -87,6 +87,16 @@ public class Bitmap
 		Arrays.fill(m_pixelComponents, shade);
 	}
 
+	public void Clear(byte r, byte g, byte b){
+		final int totalElems =m_height*m_width*4;
+		for(int i = 0 ; i<totalElems; i+=4){
+			m_pixelComponents[i] = (byte) 255;
+			m_pixelComponents[i+1] = b;
+			m_pixelComponents[i+2] = g;
+			m_pixelComponents[i+3] = r;
+		}
+	}
+
 	/**
 	 * Sets the pixel at (x, y) to the color specified by (a,b,g,r).
 	 */

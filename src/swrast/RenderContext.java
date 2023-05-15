@@ -570,15 +570,9 @@ public class RenderContext extends Bitmap
 			tempF = w0; w0=w1; w1= tempF;
 		}
 
-		float TopMidX = x1 -x0  ; 	float TopMidY  = y1 - y0;
-		float TopBottomX = x2 -x0  ; float TopBottomY  = y2-  y0;
-		float cross = TopMidX * TopBottomY - TopBottomX*TopMidY;
-		if(cross > 0){
-			System.out.println("Right");
-		}
-		else
-			System.out.println("Left");
-
+//		float TopMidX = x1 -x0  ; 	float TopMidY  = y1 - y0;
+//		float TopBottomX = x2 -x0  ; float TopBottomY  = y2-  y0;
+//		float cross = TopMidX * TopBottomY - TopBottomX*TopMidY;
 
 		//A triangle can be just flat top or flat bottom or both
 		float deltaY_1 = y1-y0;
@@ -645,17 +639,25 @@ public class RenderContext extends Bitmap
 	{
 		final float preCalBigArea= GfxMath.areaParallelogram(x0,y0,x1,y1,x2,y2);
 		for(int y = yTop ; y<=yDown; y++){
-			int xstart = (int) (xPassPoint + (y-yPassPoint)*inverse_slope_1);
-			int xend = 	 (int) (xPassPoint + (y-yPassPoint)*inverse_slope_2);
+			float xstart =(xPassPoint + (y-yPassPoint)*inverse_slope_1);
+			float xend = 	(xPassPoint + (y-yPassPoint)*inverse_slope_2);
 			if(xstart > xend){
-				int temp = xstart;
+				float temp = xstart;
 				xstart = xend;
 				xend = temp;
 			}
-			for(int x = xstart; x<xend; x++){
+			for(int x = (int) xstart; x <= (int)xend ; x++){
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
-				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,preCalBigArea,weights);
+				if(x == (int)xstart)
+					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xstart,y,preCalBigArea,weights);
+				else if(x == (int)xend)
+					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xend,y,preCalBigArea,weights);
+				else
+					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,preCalBigArea,weights);
+
+//				if(weights[0] < 0 || weights[1] < 0 || weights[2] < 0)
+//					continue;;
 
 				//Interpolate Z
 				if(depth_test) {
@@ -680,23 +682,28 @@ public class RenderContext extends Bitmap
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
 
-				finalV = finalV < 0 ? 0 :finalV;
-				finalU = finalU < 0 ? 0 :finalU;
-				finalV = finalV > 1 ? 1 :finalV;
-				finalU = finalU > 1 ? 1 :finalU;
+//				finalV = finalV < 0 ? 0 :finalV;
+//				finalU = finalU < 0 ? 0 :finalU;
+//				finalV = finalV > 1 ? 1 :finalV;
+//				finalU = finalU > 1 ? 1 :finalU;
 
 				if(filter ==0) {
 					int textX = (int) (finalU * (textW -1));
 					int textY = (int) (finalV*  (textH -1));
+
+					if(textX < 0 || textX >= textW) throw new RuntimeException();
+					if(textY < 0 || textY >= textH) throw new RuntimeException();
+
 					//Nearest neightbor (no filtering)
-					byte textR = this.texture[(textY*textW+textX)*4+3];
-					byte textG = this.texture[(textY*textW+textX)*4+2];
-					byte textB = this.texture[(textY*textW+textX)*4+1];
+					final int textIndex =(textY*textW+textX)*4;
+//					byte textR = this.texture[textIndex+3];
+//					byte textG = this.texture[textIndex+2];
+//					byte textB = this.texture[textIndex+1];
 
 					m_pixelComponents[index]=(byte)255;
-					m_pixelComponents[index+1]= textB;
-					m_pixelComponents[index+2]= textG;
-					m_pixelComponents[index+3]= textR;
+					m_pixelComponents[index+1]= this.texture[textIndex+1];
+					m_pixelComponents[index+2]= this.texture[textIndex+2];
+					m_pixelComponents[index+3]= this.texture[textIndex+3];
 				}
 
 			}//end for x

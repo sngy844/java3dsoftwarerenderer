@@ -124,7 +124,7 @@ public class Main_ObjReaderTest {
 
         //
         //Try projection and draw in buffer and save
-        Display display = new Display(320,240,1024,768, "Software Rendering - Obj, Perspective, Transform ,Backface Culling, Z Buffer Test");
+        Display display = new Display(1024,768,1024,768, "Software Rendering - Obj, Perspective, Transform ,Backface Culling, Z Buffer Test");
         RenderContext target = display.GetFrameBuffer();
 
 
@@ -180,7 +180,7 @@ public class Main_ObjReaderTest {
 
 
     while (true) {
-        target.Clear((byte) 125);
+        target.Clear((byte) 255, (byte) 0, (byte) 255);
         target.clearZBuffer();
         for(int i =0 ; i< vertices.size() && drawPoint ;i+=3){
             v0[0] = vertices.get(i);
