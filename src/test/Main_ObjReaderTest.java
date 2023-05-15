@@ -124,13 +124,13 @@ public class Main_ObjReaderTest {
 
         //
         //Try projection and draw in buffer and save
-        Display display = new Display(1024,768,1024,768, "Software Rendering - Obj, Perspective, Transform ,Backface Culling, Z Buffer Test");
+        Display display = new Display(320,240,1024,768, "Software Rendering - Obj, Perspective, Transform ,Backface Culling, Z Buffer Test");
         RenderContext target = display.GetFrameBuffer();
 
 
 
         target.Clear((byte) 125);
-        target.bindTexture(textureData,textureW,textureH,0);
+        target.bindTexture(null,textureW,textureH,0);
         target.setDepthTest(deptTest);
         final float aspect = (float)target.GetHeight() / target.GetWidth();
         final float znear = 0.1f;
@@ -146,7 +146,7 @@ public class Main_ObjReaderTest {
         float [] camPointOnFaceVec = new float[4];
         float [] v0 = new float[4]; float [] v1 = new float[4];float [] v2 = new float[4];
         double phi =0;
-
+        byte [] depthBufferVisual = new byte[64*64*4];
 
 
         display.addKeyListener(new KeyListener() {
@@ -226,20 +226,21 @@ public class Main_ObjReaderTest {
 //            v2[2] -= 3.f;
 
             //Rotation X
-            phi += rotAmount; //Increase angle over time
-            float y = (float) (Math.cos(phi)*v0[0] - Math.sin(phi)*v0[2]);
-            float z = (float) (Math.sin(phi)*v0[0] + Math.cos(phi)*v0[2]);
-            v0[0] = y;
-            v0[2] = z -4.5f ;
-            y = (float) (Math.cos(phi)*v1[0] - Math.sin(phi)*v1[2]);
-            z = (float) (Math.sin(phi)*v1[0] + Math.cos(phi)*v1[2]);
-            v1[0] = y;
-            v1[2] = z -4.5f;
-            y = (float) (Math.cos(phi)*v2[0] - Math.sin(phi)*v2[2]);
-            z = (float) (Math.sin(phi)*v2[0] + Math.cos(phi)*v2[2]);
-            v2[0] = y;
-            v2[2] = z -4.5f;
-
+            {
+                phi += rotAmount; //Increase angle over time
+                float y = (float) (Math.cos(phi) * v0[0] - Math.sin(phi) * v0[2]);
+                float z = (float) (Math.sin(phi) * v0[0] + Math.cos(phi) * v0[2]);
+                v0[0] = y;
+                v0[2] = z - 4.5f;
+                y = (float) (Math.cos(phi) * v1[0] - Math.sin(phi) * v1[2]);
+                z = (float) (Math.sin(phi) * v1[0] + Math.cos(phi) * v1[2]);
+                v1[0] = y;
+                v1[2] = z - 4.5f;
+                y = (float) (Math.cos(phi) * v2[0] - Math.sin(phi) * v2[2]);
+                z = (float) (Math.sin(phi) * v2[0] + Math.cos(phi) * v2[2]);
+                v2[0] = y;
+                v2[2] = z - 4.5f;
+            }
             //Backface culling
             //Face normal
             if(culling) {
@@ -303,6 +304,20 @@ public class Main_ObjReaderTest {
                     (int) result_v1[0], (int) result_v1[1],
                     (int) result_v2[0], (int) result_v2[1],
                     (byte) 0xff, (byte) 0xff, (byte) 0xff);
+
+            //Depth Visulization
+//            float[] zBuffer = target.getZBuffer();
+//            float zMin = target.getZMin();
+//            float zMaxMin = target.getZMax() - zMin;
+//            for(int y =0 ; y < target.GetHeight(); y++)
+//                for(int x =0 ; x < target.GetWidth(); x++){
+//                    float norm =0;
+//                    if(zMaxMin!=0)
+//                        norm=((zBuffer[y*target.GetWidth()+x] - zMin)/(zMaxMin));
+//                    byte pxDepthValue = (byte) (norm*255);
+//
+//                    target.DrawPixel(x,y,pxDepthValue,pxDepthValue,pxDepthValue);
+//                }
 
         }
         display.SwapBuffers();

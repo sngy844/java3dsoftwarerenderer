@@ -15,6 +15,9 @@ public class RenderContext extends Bitmap
 	int textH;
 	boolean depth_test;
 
+	float zMin = 0;
+	float zMax = 0;
+
 	public RenderContext(int width, int height)	{
 		super(width, height);
 		this.weights= new float[3];
@@ -30,6 +33,25 @@ public class RenderContext extends Bitmap
 			}
 		}
 	}
+
+	public float[] getZBuffer(){
+		return zBuffer;
+	}
+
+	public float getZMin(){
+		return zMin;
+	}
+
+	public float getZMax(){
+		return zMax;
+	}
+
+	public void clearZBuffer(){
+		Arrays.fill(zBuffer,0.0f);
+		zMin = 0;
+		zMax =0;
+	}
+
 
 	public void drawGrid(){
 //		int index ;
@@ -526,9 +548,6 @@ public class RenderContext extends Bitmap
 		IOUtils.saveTarga("buffer.tga",m_pixelComponents,m_width,m_height);
 	}
 
-	public void clearZBuffer(){
-		Arrays.fill(zBuffer,0.0f);
-	}
 
 
 	public void drawTriangleTexture(
@@ -666,15 +685,17 @@ public class RenderContext extends Bitmap
 						continue;
 					}
 					zBuffer[y * m_width + x] = finalZ;
+					if(zMin > finalZ) zMin = finalZ;
+					if(zMax < finalZ) zMax = finalZ;
 				}
 
 				final int index = (y * m_width + x) * 4;
 
 				if(texture== null) {
 					m_pixelComponents[index] = (byte) 255;
-					m_pixelComponents[index + 1] = (byte) 255;
-					m_pixelComponents[index + 2] = (byte) 255;
-					m_pixelComponents[index + 3] = (byte) 255;
+					m_pixelComponents[index + 1] = (byte) 125;
+					m_pixelComponents[index + 2] = (byte) 125;
+					m_pixelComponents[index + 3] = (byte) 125;
 					continue;
 				}
 
