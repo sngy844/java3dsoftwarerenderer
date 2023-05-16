@@ -39,21 +39,25 @@ public class Main_FlatTopTriangleSlopeTest {
         // TODO: check winding
         int tris[] = new int[]{
                 // Condition y0 = y1
-                50,120,
-                180,80,
-                55,110
+//                50,150,
+//                180,80,
+//                55,110
+
+                70,60,
+                95,110,
+                10,150,
 
                // 87,25,262,25,175,150
 //                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
 //                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
 
-        for(int i =0 ; i< tris.length; i+=6){
-            if(!GfxMath.isWindingCW( tris[i],tris[i+1], tris[i+2],tris[i+3],tris[i+4],tris[i+5])){
-                System.out.println("Error not CW winding");
-                System.exit(1);
-            }
-        }
+//        for(int i =0 ; i< tris.length; i+=6){
+//            if(!GfxMath.isWindingCW( tris[i],tris[i+1], tris[i+2],tris[i+3],tris[i+4],tris[i+5])){
+//                System.out.println("Error not CW winding");
+//                System.exit(1);
+//            }
+//        }
 
 
         target.bindTexture(brickTexture, textW, textH,filter);
@@ -61,7 +65,7 @@ public class Main_FlatTopTriangleSlopeTest {
         while (true) {
             long currentTime = System.nanoTime();
 
-            target.Clear((byte) 0x00);
+            target.Clear((byte) 125);
             target.clearZBuffer();
 
             for (int i = 0; i < tris.length; i += 2)

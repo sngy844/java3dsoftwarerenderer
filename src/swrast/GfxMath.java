@@ -18,7 +18,7 @@ public class GfxMath {
     public static boolean isWindingCW(float x0, float y0, 	float x1, float y1,	float x2, float y2 ){
         float v0_x = x1 -x0; float v0_y = y1 -y0;
         float v1_x = x2 -x0; float v1_y = y2 -y0;
-         return v0_x * v1_y - v1_x*v0_y < 0 ;
+        return v0_x * v1_y - v1_x*v0_y < 0 ;
     }
 
     public static float areaParallelogram(float ax, float ay,

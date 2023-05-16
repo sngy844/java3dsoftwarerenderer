@@ -605,7 +605,9 @@ public class RenderContext extends Bitmap
 
 		//If it was flat top then don't do this - This is for FLAT BOTTOM
 		if(deltaY_1 != 0){
-			traverseAndFill(y0,y1,x0,y0,inverse_slope_1,inverse_slope_2,
+			traverseAndFill((int)Math.ceil( y0 - 0.5f ),
+							(int)Math.ceil( y1 - 0.5f ),
+							x0,y0,inverse_slope_1,inverse_slope_2,
 							x0,y0,w0,
 							x1,y1,w1,
 							x2,y2,w2,
@@ -626,7 +628,9 @@ public class RenderContext extends Bitmap
 
 		//This is for FLAT TOP
 		if(deltaY_1 != 0){
-			traverseAndFill(y1,y2,x2,y2,inverse_slope_1,inverse_slope_2,
+			traverseAndFill((int)Math.ceil( y1 - 0.5f ),
+							(int)Math.ceil( y2 - 0.5f ),
+					x2,y2,inverse_slope_1,inverse_slope_2,
 					x0,y0,w0,
 					x1,y1,w1,
 					x2,y2,w2,
@@ -657,20 +661,24 @@ public class RenderContext extends Bitmap
 	)
 	{
 		final float preCalBigArea= GfxMath.areaParallelogram(x0,y0,x1,y1,x2,y2);
-		for(int y = yTop ; y<=yDown; y++){
-			float xstart =(xPassPoint + (y-yPassPoint)*inverse_slope_1);
-			float xend = 	(xPassPoint + (y-yPassPoint)*inverse_slope_2);
+		for(int y = yTop ; y<yDown; y++){
+			float xstartf =  (xPassPoint + (y+0.5f-yPassPoint)*inverse_slope_1);
+			float xendf = 	 (xPassPoint +  (y+0.5f-yPassPoint)*inverse_slope_2);
+			int xstart = (int)Math.ceil( xstartf -0.5f );
+			int xend =   (int)Math.ceil( xendf -  0.5f );
+
 			if(xstart > xend){
-				float temp = xstart;
+				int temp = xstart;
 				xstart = xend;
 				xend = temp;
 			}
-			for(int x = (int)xstart; x <= (int)xend ; x++){
+
+			for(int x =xstart; x <xend ; x++){
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
-				if(x == (int)xstart)
+				if(x == xstart)
 					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xstart,y,preCalBigArea,weights);
-				else if(x == (int)xend)
+				else if(x ==xend)
 					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xend,y,preCalBigArea,weights);
 				else
 					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,preCalBigArea,weights);
@@ -712,8 +720,10 @@ public class RenderContext extends Bitmap
 					int textX = (int) (finalU * (textW -1));
 					int textY = (int) (finalV*  (textH -1));
 
-					if(textX < 0 || textX >= textW) throw new RuntimeException();
-					if(textY < 0 || textY >= textH) throw new RuntimeException();
+					if(textX < 0 || textX >= textW)
+						throw new RuntimeException();
+					if(textY < 0 || textY >= textH)
+						throw new RuntimeException();
 
 					//Nearest neightbor (no filtering)
 					final int textIndex =(textY*textW+textX)*4;

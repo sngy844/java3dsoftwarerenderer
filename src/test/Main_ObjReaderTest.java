@@ -130,7 +130,7 @@ public class Main_ObjReaderTest {
 
 
         target.Clear((byte) 125);
-        target.bindTexture(textureData,textureW,textureH,0);
+        target.bindTexture(null,textureW,textureH,0);
         target.setDepthTest(deptTest);
         final float aspect = (float)target.GetHeight() / target.GetWidth();
         final float znear = 0.1f;
