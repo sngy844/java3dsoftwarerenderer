@@ -36,6 +36,7 @@ public class GfxMath {
                                             float px, float py,
                                             final float preCalBigArea,
                                             float weights[]){
+        final float epsilon = 0.0000001f;
         // PC PB
         float pc_x = cx - px; float pb_x = bx - px;
         float pc_y = cy - py; float pb_y = by - py;
@@ -47,10 +48,14 @@ public class GfxMath {
         // Cross AC AP, give signed area of APC -> weighted for B
         float area_apc = ac_x * ap_y - ac_y*ap_x;
 
+
         weights[0] = area_cpb/preCalBigArea; //Alpha
         weights[1] = area_apc/preCalBigArea; //Beta
-        weights[2] = 1 - weights[0] - weights[1]; //Gamma
+        weights[2] = 1 - (weights[0] +weights[1]); //Gamma
 
+        if(weights[0] < epsilon) weights[0] = 0;
+        if(weights[1] < epsilon) weights[1] = 0;
+        if(weights[2] < epsilon) weights[2] = 0;
         return  weights;
     }
 
@@ -60,6 +65,7 @@ public class GfxMath {
                                          float px, float py,
                                          float weights[]
     )    {
+        final float epsilon = 0.0000001f;
         //NOTE: On left hand coordinate, the Z is negative from screen to eye , and positive from screen inward
 
         // AC AB vectors
@@ -98,7 +104,10 @@ public class GfxMath {
         //E.G: Triangle CPB pull/weight A, triangle apc pull/weight B
         weights[0] = area_cpb/area_abc; //Alpha
         weights[1] = area_apc/area_abc; //Beta
-        weights[2] = 1 - weights[0] - weights[1]; //Gamma
+        weights[2] = 1 - (weights[0] + weights[1]); //Gamma
+        if(weights[0] < epsilon) weights[0] = 0;
+        if(weights[1] < epsilon) weights[1] = 0;
+        if(weights[2] < epsilon) weights[2] = 0;
         return weights;
     }
 

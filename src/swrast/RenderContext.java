@@ -665,7 +665,7 @@ public class RenderContext extends Bitmap
 				xstart = xend;
 				xend = temp;
 			}
-			for(int x = (int) xstart; x <= (int)xend ; x++){
+			for(int x = (int)xstart; x <= (int)xend ; x++){
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
 				if(x == (int)xstart)
@@ -675,8 +675,8 @@ public class RenderContext extends Bitmap
 				else
 					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,preCalBigArea,weights);
 
-//				if(weights[0] < 0 || weights[1] < 0 || weights[2] < 0)
-//					continue;;
+				if(weights[0] < 0 || weights[1] < 0 || weights[2] < 0)
+					throw new RuntimeException();
 
 				//Interpolate Z
 				if(depth_test) {
@@ -693,9 +693,9 @@ public class RenderContext extends Bitmap
 
 				if(texture== null) {
 					m_pixelComponents[index] = (byte) 255;
-					m_pixelComponents[index + 1] = (byte) 125;
-					m_pixelComponents[index + 2] = (byte) 125;
-					m_pixelComponents[index + 3] = (byte) 125;
+					m_pixelComponents[index + 1] = (byte) 0;
+					m_pixelComponents[index + 2] = (byte) 0;
+					m_pixelComponents[index + 3] = (byte) 0;
 					continue;
 				}
 
@@ -717,10 +717,6 @@ public class RenderContext extends Bitmap
 
 					//Nearest neightbor (no filtering)
 					final int textIndex =(textY*textW+textX)*4;
-//					byte textR = this.texture[textIndex+3];
-//					byte textG = this.texture[textIndex+2];
-//					byte textB = this.texture[textIndex+1];
-
 					m_pixelComponents[index]=(byte)255;
 					m_pixelComponents[index+1]= this.texture[textIndex+1];
 					m_pixelComponents[index+2]= this.texture[textIndex+2];
