@@ -19,11 +19,11 @@ public class Main_ObjReaderTest {
     static boolean drawWire= false;
     static boolean drawTexture =true;
     static boolean rotation = true;
-    static double rotAmount = 0.01f;
+    static double rotAmount = 0.00001f;
     static boolean culling = true;
     static boolean deptTest = true;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         List<Float> vertices =  new ArrayList<>();
         List<Float> textCoords =  new ArrayList<>();
         List<Float> vertNormals =  new ArrayList<>();
@@ -47,7 +47,7 @@ public class Main_ObjReaderTest {
         }
 
         try {
-            reader = new BufferedReader(new FileReader("res/cube.obj"));
+            reader = new BufferedReader(new FileReader("res/leon_head.obj"));
             String line = reader.readLine();
 
             while (line != null) {
@@ -131,7 +131,7 @@ public class Main_ObjReaderTest {
 
 
         target.Clear((byte) 125);
-        target.bindTexture(null,textureW,textureH,0);
+        target.bindTexture(textureData,textureW,textureH,0);
         target.setDepthTest(deptTest);
         final float aspect = (float)target.GetHeight() / target.GetWidth();
         final float znear = 0.1f;
@@ -258,22 +258,10 @@ public class Main_ObjReaderTest {
 
             {
                 if (rotation)
-                    phi += rotAmount;
+                    phi = rotAmount;
 
-                double cosPhi = Math.cos(phi);
-                double sinPhi = Math.sin(phi);
-                float y = (float) (cosPhi * v0[0] - sinPhi * v0[1]);
-                float z = (float) (sinPhi * v0[0] + cosPhi * v0[1]);
-                v0[0] = y;
-                v0[1] = z;
-                y = (float) (cosPhi * v1[0] - sinPhi * v1[1]);
-                z = (float) (sinPhi * v1[0] + cosPhi * v1[1]);
-                v1[0] = y;
-                v1[1] = z;
-                y = (float) (cosPhi * v2[0] - sinPhi * v2[1]);
-                z = (float) (sinPhi * v2[0] + cosPhi * v2[1]);
-                v2[0] = y;
-                v2[1] = z;
+                rotationY(phi,v0,v1,v2);
+
 
                 v0[2] -= 4.5f;
                 v1[2] -= 4.5f;
@@ -328,9 +316,9 @@ public class Main_ObjReaderTest {
             result_v1[1] += (target.GetHeight() - 1) / 2.0f;
             result_v2[1] += (target.GetHeight() - 1) / 2.0f;
 
-//            target.DrawPixel((int) result_v0[0], (int) result_v0[1],(byte) 0xff, (byte) 0xff, (byte) 0xff);
-//            target.DrawPixel((int) result_v1[0], (int) result_v1[1],(byte) 0xff, (byte) 0xff, (byte) 0xff);
-//            target.DrawPixel((int) result_v2[0], (int) result_v2[1],(byte) 0xff, (byte) 0xff, (byte) 0xff);
+//            target.DrawPixel((int) result_v0[0], (int) result_v0[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
+//            target.DrawPixel((int) result_v1[0], (int) result_v1[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
+//            target.DrawPixel((int) result_v2[0], (int) result_v2[1], (byte) 0xff, (byte) 0xff, (byte) 0xff);
 
 //            target.drawTriangleFill((int) result_v0[0], (int) result_v0[1],
 //                    (int) result_v1[0], (int) result_v1[1],
@@ -352,7 +340,8 @@ public class Main_ObjReaderTest {
                         (int) result_v2[0], (int) result_v2[1],
                         (byte) 0xff, (byte) 0xff, (byte) 0xff);
 
-            //Depth Visulization
+
+           //Depth Visulization
 //            float[] zBuffer = target.getZBuffer();
 //            float zMin = target.getZMin();
 //            float zMaxMin = target.getZMax() - zMin;
@@ -368,15 +357,16 @@ public class Main_ObjReaderTest {
 
         }
         //target.saveTarga("buffer_"+frame+".tga");
-        frame++;
         display.SwapBuffers();
+
+        frame++;
+        rotAmount+=0.01f;
 
         float delta = (float) ((currentTime - previousTime) / 1000000.0);
         elapsedTime += delta;
         previousTime = currentTime;
         if (elapsedTime >= 1000) {
             System.out.println("FPS:" + frame + " delta:" + delta);
-            //isDrawVertices = !isDrawVertices;
             elapsedTime = 0;
             frame = 0;
         }
@@ -448,4 +438,38 @@ public class Main_ObjReaderTest {
         }
     }
 
+    static void rotationX(double phi, float [] v0, float [] v1, float [] v2){
+        final double cosPhi = Math.cos(phi);
+        final double sinPhi = Math.sin(phi);
+
+        float y = (float) (cosPhi * v0[0] - sinPhi * v0[1]);
+        float z = (float) (sinPhi * v0[0] + cosPhi * v0[1]);
+        v0[0] = y;
+        v0[1] = z;
+        y = (float) (cosPhi * v1[0] - sinPhi * v1[1]);
+        z = (float) (sinPhi * v1[0] + cosPhi * v1[1]);
+        v1[0] = y;
+        v1[1] = z;
+        y = (float) (cosPhi * v2[0] - sinPhi * v2[1]);
+        z = (float) (sinPhi * v2[0] + cosPhi * v2[1]);
+        v2[0] = y;
+        v2[1] = z;
+    }
+    static void rotationY(double phi, float [] v0, float [] v1, float [] v2){
+        final double cosPhi = Math.cos(phi);
+        final double sinPhi = Math.sin(phi);
+
+        float y = (float) (cosPhi * v0[0] - sinPhi * v0[2]);
+        float z = (float) (sinPhi * v0[0] + cosPhi * v0[2]);
+        v0[0] = y;
+        v0[2] = z;
+        y = (float) (cosPhi * v1[0] - sinPhi * v1[2]);
+        z = (float) (sinPhi * v1[0] + cosPhi * v1[2]);
+        v1[0] = y;
+        v1[2] = z;
+        y = (float) (cosPhi * v2[0] - sinPhi * v2[2]);
+        z = (float) (sinPhi * v2[0] + cosPhi * v2[2]);
+        v2[0] = y;
+        v2[2] = z;
+    }
 }

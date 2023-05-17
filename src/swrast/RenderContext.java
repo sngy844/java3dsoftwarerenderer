@@ -678,7 +678,7 @@ public class RenderContext extends Bitmap
 				//Alos need to take of the case point is on edge of triangle
 				if(x == xstart)
 					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xstart,y,preCalBigArea,weights);
-				else if(x ==xend)
+				else if(x == xend)
 					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xend,y,preCalBigArea,weights);
 				else
 					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,preCalBigArea,weights);
@@ -711,10 +711,10 @@ public class RenderContext extends Bitmap
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
 
-//				finalV = finalV < 0 ? 0 :finalV;
-//				finalU = finalU < 0 ? 0 :finalU;
-//				finalV = finalV > 1 ? 1 :finalV;
-//				finalU = finalU > 1 ? 1 :finalU;
+				finalV = finalV < 0 ? 0 :finalV;
+				finalU = finalU < 0 ? 0 :finalU;
+				finalV = finalV > 1 ? 1 :finalV;
+				finalU = finalU > 1 ? 1 :finalU;
 
 				if(filter ==0) {
 					int textX = (int) (finalU * (textW -1));
