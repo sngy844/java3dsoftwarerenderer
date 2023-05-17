@@ -544,8 +544,8 @@ public class RenderContext extends Bitmap
 		IOUtils.save("buffer.ppm",m_pixelComponents,m_width,m_height);
 	}
 
-	public void saveTarga(){
-		IOUtils.saveTarga("buffer.tga",m_pixelComponents,m_width,m_height);
+	public void saveTarga(String fileName){
+		IOUtils.saveTarga(fileName,m_pixelComponents,m_width,m_height);
 	}
 
 
