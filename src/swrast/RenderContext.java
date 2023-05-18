@@ -605,8 +605,8 @@ public class RenderContext extends Bitmap
 
 		//If it was flat top then don't do this - This is for FLAT BOTTOM
 		if(deltaY_1 != 0){
-			traverseAndFill((int)Math.ceil( y0 - 0.5f ),
-							(int)Math.ceil( y1 - 0.5f ),
+			traverseAndFill(y0,
+							y1-1,
 							x0,y0,inverse_slope_1,inverse_slope_2,
 							x0,y0,w0,
 							x1,y1,w1,
@@ -628,8 +628,8 @@ public class RenderContext extends Bitmap
 
 		//This is for FLAT TOP
 		if(deltaY_1 != 0){
-			traverseAndFill((int)Math.ceil( y1 - 0.5f ),
-							(int)Math.ceil( y2 - 0.5f ),
+			traverseAndFill(y1,
+							y2,
 					x2,y2,inverse_slope_1,inverse_slope_2,
 					x0,y0,w0,
 					x1,y1,w1,
@@ -661,11 +661,13 @@ public class RenderContext extends Bitmap
 	)
 	{
 		final float preCalBigArea= GfxMath.areaParallelogram(x0,y0,x1,y1,x2,y2);
-		for(int y = yTop ; y<yDown; y++){
-			float xstartf =  (xPassPoint + (y+0.5f-yPassPoint)*inverse_slope_1);
-			float xendf = 	 (xPassPoint +  (y+0.5f-yPassPoint)*inverse_slope_2);
-			int xstart = (int)Math.ceil( xstartf -0.5f );
-			int xend =   (int)Math.ceil( xendf -  0.5f );
+		for(int y = yTop ; y<=yDown; y++){
+			float xstartf =  (xPassPoint +  (y-yPassPoint)*inverse_slope_1);
+			float xendf = 	 (xPassPoint +  (y-yPassPoint)*inverse_slope_2);
+//			int xstart = (int)Math.ceil( xstartf -0.5f );
+//			int xend =   (int)Math.ceil( xendf -  0.5f );
+			int xstart = (int)xstartf;
+			int xend =   (int)xendf;
 
 			if(xstart > xend){
 				int temp = xstart;
@@ -673,18 +675,20 @@ public class RenderContext extends Bitmap
 				xend = temp;
 			}
 
-			for(int x =xstart; x <xend ; x++){
+			for(int x =xstart; x <=xend ; x++){
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
 				if(x == xstart)
-					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xstart,y,preCalBigArea,weights);
+					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xstart+1,y,preCalBigArea,weights);
 				else if(x == xend)
-					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xend,y,preCalBigArea,weights);
+					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xend-1f,y,preCalBigArea,weights);
 				else
-					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x,y,preCalBigArea,weights);
+					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2, x ,y,preCalBigArea,weights);
 
-				if(weights[0] < 0 || weights[1] < 0 || weights[2] < 0)
-					throw new RuntimeException();
+//				if(weights[0] < 0 || weights[1] < 0 || weights[2] < 0)
+//					throw new RuntimeException();
+//				if(weights[0] +weights[1] + weights[2] > 1.0)
+//					continue;
 
 				//Interpolate Z
 				if(depth_test) {

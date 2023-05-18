@@ -31,7 +31,7 @@ public class Main_ObjReaderTest {
 
         BufferedReader reader;
         int dims [] = new int[2]; //Dim[0] width, dim[2] height
-        byte[] pngData = GfxNative.openPNGFile("res/emd48.png",dims);
+        byte[] pngData = GfxNative.openPNGFile("res/bricks.png",dims);
         int textureW = dims[0];
         int textureH = dims[1];
         //Convert to R-G-B
@@ -47,7 +47,7 @@ public class Main_ObjReaderTest {
         }
 
         try {
-            reader = new BufferedReader(new FileReader("res/leon_head.obj"));
+            reader = new BufferedReader(new FileReader("res/dino.obj"));
             String line = reader.readLine();
 
             while (line != null) {
@@ -91,13 +91,13 @@ public class Main_ObjReaderTest {
         }
 
         //Scale the model
-//        float scale = 35;
+//        float scale = 100;
 //        for(int i =0 ; i< vertices.size();i+=3) {
 //            vertices.set(i,     vertices.get(i)/scale );
 //            vertices.set(i+1,   vertices.get(i+1)/scale );
 //            vertices.set(i+2,   vertices.get(i+2)/scale );
 //        }
-//
+
         //Find min find max - probably do it during the read in file
         float minX = Float.MAX_VALUE; float minY = Float.MAX_VALUE; float minZ = Float.MAX_VALUE;
         float maxX = Float.MIN_VALUE; float maxY = Float.MIN_VALUE; float maxZ = Float.MIN_VALUE;
@@ -114,13 +114,15 @@ public class Main_ObjReaderTest {
         //Normalize X,Y,Z
         float deltaX = maxX - minX; float deltaY = maxY - minY; float deltaZ = maxZ - minZ;
         for(int i =0 ; i< vertices.size();i+=3) {
-            vertices.set(i,   (vertices.get(i) -   minX)/deltaX  );
+            vertices.set(i,   (vertices.get(i)   - minX)/deltaX  );
             vertices.set(i+1, (vertices.get(i+1) - minY)/deltaY);
             vertices.set(i+2, (vertices.get(i+2) - minZ)/deltaZ);
 
             vertices.set(i,     vertices.get(i)*2 - 1 );
             vertices.set(i+1,   vertices.get(i+1)*2 - 1 );
             vertices.set(i+2,   vertices.get(i+2)*2 - 1 );
+
+            System.out.println(String.format("v %f %f %f", vertices.get(i),vertices.get(i+1),vertices.get(i+2)));
         }
 
         //
@@ -360,7 +362,7 @@ public class Main_ObjReaderTest {
         display.SwapBuffers();
 
         frame++;
-        rotAmount+=0.01f;
+        rotAmount+=0.001f;
 
         float delta = (float) ((currentTime - previousTime) / 1000000.0);
         elapsedTime += delta;

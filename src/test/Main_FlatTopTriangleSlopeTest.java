@@ -9,7 +9,11 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Main_FlatTopTriangleSlopeTest {
-
+    public static void swapVertexComponent(int [] v0,int []v1 , int idx1, int idx2){
+        int temp = v0[idx1];
+        v0[idx1] = v1[idx2];
+        v1[idx2] = temp;
+    }
 
     public static void main(String[] args) throws IOException {
         InputStream inputStream = Main_SignedAreaTest.class.getResourceAsStream("texture.properties");
@@ -43,21 +47,34 @@ public class Main_FlatTopTriangleSlopeTest {
 //                180,80,
 //                55,110
 
-                70,60,
                 95,110,
                 10,150,
+                70,60,
+
+
 
                // 87,25,262,25,175,150
 //                190+500/4,100/4,190+850/4,600/4,190+150/4,600/4,
 //                2*190+500/4,100/4,2*190+850/4,600/4,2*190+150/4,600/4
         };
 
-//        for(int i =0 ; i< tris.length; i+=6){
-//            if(!GfxMath.isWindingCW( tris[i],tris[i+1], tris[i+2],tris[i+3],tris[i+4],tris[i+5])){
-//                System.out.println("Error not CW winding");
-//                System.exit(1);
-//            }
-//        }
+        //Rotate vertex indexing
+        for(int i =0 ; i< tris.length; i+=6){
+            swapVertexComponent(tris,tris,i,i+2);
+            swapVertexComponent(tris,tris,i+1,i+3);
+
+            swapVertexComponent(tris,tris,i+2,i+4);
+            swapVertexComponent(tris,tris,i+3,i+5);
+
+
+        }
+
+        for(int i =0 ; i< tris.length; i+=6){
+            if(!GfxMath.isWindingCW( tris[i],tris[i+1], tris[i+2],tris[i+3],tris[i+4],tris[i+5])){
+                System.out.println("Error not CW winding");
+                System.exit(1);
+            }
+        }
 
 
         target.bindTexture(brickTexture, textW, textH,filter);
