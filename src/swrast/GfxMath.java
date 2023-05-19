@@ -105,9 +105,9 @@ public class GfxMath {
         weights[0] = area_cpb/area_abc; //Alpha
         weights[1] = area_apc/area_abc; //Beta
         weights[2] = 1 - (weights[0] + weights[1]); //Gamma
-        if(weights[0] < epsilon) weights[0] = 0;
-        if(weights[1] < epsilon) weights[1] = 0;
-        if(weights[2] < epsilon) weights[2] = 0;
+//        if(weights[0] < epsilon) weights[0] = 0;
+//        if(weights[1] < epsilon) weights[1] = 0;
+//        if(weights[2] < epsilon) weights[2] = 0;
         return weights;
     }
 

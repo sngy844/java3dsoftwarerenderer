@@ -31,7 +31,7 @@ public class Main_ObjReaderTest {
 
         BufferedReader reader;
         int dims [] = new int[2]; //Dim[0] width, dim[2] height
-        byte[] pngData = GfxNative.openPNGFile("res/bricks.png",dims);
+        byte[] pngData = GfxNative.openPNGFile("res/emd48.png",dims);
         int textureW = dims[0];
         int textureH = dims[1];
         //Convert to R-G-B
@@ -47,7 +47,7 @@ public class Main_ObjReaderTest {
         }
 
         try {
-            reader = new BufferedReader(new FileReader("res/dino.obj"));
+            reader = new BufferedReader(new FileReader("res/leon_head.obj"));
             String line = reader.readLine();
 
             while (line != null) {

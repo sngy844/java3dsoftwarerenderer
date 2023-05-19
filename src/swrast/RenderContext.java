@@ -589,10 +589,6 @@ public class RenderContext extends Bitmap
 			tempF = w0; w0=w1; w1= tempF;
 		}
 
-//		float TopMidX = x1 -x0  ; 	float TopMidY  = y1 - y0;
-//		float TopBottomX = x2 -x0  ; float TopBottomY  = y2-  y0;
-//		float cross = TopMidX * TopBottomY - TopBottomX*TopMidY;
-
 		//A triangle can be just flat top or flat bottom or both
 		float deltaY_1 = y1-y0;
 		float deltaY_2 = y2-y0;
@@ -606,7 +602,7 @@ public class RenderContext extends Bitmap
 		//If it was flat top then don't do this - This is for FLAT BOTTOM
 		if(deltaY_1 != 0){
 			traverseAndFill(y0,
-							y1-1,
+							y1,
 							x0,y0,inverse_slope_1,inverse_slope_2,
 							x0,y0,w0,
 							x1,y1,w1,
@@ -639,6 +635,7 @@ public class RenderContext extends Bitmap
 					u2,v2,false);
 		}
 	}
+
 	boolean is_top_left(int x0,int y0,int x1,int y1){
 		int edge_x = x1 - x0;
 		int edge_y = y1 - y0;
@@ -650,7 +647,7 @@ public class RenderContext extends Bitmap
 	}
 
 
-	private void traverseAndFill(int yTop, int yDown, int xPassPoint , int yPassPoint,
+	private void traverseAndFill(float yTop, float yDown, int xPassPoint , int yPassPoint,
 								 float inverse_slope_1, float inverse_slope_2,
 								 int x0, int y0, float w0,
 								 int x1, int y1, float w1,
@@ -661,34 +658,34 @@ public class RenderContext extends Bitmap
 	)
 	{
 		final float preCalBigArea= GfxMath.areaParallelogram(x0,y0,x1,y1,x2,y2);
-		for(int y = yTop ; y<=yDown; y++){
-			float xstartf =  (xPassPoint +  (y-yPassPoint)*inverse_slope_1);
-			float xendf = 	 (xPassPoint +  (y-yPassPoint)*inverse_slope_2);
-//			int xstart = (int)Math.ceil( xstartf -0.5f );
-//			int xend =   (int)Math.ceil( xendf -  0.5f );
-			int xstart = (int)xstartf;
-			int xend =   (int)xendf;
+		for(int y = (int) yTop; y<=(int)yDown; y++){
+			float yf = y+0.5f;
+			float factor1 = (yf - yTop)/(yDown - yTop);
+			if(factor1 < 0.0f || factor1 > 1.0f)
+				continue;
 
-			if(xstart > xend){
-				int temp = xstart;
-				xstart = xend;
-				xend = temp;
+			float xstartf =  (xPassPoint +  (yf-yPassPoint)*inverse_slope_1);
+			float xendf = 	 (xPassPoint +  (yf-yPassPoint)*inverse_slope_2);
+
+			if(xstartf > xendf){
+				float temp = xstartf;
+				xstartf = xendf;
+				xendf = temp;
 			}
+			for(int x = (int) xstartf; x <=(int)xendf ; x++){
 
-			for(int x =xstart; x <=xend ; x++){
+				float factorX = (x+0.5f - xstartf)/(xendf -xstartf);
+				if(factorX < 0.0f || factorX > 1.0f)
+					continue;
+
 				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
 				//Alos need to take of the case point is on edge of triangle
-				if(x == xstart)
-					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xstart+1,y,preCalBigArea,weights);
-				else if(x == xend)
-					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xend-1f,y,preCalBigArea,weights);
-				else
-					GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2, x ,y,preCalBigArea,weights);
+				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x+0.5f,y+0.5f,preCalBigArea,weights);
 
 //				if(weights[0] < 0 || weights[1] < 0 || weights[2] < 0)
 //					throw new RuntimeException();
-//				if(weights[0] +weights[1] + weights[2] > 1.0)
-//					continue;
+				if(weights[0] +weights[1] + weights[2] > 1.0)
+					throw new RuntimeException();
 
 				//Interpolate Z
 				if(depth_test) {
@@ -715,10 +712,10 @@ public class RenderContext extends Bitmap
 				float finalU = weights[0]*u0 + weights[1]*u1 + weights[2]*u2;
 				float finalV = weights[0]*v0 + weights[1]*v1 + weights[2]*v2;
 
-				finalV = finalV < 0 ? 0 :finalV;
-				finalU = finalU < 0 ? 0 :finalU;
-				finalV = finalV > 1 ? 1 :finalV;
-				finalU = finalU > 1 ? 1 :finalU;
+//				finalV = finalV < 0 ? 0 :finalV;
+//				finalU = finalU < 0 ? 0 :finalU;
+//				finalV = finalV > 1 ? 1 :finalV;
+//				finalU = finalU > 1 ? 1 :finalU;
 
 				if(filter ==0) {
 					int textX = (int) (finalU * (textW -1));
@@ -742,60 +739,179 @@ public class RenderContext extends Bitmap
 	}
 
 
+
+
+
+
 	// Another way to think is to know how much to scale deltaX based on how much 1/deltaY: x= x0 + deltaX*k*1/deltaY
 	public  void drawTriangleSpanMethod(){
-		int x0 = 50, y0 =50,
-			x1 = 20, y1 =130,
-			x2 = 70, y2 = 150;
-		//order of x matter
-		float deltaY1 = y1 - y0; float factorStep1 = 1/deltaY1;
-		float deltaY2 = y2 - y0; float factorStep2 = 1/deltaY2;
-		float factor1 = 0 ;
-		float factor2 =0;
+		float x0 = 50, y0 =50, r0 = 255, g0 = 0,	b0=0,
+			x1 =20, y1 =130,   r1 = 0,   g1 = 255,	b1=0,
+			x2 = 70, y2 = 150, r2 = 0,   g2  =0,	b2=255 ;
 
-		for(int y = y0 ; y <= y1; y++){
-			float xstart = x0 + (x1-x0)*factor1;
-			float xend =x0 + (x2-x0)*factor2;
-			factor1+=factorStep1;
-			factor2+=factorStep2;
+		x0 = 400; y0 = 200;
+		x1 = 600; y1 = 500;
+		x2 = 200; y2 = 700;
 
-			for(int x = (int) xstart; x< xend; x++){
-				final int index = (y * m_width + x) * 4;
-				m_pixelComponents[index] = (byte) 255;
-				m_pixelComponents[index + 1] = (byte) 255;
-				m_pixelComponents[index + 2] = (byte) 255;
-				m_pixelComponents[index + 3] = (byte) 255;
+		float temp;
+		if(y0 > y1){
+			temp = x0;	x0=x1;	 x1 = temp;
+			temp = y0;	y0=y1;	 y1 = temp;
+		}
+		if(y1 > y2){
+			temp = y1;	y1=y2;	 y2 = temp;
+			temp = x1;	x1=x2;	 x2 = temp;
+		}
+		if(y0 > y1){
+			temp = y0;	y0 = y1; y1=temp;
+			temp = x0;	x0 = x1; x1=temp;
+		}
+
+		//A triangle can be just flat top or flat bottom or both
+		float deltaY_1 = y1-y0;
+		float deltaY_2 = y2-y0;
+
+		float inverse_slope_1=0;
+		float inverse_slope_2=0;
+
+		if(deltaY_1 != 0) inverse_slope_1= (x1-x0) / deltaY_1;
+		if(deltaY_2 != 0) inverse_slope_2= (x2-x0) / deltaY_2;
+
+		//If it was flat top then don't do this - This is for FLAT BOTTOM
+		if(deltaY_1 != 0){
+			for(int y = (int) y0; y<=( int)y1; y++){
+				float fy = y+0.5f;
+
+				float factor1 = (fy - y0)/(y1-y0);
+				if(factor1 < 0.0f || factor1 > 1.0f)
+					continue;
+				float factor2 = (fy-y0)/(y2-y0);
+				if(factor2 < 0.0f || factor2 > 1.0f)
+					continue;
+
+				float xstartf = x0 + (x1-x0)*factor1;
+				float xendf =   x0 + (x2-x0)*factor2;
+
+				float xstartR = r0 + (r1-r0)*factor1;
+				float xendR = 	r0 + (r2-r0)*factor2;
+
+				float xstartG = g0 + (g1-g0)*factor1;
+				float xendG = 	g0 + (g2-g0)*factor2;
+
+				float xstartB = b0 + (b1-b0)*factor1;
+				float xendB = 	b0 + (b2-b0)*factor2;
+
+				if(xstartf > xendf){
+					float tf = xstartf;
+					xstartf = xendf;
+					xendf = tf;
+
+					tf = xstartR;
+					xstartR = xendR;
+					xendR = tf;
+
+					tf = xstartG;
+					xstartG = xendG;
+					xendG = tf;
+
+					tf = xstartB;
+					xstartB = xendB;
+					xendB = tf;
+				}
+				for(int x = (int) xstartf; x<= xendf; x++ ){
+					float factor = (x+0.5f - xstartf) / (xendf - xstartf);
+					if(factor >= 0.0f && factor <= 1.0f) {
+
+//						GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x+0.5f,y+0.5f,weights);
+//						if(weights[0] + weights[1] + weights[2] > 1.0f)
+//							throw new RuntimeException();
+//						float _finalR = weights[0]*r0 + weights[1]*r1 + weights[2]*r2;
+//						float _finalG = weights[0]*g0 + weights[1]*g1 + weights[2]*g2;
+//						float _finalB = weights[0]*b0 + weights[1]*b1 + weights[2]*b2;
+
+						float finalR = xstartR + (xendR - xstartR) * factor;
+						float finalG = xstartG + (xendG - xstartG) * factor;
+						float finalB = xstartB + (xendB - xstartB) * factor;
+
+						final int index = (y * m_width + x) * 4;
+						m_pixelComponents[index] = (byte) 255;
+						m_pixelComponents[index + 1] = (byte) finalB;
+						m_pixelComponents[index + 2] = (byte) finalG;
+						m_pixelComponents[index + 3] = (byte) finalR;
+					}
+				}
 			}
 		}
 
+		deltaY_1 = y2-y1; //Change from above
+		deltaY_2 = y2-y0;
 
-		deltaY1 = y2 - y0; factorStep1 = 1/deltaY1;
-		deltaY2 = y2 - y1; factorStep2 = 1/deltaY2;
-		factor1= (y1 -y0) / deltaY1;
-		factor2=0;
-		for(int y = y1 ; y <= y2; y++){
-			float xstart = x1 + (x2-x1)*factor2;
-			float xend =   x0 + (x2-x0)*factor1;
+		inverse_slope_1=0;
+		inverse_slope_2=0;
 
-			factor1+=factorStep1;
-			factor2+=factorStep2;
+		if(deltaY_1 != 0) inverse_slope_1 = (x2-x1) / deltaY_1;
+		if(deltaY_2 != 0) inverse_slope_2 = (x2-x0) / deltaY_2;
+		//
+		//This is for FLAT TOP
+		if(deltaY_1 != 0){
+			for(int y = (int) y1; y <= (int)y2;y++){
+				float fy = y+0.5f;
 
-//			if(xstart > xend){
-//				float temp = xend;
-//				xstart = xend;
-//				xend = temp;
-//			}
+				float factor1 =  (fy - y1)/(y2-y1);
+				if(factor1 < 0.0f || factor1 > 1.0f)
+					continue;
 
-			for(int x = (int) xstart; x<xend; x++){
-				final int index = (y * m_width + x) * 4;
-				m_pixelComponents[index] = (byte) 255;
-				m_pixelComponents[index + 1] = (byte) 255;
-				m_pixelComponents[index + 2] = (byte) 255;
-				m_pixelComponents[index + 3] = (byte) 255;
+				float factor2 = (fy-y0)/(y2-y0);
+				if(factor2 < 0.0f || factor2 > 1.0f)
+					continue;
+
+				float xstartf = x1 + (x2-x1)*factor1;
+				float xendf = x0 + (x2-x0)*factor2;
+
+				float xstartR = r1 + (r2-r1)*factor1;
+				float xendR = 	r0 + (r2-r0)*factor2;
+
+				float xstartG = g1 + (g2-g1)*factor1;
+				float xendG = 	g0 + (g2-g0)*factor2;
+
+				float xstartB = b1 + (b2-b1)*factor1;
+				float xendB = 	b0 + (b2-b0)*factor2;
+
+				if(xstartf > xendf){
+					float tf = xstartf;
+					xstartf = xendf;
+					xendf = tf;
+
+					tf = xstartR;
+					xstartR = xendR;
+					xendR = tf;
+
+					tf = xstartG;
+					xstartG = xendG;
+					xendG = tf;
+
+					tf = xstartB;
+					xstartB = xendB;
+					xendB = tf;
+				}
+
+				for(int x = (int) xstartf; x<= xendf; x++ ){
+					float factor = (x+0.5f - xstartf) / (xendf - xstartf);
+					if(factor >= 0.0f && factor <= 1.0f) {
+						float finalR = xstartR + (xendR - xstartR) * factor;
+						float finalG = xstartG + (xendG - xstartG) * factor;
+						float finalB = xstartB + (xendB - xstartB) * factor;
+
+						final int index = (y * m_width + x) * 4;
+						m_pixelComponents[index] = (byte) 255;
+						m_pixelComponents[index + 1] = (byte) finalB;
+						m_pixelComponents[index + 2] = (byte) finalG;
+						m_pixelComponents[index + 3] = (byte) finalR;
+					}
+				}
 			}
+
 		}
-
-
 	}
 
 

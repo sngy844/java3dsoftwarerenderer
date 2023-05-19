@@ -6,7 +6,7 @@ import swrast.RenderContext;
 public class Main_TriangleSpanMethodTest {
     public static void main(String[] args){
         //
-        Display display = new Display(801, 801,1024,1014, "Software Rendering");
+        Display display = new Display(1024, 768,1024,768, "Software Rendering");
         RenderContext target = display.GetFrameBuffer();
 
         long previousTime = System.nanoTime();
