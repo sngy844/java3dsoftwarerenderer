@@ -742,8 +742,61 @@ public class RenderContext extends Bitmap
 	}
 
 
+	// Another way to think is to know how much to scale deltaX based on how much 1/deltaY: x= x0 + deltaX*k*1/deltaY
+	public  void drawTriangleSpanMethod(){
+		int x0 = 50, y0 =50,
+			x1 = 20, y1 =130,
+			x2 = 70, y2 = 150;
+		//order of x matter
+		float deltaY1 = y1 - y0; float factorStep1 = 1/deltaY1;
+		float deltaY2 = y2 - y0; float factorStep2 = 1/deltaY2;
+		float factor1 = 0 ;
+		float factor2 =0;
+
+		for(int y = y0 ; y <= y1; y++){
+			float xstart = x0 + (x1-x0)*factor1;
+			float xend =x0 + (x2-x0)*factor2;
+			factor1+=factorStep1;
+			factor2+=factorStep2;
+
+			for(int x = (int) xstart; x< xend; x++){
+				final int index = (y * m_width + x) * 4;
+				m_pixelComponents[index] = (byte) 255;
+				m_pixelComponents[index + 1] = (byte) 255;
+				m_pixelComponents[index + 2] = (byte) 255;
+				m_pixelComponents[index + 3] = (byte) 255;
+			}
+		}
 
 
+		deltaY1 = y2 - y0; factorStep1 = 1/deltaY1;
+		deltaY2 = y2 - y1; factorStep2 = 1/deltaY2;
+		factor1= (y1 -y0) / deltaY1;
+		factor2=0;
+		for(int y = y1 ; y <= y2; y++){
+			float xstart = x1 + (x2-x1)*factor2;
+			float xend =   x0 + (x2-x0)*factor1;
+
+			factor1+=factorStep1;
+			factor2+=factorStep2;
+
+//			if(xstart > xend){
+//				float temp = xend;
+//				xstart = xend;
+//				xend = temp;
+//			}
+
+			for(int x = (int) xstart; x<xend; x++){
+				final int index = (y * m_width + x) * 4;
+				m_pixelComponents[index] = (byte) 255;
+				m_pixelComponents[index + 1] = (byte) 255;
+				m_pixelComponents[index + 2] = (byte) 255;
+				m_pixelComponents[index + 3] = (byte) 255;
+			}
+		}
+
+
+	}
 
 
 }
