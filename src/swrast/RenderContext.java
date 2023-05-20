@@ -609,8 +609,7 @@ public class RenderContext extends Bitmap
 							x2,y2,w2,
 							u0,v0,
 							u1,v1,
-							u2,v2,true
-			);
+							u2,v2);
 		}
 
 		deltaY_1 = y2-y1; //Change from above
@@ -632,30 +631,19 @@ public class RenderContext extends Bitmap
 					x2,y2,w2,
 					u0,v0,
 					u1,v1,
-					u2,v2,false);
+					u2,v2);
 		}
 	}
 
-	boolean is_top_left(int x0,int y0,int x1,int y1){
-		int edge_x = x1 - x0;
-		int edge_y = y1 - y0;
 
-		boolean is_top_left =  edge_y == 0 && edge_x >0;
-		boolean is_left_edge =  edge_y <0;
-
-		return is_top_left || is_left_edge;
-	}
-
-
-	private void traverseAndFill(float yTop, float yDown, int xPassPoint , int yPassPoint,
+	private void traverseAndFill(float yTop, float yDown, float xPassPoint , float yPassPoint,
 								 float inverse_slope_1, float inverse_slope_2,
 								 int x0, int y0, float w0,
 								 int x1, int y1, float w1,
 								 int x2, int y2, float w2,
 								 float u0, float v0,
 								 float u1, float v1,
-								 float u2, float v2, boolean isBottomFlat
-	)
+								 float u2, float v2	)
 	{
 		final float preCalBigArea= GfxMath.areaParallelogram(x0,y0,x1,y1,x2,y2);
 		for(int y = (int) yTop; y<=(int)yDown; y++){
@@ -664,6 +652,7 @@ public class RenderContext extends Bitmap
 			if(factor1 < 0.0f || factor1 > 1.0f)
 				continue;
 
+			//This give the x of the center of pixel (note the yf = y+0.5f) -> give point (xstartf , y+0.5) & (xendf,y+0.5f)
 			float xstartf =  (xPassPoint +  (yf-yPassPoint)*inverse_slope_1);
 			float xendf = 	 (xPassPoint +  (yf-yPassPoint)*inverse_slope_2);
 
@@ -673,17 +662,15 @@ public class RenderContext extends Bitmap
 				xendf = temp;
 			}
 			for(int x = (int) xstartf; x <=(int)xendf ; x++){
-
-				float factorX = (x+0.5f - xstartf)/(xendf -xstartf);
+				float xf = x+0.5f;
+				float factorX = (xf - xstartf)/(xendf -xstartf);
 				if(factorX < 0.0f || factorX > 1.0f)
 					continue;
 
-				//Barcycentric weight Can be optimized here - like no need to recalculate area of the same big triangle
-				//Alos need to take of the case point is on edge of triangle
-				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,x+0.5f,y+0.5f,preCalBigArea,weights);
+				GfxMath.baryCentricWeight(x0,y0,x1,y1,x2,y2,xf,yf,preCalBigArea,weights);
 
-//				if(weights[0] < 0 || weights[1] < 0 || weights[2] < 0)
-//					throw new RuntimeException();
+				if(weights[0] < 0 || weights[1] < 0 || weights[2] < 0)
+					throw new RuntimeException();
 				if(weights[0] +weights[1] + weights[2] > 1.0)
 					throw new RuntimeException();
 
@@ -720,11 +707,6 @@ public class RenderContext extends Bitmap
 				if(filter ==0) {
 					int textX = (int) (finalU * (textW -1));
 					int textY = (int) (finalV*  (textH -1));
-
-					if(textX < 0 || textX >= textW)
-						throw new RuntimeException();
-					if(textY < 0 || textY >= textH)
-						throw new RuntimeException();
 
 					//Nearest neightbor (no filtering)
 					final int textIndex =(textY*textW+textX)*4;
