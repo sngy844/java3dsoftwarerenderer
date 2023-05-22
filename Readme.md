@@ -19,6 +19,7 @@ Coordinate for `RenderContext::drawTriangleTexture` is in **screen-space** which
 The `w` argument is original Z of the vertex before perspective projection (but after modelview transform). See `Main_ObjReaderTest.java`, and `Main_PerspectiveTest.java`
 - See `Main_WindowlessTest.java` for headless and just triangle rasterization demo.
 - Demo code quality is pretty bad, will need some clean up.
+- Please use IntelliJ to open the project.
 
 # Technique
 ## Filling algorithm
@@ -95,3 +96,8 @@ The `traverseAndFill` function use top-left filling rules. A pixel center (x+0.5
 Details about filling convention & explanation will be added later. 
 I found that the doc at MS about filling rules is a bit confusing https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-rasterizer-stage-rules
 but still leave it here for reference.
+
+# References:
+- http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
+- https://trenki2.github.io/blog/2017/06/06/developing-a-software-renderer-part1/
+- Pikuma How Does Triangle Rasterization Work? https://www.youtube.com/watch?v=k5wtuKWmV48
