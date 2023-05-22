@@ -47,7 +47,7 @@ public class Main_ObjReaderTest {
         }
 
         try {
-            reader = new BufferedReader(new FileReader("res/cube.obj"));
+            reader = new BufferedReader(new FileReader("res/leon_head.obj"));
             String line = reader.readLine();
 
             while (line != null) {

@@ -540,8 +540,8 @@ public class RenderContext extends Bitmap
 		this.depth_test = onOff;
 	}
 
-	public void save(){
-		IOUtils.save("buffer.ppm",m_pixelComponents,m_width,m_height);
+	public void save(String fileName){
+		IOUtils.save(fileName,m_pixelComponents,m_width,m_height);
 	}
 
 	public void saveTarga(String fileName){
@@ -689,9 +689,9 @@ public class RenderContext extends Bitmap
 
 				if(texture== null) {
 					m_pixelComponents[index] = (byte) 255;
-					m_pixelComponents[index + 1] = (byte) 0;
-					m_pixelComponents[index + 2] = (byte) 0;
-					m_pixelComponents[index + 3] = (byte) 0;
+					m_pixelComponents[index + 1] = (byte) 125;
+					m_pixelComponents[index + 2] = (byte) 125;
+					m_pixelComponents[index + 3] = (byte) 125;
 					continue;
 				}
 
@@ -705,8 +705,8 @@ public class RenderContext extends Bitmap
 //				finalU = finalU > 1 ? 1 :finalU;
 
 				if(filter ==0) {
-					int textX = (int) (finalU * (textW -1));
-					int textY = (int) (finalV*  (textH -1));
+					int textX = (int) (finalU * (textW-1));
+					int textY = (int) (finalV * (textH-1));
 
 					//Nearest neightbor (no filtering)
 					final int textIndex =(textY*textW+textX)*4;
